@@ -86,7 +86,7 @@ export function DataTableRowActions<TData>({
                 <DropdownMenuItem
                     onClick={() =>
                         navigator.clipboard.writeText(
-                            diamond["CERT-NO"].toString()
+                            diamond["certificateNumber"].toString()
                         )
                     }
                 >
