@@ -18,8 +18,8 @@ export function DataTableLoading({
     rowCount = 10,
 }: DataTableLoadingProps) {
     return (
-        <div className="w-full space-y-3 overflow-auto">
-            <div className="flex w-full items-center justify-between space-x-2 overflow-auto p-1">
+        <div className="w-full space-y-3 ">
+            <div className="flex w-full items-center justify-between space-x-2  p-1">
                 <div className="flex flex-1 items-center space-x-2">
                     <Skeleton className="h-7 w-[150px] lg:w-[250px]" />
                     <Skeleton className="h-7 w-[70px] border-dashed" />

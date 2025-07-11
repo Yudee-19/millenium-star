@@ -15,7 +15,7 @@ const CustomButton = ({
     children: React.ReactNode;
     className?: string;
     icon?: React.ReactNode;
-    variant?: "primary" | "secondary";
+    variant?: "primary" | "secondary" | "dark";
 } & (
     | React.ComponentPropsWithoutRef<"a">
     | React.ComponentPropsWithoutRef<"button">
@@ -25,6 +25,7 @@ const CustomButton = ({
     const variantStyles = {
         primary: "bg-gradient-to-b from-blue-700 to-blue-400 text-white ",
         secondary: "bg-black/5 text-sky-950",
+        dark: "bg-black text-white",
     };
     return (
         <Tag

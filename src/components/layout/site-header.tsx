@@ -7,7 +7,7 @@ export function SiteHeader() {
             <div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
                 <div className="flex gap-6 md:gap-10">
                     <Link href="/" className="flex items-center space-x-2">
-                        <span className="inline-block text-xl font-inter font-bold">
+                        <span className="inline-block text-xl font-playfair font-bold ">
                             {siteConfig.name}
                         </span>
                     </Link>
@@ -48,6 +48,12 @@ export function SiteHeader() {
                                     clipRule="evenodd"
                                 />
                             </svg>
+                        </Link>
+                        <Link
+                            href="/client"
+                            className="text-muted-foreground hover:text-foreground"
+                        >
+                            Client View
                         </Link>
                     </nav>
                 </div>

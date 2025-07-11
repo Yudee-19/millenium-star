@@ -1,36 +1,191 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Diamond Elite Admin Dashboard
 
-## Getting Started
+## 🚧 Development Status Notice
 
-First, run the development server:
+**This is a work-in-progress codebase and NOT the final production version.**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Current Development Phase
+This repository represents an active development state of the Diamond Elite Admin Dashboard. The codebase is continuously evolving with frequent updates, refactoring, and feature additions.
+
+## 📋 Current Implementation Status
+
+### ✅ Completed Features
+- **Admin Dashboard Core**
+  - Data table with sorting, filtering, and pagination
+  - Diamond inventory management interface
+  - Column visibility controls and data export functionality
+  - Responsive design with modern UI components
+
+- **Client-Facing Interface**
+  - Public diamond search and filter interface
+  - Advanced filtering by shape, color, clarity, cut, polish, symmetry
+  - Client authentication system with modal login
+  - Seamless navigation between admin and client views
+
+- **Data Management**
+  - Zod schema validation for type safety
+  - Comprehensive diamond data structure
+  - RESTful API integration ready
+  - Real-time data fetching and state management
+
+### 🔄 In Development
+- **Backend Integration**
+  - API endpoints implementation (referenced in APIs.md)
+  - MongoDB database connection
+  - Authentication and authorization system
+  - Data persistence and CRUD operations
+
+- **Enhanced Features**
+  - Advanced search and filtering capabilities
+  - Bulk operations for diamond management
+  - User role management
+  - Inventory analytics and reporting
+
+- **UI/UX Improvements**
+  - Mobile responsiveness optimization
+  - Performance optimizations
+  - Accessibility enhancements
+  - Loading states and error handling refinement
+
+### ⚠️ Known Limitations & TODO Items
+
+#### Technical Debt
+- **Schema Consistency**: Column definitions need alignment with backend schema
+- **Type Safety**: Some components still use `any` types that need proper typing
+- **Error Boundaries**: Missing error boundary implementations
+- **Testing**: No test coverage currently implemented
+
+#### Missing Features
+- **Authentication**: JWT token management and session handling
+- **File Upload**: Diamond image and certificate upload functionality
+- **Real-time Updates**: WebSocket integration for live inventory updates
+- **Audit Logging**: User activity tracking and change history
+- **Advanced Permissions**: Role-based access control implementation
+
+#### Performance Considerations
+- **Virtualization**: Large dataset rendering optimization needed
+- **Caching**: API response caching strategy
+- **Bundle Optimization**: Code splitting and lazy loading
+- **SEO**: Meta tags and structured data for client pages
+
+## 🏗️ Architecture Overview
+
+### Tech Stack
+- **Frontend**: Next.js 14, React 18, TypeScript
+- **UI Components**: Radix UI, Tailwind CSS, Lucide Icons
+- **State Management**: React Hooks, Custom hooks
+- **Data Fetching**: Native fetch API (planned: React Query/SWR)
+- **Validation**: Zod schemas
+- **Backend**: Express.js, MongoDB, Mongoose (in development)
+
+### Project Structure
+```
+src/
+├── app/                    # Next.js app router pages
+├── components/             # Reusable UI components
+│   ├── auth/              # Authentication components
+│   ├── client/            # Client-facing components
+│   ├── data-table/        # Table components
+│   └── ui/                # Base UI components
+├── hooks/                  # Custom React hooks
+├── lib/                   # Utility functions and configs
+├── types/                 # TypeScript type definitions
+└── validations/           # Zod schemas
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Getting Started
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
+- MongoDB (for backend)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Installation
+```bash
+# Clone the repository
+git clone [repository-url]
 
-## Learn More
+# Install dependencies
+npm install
 
-To learn more about Next.js, take a look at the following resources:
+# Set up environment variables
+cp .env.example .env.local
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Run development server
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Environment Setup
+```env
+# Add to .env.local
+NEXT_PUBLIC_API_URL=http://localhost:5000/api
+MONGODB_URI=mongodb://localhost:27017/diamond-inventory
+JWT_SECRET=your-jwt-secret
+```
 
-## Deploy on Vercel
+## 📝 Development Guidelines
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Code Standards
+- Use TypeScript for all new components
+- Follow ESLint and Prettier configurations
+- Implement proper error handling
+- Add JSDoc comments for complex functions
+- Use semantic commit messages
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Component Guidelines
+- Prefer functional components with hooks
+- Use proper TypeScript interfaces
+- Implement loading and error states
+- Follow atomic design principles
+- Ensure responsive design
+
+### API Integration
+- Use custom hooks for data fetching
+- Implement proper error handling
+- Add loading states
+- Follow the API documentation in `APIs.md`
+
+## 🔮 Upcoming Features
+
+### Short Term (Next 2-4 weeks)
+- Complete backend API integration
+- User authentication system
+- Real-time inventory updates
+- Mobile responsiveness improvements
+
+### Medium Term (1-2 months)
+- Advanced analytics dashboard
+- Bulk import/export functionality
+- Multi-language support
+- Performance optimizations
+
+### Long Term (3+ months)
+- Machine learning price predictions
+- Advanced reporting system
+- Third-party integrations
+- Mobile app development
+
+## 🤝 Contributing
+
+This is an active development project. If you're contributing:
+
+1. Check the current issues and roadmap
+2. Follow the coding standards
+3. Test your changes thoroughly
+4. Update documentation as needed
+5. Submit detailed pull requests
+
+## 📞 Contact & Support
+
+For questions about this development version:
+- Create an issue in the repository
+- Review the `APIs.md` for backend integration details
+- Check the project roadmap for planned features
+
+---
+
+**⚠️ Important**: This codebase is under active development. Features, APIs, and structure may change significantly. Do not use in production without thorough testing and review.
+
+**Last Updated**: [Current Date]
+**Version**: Development Build
+**Status**: Active Development

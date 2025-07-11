@@ -31,11 +31,13 @@ import { DataTablePagination } from "./data-table-pagination";
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
+    toolbar?: React.ComponentType<{ table: any }>;
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
+    toolbar: Toolbar = DataTableToolbar,
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] =
@@ -68,9 +70,9 @@ export function DataTable<TData, TValue>({
 
     return (
         <div className="space-y-4">
-            <DataTableToolbar table={table} />
+            <Toolbar table={table} />
             <div className="rounded-md border">
-                <Table>
+                <Table className="overflow-x-auto">
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
