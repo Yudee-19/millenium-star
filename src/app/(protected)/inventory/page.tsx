@@ -7,10 +7,12 @@ import { ClientDiamondGrid } from "@/components/inventory/client-diamond-grid";
 import { AppliedFilters } from "@/components/inventory/applied-filters";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ClientFilters } from "@/types/client/diamond";
 import { useClientDiamonds } from "@/hooks/client-table/use-client-diamonds";
 import { Download, Grid3X3, Table as TableIcon } from "lucide-react";
+import { ApprovedUserGuard } from "@/components/auth/routeGuard";
+import { UserStatusHandler } from "@/components/auth/statusGuard";
 
 export default function ClientPage() {
     const {
@@ -128,149 +130,157 @@ export default function ClientPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <header className="bg-white border-b border-gray-200 px-6 py-4">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-8">
-                        <h1 className="text-2xl font-bold font-playfair text-gray-900">
-                            DIAMOND ELITE
-                        </h1>
-                        <nav className="flex space-x-6">
-                            <a href="/inventory">
-                                <Button
-                                    variant="ghost"
-                                    className="text-gray-600 hover:text-gray-900"
-                                >
-                                    Inventory
-                                </Button>
-                            </a>
+        <ApprovedUserGuard>
+            <UserStatusHandler>
+                <div className="min-h-screen bg-gray-50">
+                    {/* Header */}
+                    <header className="bg-white border-b border-gray-200 px-6 py-4">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-8">
+                                <h1 className="text-2xl font-bold font-playfair text-gray-900">
+                                    DIAMOND ELITE
+                                </h1>
+                                <nav className="flex space-x-6">
+                                    <a href="/inventory">
+                                        <Button
+                                            variant="ghost"
+                                            className="text-gray-600 hover:text-gray-900"
+                                        >
+                                            Inventory
+                                        </Button>
+                                    </a>
 
-                            <Button
-                                variant="ghost"
-                                className="text-gray-600 hover:text-gray-900"
-                            >
-                                Offer Enquiry
-                            </Button>
-                            {/* <Button
+                                    <Button
+                                        variant="ghost"
+                                        className="text-gray-600 hover:text-gray-900"
+                                    >
+                                        Offer Enquiry
+                                    </Button>
+                                    {/* <Button
                                 variant="ghost"
                                 className="text-gray-600 hover:text-gray-900"
                             >
                                 Member Enquiry
                             </Button> */}
-                            {/* <Button
+                                    {/* <Button
                                 variant="ghost"
                                 className="text-gray-600 hover:text-gray-900"
                             >
                                 My Account
                             </Button> */}
-                        </nav>
-                    </div>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        className="bg-gray-900 hover:bg-gray-900 text-white hover:text-white rounded-full space-x-2 flex justify-center"
-                    >
-                        <div className="h-5 w-5 bg-white/50 hover:bg-white/50 rounded-full"></div>
-                        John Doe
-                    </Button>
-                </div>
-            </header>
-
-            <div className="flex">
-                {/* Filter Sidebar */}
-                <ClientFilterSidebar
-                    filters={filters}
-                    onFiltersChange={handleFiltersChange}
-                    filterOptions={filterOptions}
-                    onSearch={handleSearch}
-                    onReset={handleReset}
-                    loading={loading}
-                />
-
-                {/* Main Content */}
-                <div className="flex-1 p-6">
-                    {/* Top Controls */}
-                    <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center space-x-4">
-                            <Tabs
-                                value={view}
-                                onValueChange={(v) =>
-                                    setView(v as "table" | "grid")
-                                }
-                            >
-                                <TabsList className="bg-gray-100">
-                                    <TabsTrigger
-                                        value="table"
-                                        className="flex items-center space-x-2"
-                                    >
-                                        <TableIcon className="w-4 h-4" />
-                                        <span>Table View</span>
-                                    </TabsTrigger>
-                                    <TabsTrigger
-                                        value="grid"
-                                        className="flex items-center space-x-2"
-                                    >
-                                        <Grid3X3 className="w-4 h-4" />
-                                        <span>Grid View</span>
-                                    </TabsTrigger>
-                                </TabsList>
-                            </Tabs>
-
-                            <div className="flex items-center space-x-2">
-                                <Input
-                                    placeholder="Search by Diamond ID, Shape, Color, Clarity, etc."
-                                    value={searchTerm}
-                                    onChange={(e) =>
-                                        setSearchTerm(e.target.value)
-                                    }
-                                    onKeyPress={(e) =>
-                                        e.key === "Enter" && handleSearch()
-                                    }
-                                    className="w-96"
-                                />
-                                <Button
-                                    onClick={handleSearch}
-                                    disabled={loading}
-                                >
-                                    Search
-                                </Button>
+                                </nav>
                             </div>
-                        </div>
-
-                        <div className="flex items-center space-x-2">
-                            <Button variant="outline" onClick={exportData}>
-                                <Download className="w-4 h-4 mr-2" />
-                                Export Current View
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="bg-gray-900 hover:bg-gray-900 text-white hover:text-white rounded-full space-x-2 flex justify-center"
+                            >
+                                <div className="h-5 w-5 bg-white/50 hover:bg-white/50 rounded-full"></div>
+                                John Doe
                             </Button>
                         </div>
+                    </header>
+
+                    <div className="flex">
+                        {/* Filter Sidebar */}
+                        <ClientFilterSidebar
+                            filters={filters}
+                            onFiltersChange={handleFiltersChange}
+                            filterOptions={filterOptions}
+                            onSearch={handleSearch}
+                            onReset={handleReset}
+                            loading={loading}
+                        />
+
+                        {/* Main Content */}
+                        <div className="flex-1 p-6">
+                            {/* Top Controls */}
+                            <div className="flex items-center justify-between mb-6">
+                                <div className="flex items-center space-x-4">
+                                    <Tabs
+                                        value={view}
+                                        onValueChange={(v) =>
+                                            setView(v as "table" | "grid")
+                                        }
+                                    >
+                                        <TabsList className="bg-gray-100">
+                                            <TabsTrigger
+                                                value="table"
+                                                className="flex items-center space-x-2"
+                                            >
+                                                <TableIcon className="w-4 h-4" />
+                                                <span>Table View</span>
+                                            </TabsTrigger>
+                                            <TabsTrigger
+                                                value="grid"
+                                                className="flex items-center space-x-2"
+                                            >
+                                                <Grid3X3 className="w-4 h-4" />
+                                                <span>Grid View</span>
+                                            </TabsTrigger>
+                                        </TabsList>
+                                    </Tabs>
+
+                                    <div className="flex items-center space-x-2">
+                                        <Input
+                                            placeholder="Search by Diamond ID, Shape, Color, Clarity, etc."
+                                            value={searchTerm}
+                                            onChange={(e) =>
+                                                setSearchTerm(e.target.value)
+                                            }
+                                            onKeyPress={(e) =>
+                                                e.key === "Enter" &&
+                                                handleSearch()
+                                            }
+                                            className="w-96"
+                                        />
+                                        <Button
+                                            onClick={handleSearch}
+                                            disabled={loading}
+                                        >
+                                            Search
+                                        </Button>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center space-x-2">
+                                    <Button
+                                        variant="outline"
+                                        onClick={exportData}
+                                    >
+                                        <Download className="w-4 h-4 mr-2" />
+                                        Export Current View
+                                    </Button>
+                                </div>
+                            </div>
+
+                            {/* Applied Filters */}
+                            <AppliedFilters
+                                filters={currentFilters}
+                                onRemoveFilter={handleRemoveFilter}
+                                onClearAll={handleClearAllFilters}
+                            />
+
+                            {/* Diamond Display - Conditional based on view */}
+                            {view === "table" ? (
+                                <ClientDiamondTable
+                                    diamonds={diamonds}
+                                    loading={loading}
+                                    pagination={pagination}
+                                    onPageChange={handlePageChange}
+                                />
+                            ) : (
+                                <ClientDiamondGrid
+                                    diamonds={diamonds}
+                                    loading={loading}
+                                    pagination={pagination}
+                                    onPageChange={handlePageChange}
+                                />
+                            )}
+                        </div>
                     </div>
-
-                    {/* Applied Filters */}
-                    <AppliedFilters
-                        filters={currentFilters}
-                        onRemoveFilter={handleRemoveFilter}
-                        onClearAll={handleClearAllFilters}
-                    />
-
-                    {/* Diamond Display - Conditional based on view */}
-                    {view === "table" ? (
-                        <ClientDiamondTable
-                            diamonds={diamonds}
-                            loading={loading}
-                            pagination={pagination}
-                            onPageChange={handlePageChange}
-                        />
-                    ) : (
-                        <ClientDiamondGrid
-                            diamonds={diamonds}
-                            loading={loading}
-                            pagination={pagination}
-                            onPageChange={handlePageChange}
-                        />
-                    )}
                 </div>
-            </div>
-        </div>
+            </UserStatusHandler>
+        </ApprovedUserGuard>
     );
 }

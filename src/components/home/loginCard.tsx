@@ -125,7 +125,7 @@ export function LoginModal({
                 if (result.data.user.role === "ADMIN") {
                     router.push("/admin");
                 } else {
-                    router.push("/client");
+                    router.push("/inventory");
                 }
             } else {
                 throw new Error(result.message || "Login failed");

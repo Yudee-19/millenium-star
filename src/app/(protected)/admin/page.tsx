@@ -12,8 +12,11 @@ import { useDiamonds } from "@/hooks/use-diamonds";
 import { DownloadIcon, FileTextIcon, FunnelPlus, PlusIcon } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AddDiamondModal } from "@/components/modals/add-diamond";
+import { AdminGuard } from "@/components/auth/routeGuard";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function DiamondPage() {
+    const { user, logout } = useAuth();
     const {
         diamonds,
         loading,
@@ -71,193 +74,200 @@ export default function DiamondPage() {
     }
 
     return (
-        <Container>
-            {/* Header Section */}
-            <SiteHeader />
+        <AdminGuard>
+            <Container>
+                {/* Header Section */}
+                <SiteHeader />
 
-            {/* Navbar Buttons */}
-            <div className="flex items-center justify-evenly gap-2 my-5">
-                <CustomButton variant="dark">Inventory</CustomButton>
-                <CustomButton variant="secondary">Application</CustomButton>
-                <CustomButton variant="secondary">Rapnet</CustomButton>
-            </div>
+                {/* Navbar Buttons */}
+                <div className="flex items-center justify-evenly gap-2 my-5">
+                    <CustomButton variant="dark">Inventory</CustomButton>
+                    <CustomButton variant="secondary">Application</CustomButton>
+                    <CustomButton variant="secondary">Rapnet</CustomButton>
+                </div>
 
-            {/* Search and Action Buttons */}
-            <div className="flex items-center justify-center gap-2 my-5">
-                <Input
-                    className="bg-black/5 text-sky-950 px-3 py-3 text-base rounded-full"
-                    placeholder="Search by Diamond ID, Shape, Color, Clarity, etc."
-                />
-                <CustomButton
-                    variant="secondary"
-                    icon={<FunnelPlus size={15} />}
-                >
-                    Filter
-                </CustomButton>
-                <CustomButton
-                    variant="secondary"
-                    icon={<DownloadIcon size={15} />}
-                >
-                    Export
-                </CustomButton>
-                <CustomButton
-                    variant="secondary"
-                    icon={<FileTextIcon size={15} />}
-                >
-                    <span>Import&nbsp;Excel</span>
-                </CustomButton>
-                <CustomButton
-                    variant="dark"
-                    icon={<PlusIcon size={15} />}
-                    onClick={() => setIsAddModalOpen(true)}
-                >
-                    <span>Add&nbsp;Diamond</span>
-                </CustomButton>
-            </div>
+                {/* Search and Action Buttons */}
+                <div className="flex items-center justify-center gap-2 my-5">
+                    <Input
+                        className="bg-black/5 text-sky-950 px-3 py-3 text-base rounded-full"
+                        placeholder="Search by Diamond ID, Shape, Color, Clarity, etc."
+                    />
+                    <CustomButton
+                        variant="secondary"
+                        icon={<FunnelPlus size={15} />}
+                    >
+                        Filter
+                    </CustomButton>
+                    <CustomButton
+                        variant="secondary"
+                        icon={<DownloadIcon size={15} />}
+                    >
+                        Export
+                    </CustomButton>
+                    <CustomButton
+                        variant="secondary"
+                        icon={<FileTextIcon size={15} />}
+                    >
+                        <span>Import&nbsp;Excel</span>
+                    </CustomButton>
+                    <CustomButton
+                        variant="dark"
+                        icon={<PlusIcon size={15} />}
+                        onClick={() => setIsAddModalOpen(true)}
+                    >
+                        <span>Add&nbsp;Diamond</span>
+                    </CustomButton>
+                </div>
 
-            {/* Tabs Section */}
-            <div className="w-full my-5">
-                <Tabs defaultValue="all" className="w-full">
-                    <TabsList className="w-full rounded-full">
-                        <TabsTrigger
-                            value="all"
-                            className="rounded-full text-sky-950 p-3"
-                        >
-                            All
-                        </TabsTrigger>
-                        <TabsTrigger
-                            value="fancy"
-                            className="rounded-full text-sky-950 p-3"
-                        >
-                            Fancy
-                        </TabsTrigger>
-                        <TabsTrigger
-                            value="labGrown"
-                            className="rounded-full text-sky-950 p-3"
-                        >
-                            Lab Grown
-                        </TabsTrigger>
-                        <TabsTrigger
-                            value="highEnd"
-                            className="rounded-full text-sky-950 p-3"
-                        >
-                            High End
-                        </TabsTrigger>
-                    </TabsList>
+                {/* Tabs Section */}
+                <div className="w-full my-5">
+                    <Tabs defaultValue="all" className="w-full">
+                        <TabsList className="w-full rounded-full">
+                            <TabsTrigger
+                                value="all"
+                                className="rounded-full text-sky-950 p-3"
+                            >
+                                All
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="fancy"
+                                className="rounded-full text-sky-950 p-3"
+                            >
+                                Fancy
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="labGrown"
+                                className="rounded-full text-sky-950 p-3"
+                            >
+                                Lab Grown
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="highEnd"
+                                className="rounded-full text-sky-950 p-3"
+                            >
+                                High End
+                            </TabsTrigger>
+                        </TabsList>
 
-                    <TabsContent value="all">
-                        {/* Stats Cards */}
-                        <div className="flex items-center justify-center gap-5 my-10">
-                            <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                <h1 className="text-sky-950 text-base">
-                                    Total Diamonds (All Inventory)
-                                </h1>
-                                <h1 className="text-2xl font-semibold">
-                                    {loading
-                                        ? "..."
-                                        : totalCount.toLocaleString()}
-                                </h1>
+                        <TabsContent value="all">
+                            {/* Stats Cards */}
+                            <div className="flex items-center justify-center gap-5 my-10">
+                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-sky-950 text-base">
+                                        Total Diamonds (All Inventory)
+                                    </h1>
+                                    <h1 className="text-2xl font-semibold">
+                                        {loading
+                                            ? "..."
+                                            : totalCount.toLocaleString()}
+                                    </h1>
+                                </div>
+                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-sky-950 text-base">
+                                        Available
+                                    </h1>
+                                    <h1 className="text-2xl font-semibold">
+                                        {loading
+                                            ? "..."
+                                            : diamonds.filter(
+                                                  (d) => d.isAvailable
+                                              ).length}
+                                    </h1>
+                                </div>
+                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-sky-950 text-base">
+                                        Total Carat Weight
+                                    </h1>
+                                    <h1 className="text-2xl font-semibold">
+                                        {loading
+                                            ? "..."
+                                            : diamonds
+                                                  .reduce(
+                                                      (sum, d) =>
+                                                          sum + (d.size || 0),
+                                                      0
+                                                  )
+                                                  .toFixed(2)}{" "}
+                                        ct
+                                    </h1>
+                                </div>
                             </div>
-                            <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                <h1 className="text-sky-950 text-base">
-                                    Available
-                                </h1>
-                                <h1 className="text-2xl font-semibold">
-                                    {loading
-                                        ? "..."
-                                        : diamonds.filter((d) => d.isAvailable)
-                                              .length}
-                                </h1>
-                            </div>
-                            <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                <h1 className="text-sky-950 text-base">
-                                    Total Carat Weight
-                                </h1>
-                                <h1 className="text-2xl font-semibold">
-                                    {loading
-                                        ? "..."
-                                        : diamonds
-                                              .reduce(
-                                                  (sum, d) =>
-                                                      sum + (d.size || 0),
-                                                  0
-                                              )
-                                              .toFixed(2)}{" "}
-                                    ct
-                                </h1>
-                            </div>
-                        </div>
 
-                        <Tabs defaultValue="tableview" className="">
-                            <TabsList className="rounded-full space-x-3">
-                                <TabsTrigger
-                                    value="tableview"
-                                    className="rounded-full text-sky-950 p-3"
-                                >
-                                    Table View
-                                </TabsTrigger>
-                                <TabsTrigger
-                                    value="rapport"
-                                    className="rounded-full text-sky-950 p-3"
-                                >
-                                    Rapport
-                                </TabsTrigger>
-                                <TabsTrigger
-                                    value="chart"
-                                    className="rounded-full text-sky-950 p-3"
-                                >
-                                    Chart
-                                </TabsTrigger>
-                            </TabsList>
+                            <Tabs defaultValue="tableview" className="">
+                                <TabsList className="rounded-full space-x-3">
+                                    <TabsTrigger
+                                        value="tableview"
+                                        className="rounded-full text-sky-950 p-3"
+                                    >
+                                        Table View
+                                    </TabsTrigger>
+                                    <TabsTrigger
+                                        value="rapport"
+                                        className="rounded-full text-sky-950 p-3"
+                                    >
+                                        Rapport
+                                    </TabsTrigger>
+                                    <TabsTrigger
+                                        value="chart"
+                                        className="rounded-full text-sky-950 p-3"
+                                    >
+                                        Chart
+                                    </TabsTrigger>
+                                </TabsList>
 
-                            <TabsContent value="tableview">
-                                <Shell>
-                                    <div className="flex h-full min-h-screen overflow-x-auto flex-col">
-                                        <div className="flex flex-col space-y-8">
-                                            <DataTable
-                                                data={diamonds}
-                                                columns={diamondColumns}
-                                                toolbar={DiamondTableToolbar}
-                                                pageCount={pageCount}
-                                                loading={loading}
-                                                onStateChange={
-                                                    handleTableStateChange
-                                                }
-                                                paginationMeta={paginationMeta}
-                                            />
+                                <TabsContent value="tableview">
+                                    <Shell>
+                                        <div className="flex h-full min-h-screen overflow-x-auto flex-col">
+                                            <div className="flex flex-col space-y-8">
+                                                <DataTable
+                                                    data={diamonds}
+                                                    columns={diamondColumns}
+                                                    toolbar={
+                                                        DiamondTableToolbar
+                                                    }
+                                                    pageCount={pageCount}
+                                                    loading={loading}
+                                                    onStateChange={
+                                                        handleTableStateChange
+                                                    }
+                                                    paginationMeta={
+                                                        paginationMeta
+                                                    }
+                                                />
+                                            </div>
                                         </div>
-                                    </div>
-                                </Shell>
-                            </TabsContent>
+                                    </Shell>
+                                </TabsContent>
 
-                            <TabsContent value="rapport">
-                                Rappaport Unavailable
-                            </TabsContent>
+                                <TabsContent value="rapport">
+                                    Rappaport Unavailable
+                                </TabsContent>
 
-                            <TabsContent value="chart">
-                                Charts Not Fetched
-                            </TabsContent>
-                        </Tabs>
-                    </TabsContent>
+                                <TabsContent value="chart">
+                                    Charts Not Fetched
+                                </TabsContent>
+                            </Tabs>
+                        </TabsContent>
 
-                    <TabsContent value="fancy">
-                        Data Unavailable Now
-                    </TabsContent>
-                    <TabsContent value="labGrown">
-                        Data Unavailable Now
-                    </TabsContent>
-                    <TabsContent value="highEnd">
-                        Data Unavailable Now
-                    </TabsContent>
-                </Tabs>
-            </div>
+                        <TabsContent value="fancy">
+                            Data Unavailable Now
+                        </TabsContent>
+                        <TabsContent value="labGrown">
+                            Data Unavailable Now
+                        </TabsContent>
+                        <TabsContent value="highEnd">
+                            Data Unavailable Now
+                        </TabsContent>
+                    </Tabs>
+                </div>
 
-            {/* Add Diamond Modal */}
-            <AddDiamondModal
-                isOpen={isAddModalOpen}
-                onClose={() => setIsAddModalOpen(false)}
-                onSuccess={handleAddDiamondSuccess}
-            />
-        </Container>
+                {/* Add Diamond Modal */}
+                <AddDiamondModal
+                    isOpen={isAddModalOpen}
+                    onClose={() => setIsAddModalOpen(false)}
+                    onSuccess={handleAddDiamondSuccess}
+                />
+            </Container>
+        </AdminGuard>
     );
 }
