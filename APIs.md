@@ -15,7 +15,7 @@ This document provides comprehensive information about all the APIs available in
 
 ## Base Information
 
-**Base URL:** `http://localhost:8000/api` (or your deployed URL)
+**Base URL:** `http://localhost:3000/api` (or your deployed URL)
 **Content-Type:** `application/json`
 **Authentication:** Cookie-based JWT tokens (HTTP-only cookies)
 

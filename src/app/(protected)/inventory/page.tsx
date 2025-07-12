@@ -1,15 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import { ClientFilterSidebar } from "@/components/client/client-filter-sidebar";
-import { ClientDiamondTable } from "@/components/client/client-diamond-table";
-import { ClientDiamondGrid } from "@/components/client/client-diamond-grid";
-import { AppliedFilters } from "@/components/client/applied-filters";
+import { ClientFilterSidebar } from "@/components/inventory/client-filter-sidebar";
+import { ClientDiamondTable } from "@/components/inventory/client-diamond-table";
+import { ClientDiamondGrid } from "@/components/inventory/client-diamond-grid";
+import { AppliedFilters } from "@/components/inventory/applied-filters";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ClientFilters } from "@/types/client/diamond";
-import { useClientDiamonds } from "@/hooks/client/use-client-diamonds";
+import { useClientDiamonds } from "@/hooks/client-table/use-client-diamonds";
 import { Download, Grid3X3, Table as TableIcon } from "lucide-react";
 
 export default function ClientPage() {
@@ -137,30 +137,33 @@ export default function ClientPage() {
                             DIAMOND ELITE
                         </h1>
                         <nav className="flex space-x-6">
-                            <Button
-                                variant="ghost"
-                                className="text-gray-600 hover:text-gray-900"
-                            >
-                                Inventory
-                            </Button>
+                            <a href="/inventory">
+                                <Button
+                                    variant="ghost"
+                                    className="text-gray-600 hover:text-gray-900"
+                                >
+                                    Inventory
+                                </Button>
+                            </a>
+
                             <Button
                                 variant="ghost"
                                 className="text-gray-600 hover:text-gray-900"
                             >
                                 Offer Enquiry
                             </Button>
-                            <Button
+                            {/* <Button
                                 variant="ghost"
                                 className="text-gray-600 hover:text-gray-900"
                             >
                                 Member Enquiry
-                            </Button>
-                            <Button
+                            </Button> */}
+                            {/* <Button
                                 variant="ghost"
                                 className="text-gray-600 hover:text-gray-900"
                             >
                                 My Account
-                            </Button>
+                            </Button> */}
                         </nav>
                     </div>
                     <Button

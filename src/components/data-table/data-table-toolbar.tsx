@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { DataTableFacetedFilter } from "@/components/data-table/data-table-faceted-filter";
 import { DataTableViewOptions } from "@/components/data-table/data-table-view-options";
 import { X } from "lucide-react";
-import { priority_options, status_options } from "../filters";
+import { priority_options, status_options } from "../filters/filters";
 
 interface DataTableToolbarProps<TData> {
     table: Table<TData>;

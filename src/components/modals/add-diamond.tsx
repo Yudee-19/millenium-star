@@ -28,7 +28,7 @@ import {
     cut_options,
     lab_options,
     flou_options,
-} from "../diamond-filters";
+} from "../filters/diamond-filters";
 import { Textarea } from "../ui/textarea";
 
 interface AddDiamondModalProps {

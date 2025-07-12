@@ -14,7 +14,7 @@ import {
     lab_options,
     flou_options,
     availability_options,
-} from "../diamond-filters";
+} from "../filters/diamond-filters";
 
 export const diamondColumns: ColumnDef<DiamondType>[] = [
     {
