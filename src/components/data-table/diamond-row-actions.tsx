@@ -62,7 +62,7 @@ export function DataTableRowActions<TData>({
     }
 
     const diamond = parseResult.data;
-    console.log("Parsed diamond data:", diamond);
+    // console.log("Parsed diamond data:", diamond);
 
     return (
         <DropdownMenu>
@@ -84,11 +84,14 @@ export function DataTableRowActions<TData>({
                     Copy Diamond ID
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                    onClick={() =>
-                        navigator.clipboard.writeText(
-                            diamond["certificateNumber"].toString()
-                        )
-                    }
+                    onClick={() => {
+                        const diamond = row.original as DiamondType;
+                        const certNo =
+                            diamond.certificateNumber ||
+                            (diamond as any)["CERT-NO"] ||
+                            "No certificate number";
+                        navigator.clipboard.writeText(certNo);
+                    }}
                 >
                     <Copy className="mr-2 h-4 w-4" />
                     Copy Certificate Number

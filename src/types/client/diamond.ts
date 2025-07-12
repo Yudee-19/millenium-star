@@ -3,7 +3,6 @@ export interface ClientDiamond {
     _id: string;
     color: string;
     clarity: string;
-    carat: number;
     rapList: number;
     discount: number;
     cut: string;
@@ -34,6 +33,10 @@ export interface ClientFilters {
     caratMax?: number;
     priceMin?: number;
     priceMax?: number;
+    discountMin?: number;
+    discountMax?: number;
+    rapListMin?: number;
+    rapListMax?: number;
     color?: string[];
     clarity?: string[];
     cut?: string[];

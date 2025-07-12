@@ -13,6 +13,7 @@ import {
     cut_options,
     lab_options,
     flou_options,
+    availability_options,
 } from "../diamond-filters";
 
 export const diamondColumns: ColumnDef<DiamondType>[] = [
@@ -44,11 +45,15 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="CERT-NO" />
         ),
-        cell: ({ row }) => (
-            <div className="w-[120px] font-mono text-xs ">
-                {row.getValue("CERT-NO") || row.getValue("certificateNumber")}
-            </div>
-        ),
+        cell: ({ row }) => {
+            const certNo =
+                (row.original as any)["CERT-NO"] ||
+                row.original.certificateNumber ||
+                "N/A";
+            return (
+                <div className="w-[120px] font-mono text-xs">{`${certNo}`}</div>
+            );
+        },
     },
     {
         accessorKey: "LAB",
@@ -56,15 +61,16 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             <DataTableColumnHeader column={column} title="LAB" />
         ),
         cell: ({ row }) => {
-            const lab = lab_options.find(
-                (lab) => lab.value === row.getValue("LAB")
-            );
+            const labValue =
+                row.original.lab || (row.original as any)["LAB"] || "-";
+
+            const lab = lab_options.find((lab) => lab.value === labValue);
             return (
                 <div className="flex w-[80px] items-center">
                     {lab?.icon && (
                         <lab.icon className="mr-2 h-4 w-4 text-muted-foreground" />
                     )}
-                    <span>{row.getValue("LAB")}</span>
+                    <span>{labValue}</span>
                 </div>
             );
         },
@@ -78,15 +84,16 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             <DataTableColumnHeader column={column} title="Shape" />
         ),
         cell: ({ row }) => {
+            const shapeValue = row.original.shape || "-";
             const shape = shape_options.find(
-                (shape) => shape.value === row.getValue("shape")
+                (shape) => shape.value === shapeValue
             );
             return (
                 <div className="flex w-[80px] items-center">
                     {shape?.icon && (
                         <shape.icon className="mr-2 h-4 w-4 text-muted-foreground" />
                     )}
-                    <span>{row.getValue("shape")}</span>
+                    <span>{shapeValue}</span>
                 </div>
             );
         },
@@ -100,7 +107,9 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             <DataTableColumnHeader column={column} title="Size" />
         ),
         cell: ({ row }) => (
-            <div className="w-[80px]">{row.getValue("size")} ct</div>
+            <div className="w-[80px]">
+                {(row.getValue("size") as number) || (0 as number)} ct
+            </div>
         ),
     },
     {
@@ -109,15 +118,19 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             <DataTableColumnHeader column={column} title="Color" />
         ),
         cell: ({ row }) => {
+            const colorValue =
+                row.original.color || (row.original as any)["Color"] || "N/A";
+
             const color = color_options.find(
-                (color) => color.value === row.getValue("Color")
+                (color) => color.value === colorValue
             );
+
             return (
                 <div className="flex w-[60px] items-center">
                     {color?.icon && (
                         <color.icon className="mr-2 h-4 w-4 text-muted-foreground" />
                     )}
-                    <span>{row.getValue("Color")}</span>
+                    <span>{colorValue}</span>
                 </div>
             );
         },
@@ -131,15 +144,19 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             <DataTableColumnHeader column={column} title="Clarity" />
         ),
         cell: ({ row }) => {
+            const clarityValue =
+                row.original.clarity ||
+                (row.original as any)["Clarity"] ||
+                "N/A";
             const clarity = clarity_options.find(
-                (clarity) => clarity.value === row.getValue("Clarity")
+                (clarity) => clarity.value === clarityValue
             );
             return (
                 <div className="flex w-[80px] items-center">
                     {clarity?.icon && (
                         <clarity.icon className="mr-2 h-4 w-4 text-muted-foreground" />
                     )}
-                    <span>{row.getValue("Clarity")}</span>
+                    <span>{clarityValue}</span>
                 </div>
             );
         },
@@ -153,7 +170,11 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             <DataTableColumnHeader column={column} title="RapList" />
         ),
         cell: ({ row }) => (
-            <div className="w-[80px]">{row.getValue("RapList")}</div>
+            <div className="w-[80px]">
+                {row.getValue("RapList") ||
+                    (row.original as any)["rapList"] ||
+                    "N/A"}
+            </div>
         ),
     },
     {
@@ -180,15 +201,15 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             <DataTableColumnHeader column={column} title="Cut" />
         ),
         cell: ({ row }) => {
-            const cut = cut_options.find(
-                (cut) => cut.value === row.getValue("cut")
-            );
+            const cutValue =
+                row.original.cut || (row.original as any)["cut"] || "N/A";
+            const cut = cut_options.find((cut) => cut.value === cutValue);
             return (
                 <div className="flex w-[80px] items-center">
                     {cut?.icon && (
                         <cut.icon className="mr-2 h-4 w-4 text-muted-foreground" />
                     )}
-                    <span>{row.getValue("cut")}</span>
+                    <span>{cutValue}</span>
                 </div>
             );
         },
@@ -202,7 +223,11 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             <DataTableColumnHeader column={column} title="Polish" />
         ),
         cell: ({ row }) => (
-            <div className="w-[80px]">{row.getValue("Polish")}</div>
+            <div className="w-[80px]">
+                {row.original.polish ||
+                    (row.original as any)["Polish"] ||
+                    "N/A"}
+            </div>
         ),
     },
     {
@@ -211,7 +236,9 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             <DataTableColumnHeader column={column} title="Symmetry" />
         ),
         cell: ({ row }) => (
-            <div className="w-[80px]">{row.getValue("sym")}</div>
+            <div className="w-[80px]">
+                {(row.original as any)["sym"] || row.original.symmetry || "N/A"}
+            </div>
         ),
     },
     {
@@ -228,7 +255,11 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
                     {flou?.icon && (
                         <flou.icon className="mr-2 h-4 w-4 text-muted-foreground" />
                     )}
-                    <span>{row.getValue("FLOU")}</span>
+                    <span>
+                        {(row.original as any)["FLOU"] ||
+                            row.original.fluorescence ||
+                            "-"}
+                    </span>
                 </div>
             );
         },
@@ -242,7 +273,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             <DataTableColumnHeader column={column} title="Length" />
         ),
         cell: ({ row }) => (
-            <div className="w-[80px]">{row.getValue("length")} mm</div>
+            <div className="w-[80px]">{row.getValue("length") || "-"} mm</div>
         ),
     },
     {
@@ -251,7 +282,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             <DataTableColumnHeader column={column} title="Width" />
         ),
         cell: ({ row }) => (
-            <div className="w-[80px]">{row.getValue("width")} mm</div>
+            <div className="w-[80px]">{row.getValue("width") || "-"} mm</div>
         ),
     },
     {
@@ -260,7 +291,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             <DataTableColumnHeader column={column} title="Depth" />
         ),
         cell: ({ row }) => (
-            <div className="w-[80px]">{row.getValue("depth")} mm</div>
+            <div className="w-[80px]">{row.getValue("depth") || "-"} mm</div>
         ),
     },
     {
@@ -270,7 +301,8 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
         ),
         cell: ({ row }) => {
             // Safe access to nested property
-            const tDep = (row.original as any)?.T?.DEP;
+            const tDep =
+                row.original.totalDepth || (row.original as any)?.T?.DEP;
             return <div className="w-[80px]">{tDep ? `${tDep}%` : "N/A"}</div>;
         },
     },
@@ -280,7 +312,9 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             <DataTableColumnHeader column={column} title="Table" />
         ),
         cell: ({ row }) => (
-            <div className="w-[80px]">{row.getValue("TABLE")}%</div>
+            <div className="w-[80px]">
+                {row.getValue("TABLE") || row.original.table || "-"}%
+            </div>
         ),
     },
     {
@@ -296,6 +330,36 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
                 </div>
             );
         },
+    },
+    {
+        accessorKey: "isAvailable", // Change from "Availabilty" to "isAvailable"
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Availability" />
+        ),
+        cell: ({ row }) => {
+            const isAvailable = row.getValue("isAvailable") as boolean;
+            return (
+                <div className="w-[100px]">
+                    <Badge
+                        variant={isAvailable ? "default" : "secondary"}
+                        className={
+                            isAvailable
+                                ? "bg-green-100 text-green-800"
+                                : "bg-red-100 text-red-800"
+                        }
+                    >
+                        {isAvailable ? "Available" : "Not Available"}
+                    </Badge>
+                </div>
+            );
+        },
+        filterFn: (row, id, value) => {
+            const cellValue = row.getValue(id) as boolean;
+            // Handle undefined/null values
+            const normalizedValue = cellValue ?? false;
+            return value.includes(normalizedValue);
+        },
+        enableSorting: true, // Enable sorting for this column
     },
     {
         id: "actions",

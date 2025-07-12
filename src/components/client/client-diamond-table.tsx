@@ -14,19 +14,26 @@ import {
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+interface PaginationData {
+    currentPage: number;
+    totalPages: number;
+    totalRecords: number;
+    recordsPerPage: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+}
+
 interface ClientDiamondTableProps {
     diamonds: ClientDiamond[];
     loading: boolean;
-    currentPage: number;
-    totalPages: number;
+    pagination: PaginationData;
     onPageChange: (page: number) => void;
 }
 
 export function ClientDiamondTable({
     diamonds,
     loading,
-    currentPage,
-    totalPages,
+    pagination,
     onPageChange,
 }: ClientDiamondTableProps) {
     if (loading) {
@@ -49,91 +56,181 @@ export function ClientDiamondTable({
         return new Intl.NumberFormat("en-US").format(price);
     };
 
+    const renderPaginationButtons = () => {
+        const buttons = [];
+        const { currentPage, totalPages } = pagination;
+
+        // Show first page
+        if (currentPage > 3) {
+            buttons.push(
+                <Button
+                    key={1}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onPageChange(1)}
+                    className="w-8"
+                >
+                    1
+                </Button>
+            );
+
+            if (currentPage > 4) {
+                buttons.push(
+                    <span key="dots1" className="text-sm text-gray-500">
+                        ...
+                    </span>
+                );
+            }
+        }
+
+        // Show pages around current page
+        for (
+            let i = Math.max(1, currentPage - 2);
+            i <= Math.min(totalPages, currentPage + 2);
+            i++
+        ) {
+            buttons.push(
+                <Button
+                    key={i}
+                    variant={currentPage === i ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => onPageChange(i)}
+                    className="w-8"
+                >
+                    {i}
+                </Button>
+            );
+        }
+
+        // Show last page
+        if (currentPage < totalPages - 2) {
+            if (currentPage < totalPages - 3) {
+                buttons.push(
+                    <span key="dots2" className="text-sm text-gray-500">
+                        ...
+                    </span>
+                );
+            }
+
+            buttons.push(
+                <Button
+                    key={totalPages}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onPageChange(totalPages)}
+                    className="w-8"
+                >
+                    {totalPages}
+                </Button>
+            );
+        }
+
+        return buttons;
+    };
+
     return (
         <div className="space-y-4">
+            {/* Results Summary */}
+            <div className="flex justify-between items-center">
+                <div className="text-sm text-gray-600">
+                    Showing{" "}
+                    {(pagination.currentPage - 1) * pagination.recordsPerPage +
+                        1}
+                    -
+                    {Math.min(
+                        pagination.currentPage * pagination.recordsPerPage,
+                        pagination.totalRecords
+                    )}{" "}
+                    of {pagination.totalRecords} diamonds
+                </div>
+                <div className="text-sm text-gray-600">
+                    Page {pagination.currentPage} of {pagination.totalPages}
+                </div>
+            </div>
+
             <div className="rounded-lg border border-gray-200 bg-white">
                 <Table>
                     <TableHeader>
                         <TableRow className="bg-gray-50">
-                            <TableHead className="text-xs font-medium text-gray-700">
-                                Stone ID
+                            <TableHead className="text-xs font-medium text-gray-700 text-center">
+                                Certificate No.
                             </TableHead>
-                            <TableHead className="text-xs font-medium text-gray-700">
+                            <TableHead className="text-xs font-medium text-gray-700 text-center">
                                 Shape
                             </TableHead>
-                            <TableHead className="text-xs font-medium text-gray-700">
-                                Carat
-                            </TableHead>
-                            <TableHead className="text-xs font-medium text-gray-700">
+                            <TableHead className="text-xs font-medium  text-gray-700 text-center">
                                 Color
                             </TableHead>
-                            <TableHead className="text-xs font-medium text-gray-700">
+                            <TableHead className="text-xs font-medium text-gray-700 text-center">
                                 Clarity
                             </TableHead>
-                            <TableHead className="text-xs font-medium text-gray-700">
+                            <TableHead className="text-xs font-medium text-gray-700 text-center">
                                 Cut
                             </TableHead>
-                            <TableHead className="text-xs font-medium text-gray-700">
+                            <TableHead className="text-xs font-medium text-gray-700 text-center">
                                 Polish
                             </TableHead>
-                            <TableHead className="text-xs font-medium text-gray-700">
+                            <TableHead className="text-xs font-medium text-gray-700 text-center">
                                 Symmetry
                             </TableHead>
-                            <TableHead className="text-xs font-medium text-gray-700">
+                            <TableHead className="text-xs font-medium text-gray-700 text-center">
                                 Fluorescence
                             </TableHead>
-                            <TableHead className="text-xs font-medium text-gray-700">
+                            <TableHead className="text-xs font-medium text-gray-700 text-center">
                                 Lab
                             </TableHead>
-                            <TableHead className="text-xs font-medium text-gray-700">
-                                Certificate
+                            <TableHead className="text-xs font-medium text-gray-700 text-center">
+                                Stone Id
                             </TableHead>
-                            <TableHead className="text-xs font-medium text-gray-700">
+                            <TableHead className="text-xs font-medium text-gray-700 text-center">
                                 Price
                             </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {diamonds.map((diamond) => (
+                        {diamonds.map((diamond: any) => (
                             <TableRow
                                 key={diamond._id}
-                                className="hover:bg-gray-50"
+                                className="hover:bg-gray-50  text-center"
                             >
+                                <TableCell className="text-sm font-mono">
+                                    {diamond.certificateNumber ||
+                                        diamond["CERT-NO"] ||
+                                        "-"}
+                                </TableCell>
+                                <TableCell className="text-sm">
+                                    {diamond.shape || diamond["Shape"] || "-"}
+                                </TableCell>
+                                <TableCell className="text-sm ">
+                                    {diamond.color || diamond["Color"] || "-"}
+                                </TableCell>
+                                <TableCell className="text-sm">
+                                    {diamond.clarity ||
+                                        diamond["Clarity"] ||
+                                        "-"}
+                                </TableCell>
+                                <TableCell className="text-sm">
+                                    {diamond.cut || diamond["Cut"] || "-"}
+                                </TableCell>
+                                <TableCell className="text-sm">
+                                    {diamond.polish || diamond["Polish"] || "-"}
+                                </TableCell>
+                                <TableCell className="text-sm">
+                                    {diamond.symmetry || diamond["sym"] || "-"}
+                                </TableCell>
+                                <TableCell className="text-sm">
+                                    {diamond.fluorescence ||
+                                        diamond["FLOU"] ||
+                                        "-"}
+                                </TableCell>
+                                <TableCell className="text-sm">
+                                    {diamond.lab || diamond["LAB"] || "-"}
+                                </TableCell>
                                 <TableCell className="text-sm">
                                     {diamond._id.slice(-8)}
                                 </TableCell>
-                                <TableCell className="text-sm">
-                                    {diamond.shape || "N/A"}
-                                </TableCell>
-                                <TableCell className="text-sm">
-                                    {diamond.carat}
-                                </TableCell>
-                                <TableCell className="text-sm">
-                                    {diamond.color}
-                                </TableCell>
-                                <TableCell className="text-sm">
-                                    {diamond.clarity}
-                                </TableCell>
-                                <TableCell className="text-sm">
-                                    {diamond.cut}
-                                </TableCell>
-                                <TableCell className="text-sm">
-                                    {diamond.polish}
-                                </TableCell>
-                                <TableCell className="text-sm">
-                                    {diamond.symmetry}
-                                </TableCell>
-                                <TableCell className="text-sm">
-                                    {diamond.fluorescence}
-                                </TableCell>
-                                <TableCell className="text-sm">
-                                    {diamond.lab || "N/A"}
-                                </TableCell>
-                                <TableCell className="text-sm font-mono">
-                                    {diamond.certificateNumber}
-                                </TableCell>
                                 <TableCell className="text-sm font-semibold">
-                                    {formatPrice(diamond.price)}
+                                    {"$ " + formatPrice(diamond.price) || "-"}
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -147,55 +244,26 @@ export function ClientDiamondTable({
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => onPageChange(currentPage - 1)}
-                        disabled={currentPage <= 1}
+                        onClick={() => onPageChange(pagination.currentPage - 1)}
+                        disabled={!pagination.hasPrevPage}
                     >
                         <ChevronLeft className="h-4 w-4" />
                     </Button>
 
-                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                        const page = i + 1;
-                        return (
-                            <Button
-                                key={page}
-                                variant={
-                                    currentPage === page ? "default" : "outline"
-                                }
-                                size="sm"
-                                onClick={() => onPageChange(page)}
-                                className="w-8"
-                            >
-                                {page}
-                            </Button>
-                        );
-                    })}
-
-                    {totalPages > 5 && (
-                        <>
-                            <span className="text-sm text-gray-500">...</span>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => onPageChange(totalPages)}
-                                className="w-8"
-                            >
-                                {totalPages}
-                            </Button>
-                        </>
-                    )}
+                    {renderPaginationButtons()}
 
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => onPageChange(currentPage + 1)}
-                        disabled={currentPage >= totalPages}
+                        onClick={() => onPageChange(pagination.currentPage + 1)}
+                        disabled={!pagination.hasNextPage}
                     >
                         <ChevronRight className="h-4 w-4" />
                     </Button>
                 </div>
 
                 <div className="text-sm text-gray-500">
-                    Page {currentPage} of {totalPages}
+                    Total: {pagination.totalRecords} diamonds
                 </div>
             </div>
         </div>

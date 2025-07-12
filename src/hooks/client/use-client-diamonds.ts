@@ -7,13 +7,24 @@ import {
 } from "@/types/client/diamond";
 import { clientDiamondAPI } from "@/services/client-api";
 
+interface PaginationData {
+    currentPage: number;
+    totalPages: number;
+    totalRecords: number;
+    recordsPerPage: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+}
+
 interface UseClientDiamondsReturn {
     diamonds: ClientDiamond[];
     filterOptions: FilterOptions;
+    pagination: PaginationData;
     loading: boolean;
     error: string | null;
-    searchDiamonds: (filters: ClientFilters) => Promise<void>;
+    searchDiamonds: (filters: ClientFilters, page?: number) => Promise<void>;
     resetFilters: () => Promise<void>;
+    currentFilters: ClientFilters;
 }
 
 export function useClientDiamonds(): UseClientDiamondsReturn {
@@ -28,6 +39,15 @@ export function useClientDiamonds(): UseClientDiamondsReturn {
         shapes: [],
         labs: [],
     });
+    const [pagination, setPagination] = useState<PaginationData>({
+        currentPage: 1,
+        totalPages: 1,
+        totalRecords: 0,
+        recordsPerPage: 20,
+        hasNextPage: false,
+        hasPrevPage: false,
+    });
+    const [currentFilters, setCurrentFilters] = useState<ClientFilters>({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -36,13 +56,15 @@ export function useClientDiamonds(): UseClientDiamondsReturn {
             setLoading(true);
             setError(null);
 
-            const [diamondsData, filterOptionsData] = await Promise.all([
-                clientDiamondAPI.getAllDiamonds(),
+            const [diamondsResponse, filterOptionsData] = await Promise.all([
+                clientDiamondAPI.searchDiamonds({}, 1, 20), // Use search with pagination
                 clientDiamondAPI.getFilterOptions(),
             ]);
 
-            setDiamonds(diamondsData);
+            setDiamonds(diamondsResponse.data);
+            setPagination(diamondsResponse.pagination);
             setFilterOptions(filterOptionsData);
+            setCurrentFilters({});
         } catch (err) {
             setError(
                 err instanceof Error ? err.message : "An unknown error occurred"
@@ -52,13 +74,20 @@ export function useClientDiamonds(): UseClientDiamondsReturn {
         }
     };
 
-    const searchDiamonds = async (filters: ClientFilters) => {
+    const searchDiamonds = async (filters: ClientFilters, page: number = 1) => {
         try {
             setLoading(true);
             setError(null);
 
-            const results = await clientDiamondAPI.searchDiamonds(filters);
-            setDiamonds(results);
+            const results = await clientDiamondAPI.searchDiamonds(
+                filters,
+                page,
+                20
+            );
+
+            setDiamonds(results.data);
+            setPagination(results.pagination);
+            setCurrentFilters(filters);
         } catch (err) {
             setError(err instanceof Error ? err.message : "Search failed");
         } finally {
@@ -77,9 +106,11 @@ export function useClientDiamonds(): UseClientDiamondsReturn {
     return {
         diamonds,
         filterOptions,
+        pagination,
         loading,
         error,
         searchDiamonds,
         resetFilters,
+        currentFilters,
     };
 }

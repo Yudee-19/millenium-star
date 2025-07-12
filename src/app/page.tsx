@@ -1,8 +1,7 @@
 "use client";
-
+import { useCallback, useState } from "react";
 import { diamondColumns } from "@/components/data-table/diamond-columns";
 import { DataTable } from "@/components/data-table/data-table";
-import { DataTableLoading } from "@/components/data-table/data-table-skeleton";
 import { DiamondTableToolbar } from "@/components/data-table/diamond-toolbar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { Shell } from "@/components/shells/shell";
@@ -12,9 +11,41 @@ import { Input } from "@/components/ui/input";
 import { useDiamonds } from "@/hooks/use-diamonds";
 import { DownloadIcon, FileTextIcon, FunnelPlus, PlusIcon } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AddDiamondModal } from "@/components/modals/add-diamond";
 
 export default function DiamondPage() {
-    const { diamonds, loading, error, refetch } = useDiamonds();
+    const {
+        diamonds,
+        loading,
+        error,
+        totalCount,
+        pageCount,
+        refetch,
+        updateTable,
+        paginationMeta,
+    } = useDiamonds();
+
+    // Modal state
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+    // Handle table state changes
+    const handleTableStateChange = useCallback(
+        (state: {
+            pagination: { pageIndex: number; pageSize: number };
+            sorting: Array<{ id: string; desc: boolean }>;
+            columnFilters: Array<{ id: string; value: any }>;
+        }) => {
+            console.log("🎯 Page: Table state change requested:", state);
+            updateTable(state);
+        },
+        [updateTable]
+    );
+
+    // Handle successful diamond addition
+    const handleAddDiamondSuccess = () => {
+        console.log("✅ Diamond added successfully");
+        refetch(); // Refresh the table data
+    };
 
     if (error) {
         return (
@@ -43,11 +74,16 @@ export default function DiamondPage() {
         <Container>
             {/* Header Section */}
             <SiteHeader />
+
             {/* Navbar Buttons */}
-            <div className="flex items-center justify-evenly gap-2 my-5 ">
+            <div className="flex items-center justify-evenly gap-2 my-5">
                 <CustomButton variant="dark">Inventory</CustomButton>
                 <CustomButton variant="secondary">Application</CustomButton>
                 <CustomButton variant="secondary">Rapnet</CustomButton>
+            </div>
+
+            {/* Search and Action Buttons */}
+            <div className="flex items-center justify-center gap-2 my-5">
                 <Input
                     className="bg-black/5 text-sky-950 px-3 py-3 text-base rounded-full"
                     placeholder="Search by Diamond ID, Shape, Color, Clarity, etc."
@@ -70,7 +106,11 @@ export default function DiamondPage() {
                 >
                     <span>Import&nbsp;Excel</span>
                 </CustomButton>
-                <CustomButton variant="dark" icon={<PlusIcon size={15} />}>
+                <CustomButton
+                    variant="dark"
+                    icon={<PlusIcon size={15} />}
+                    onClick={() => setIsAddModalOpen(true)}
+                >
                     <span>Add&nbsp;Diamond</span>
                 </CustomButton>
             </div>
@@ -81,91 +121,68 @@ export default function DiamondPage() {
                     <TabsList className="w-full rounded-full">
                         <TabsTrigger
                             value="all"
-                            className="rounded-full text-sky-950"
+                            className="rounded-full text-sky-950 p-3"
                         >
                             All
                         </TabsTrigger>
                         <TabsTrigger
                             value="fancy"
-                            className="rounded-full text-sky-950"
+                            className="rounded-full text-sky-950 p-3"
                         >
                             Fancy
                         </TabsTrigger>
                         <TabsTrigger
                             value="labGrown"
-                            className="rounded-full text-sky-950"
+                            className="rounded-full text-sky-950 p-3"
                         >
-                            Lab&nbsp;Grown
+                            Lab Grown
                         </TabsTrigger>
                         <TabsTrigger
                             value="highEnd"
-                            className="rounded-full text-sky-950"
+                            className="rounded-full text-sky-950 p-3"
                         >
-                            High-End
-                        </TabsTrigger>
-                        <TabsTrigger
-                            value="lowEnd"
-                            className="rounded-full text-sky-950"
-                        >
-                            Low-End
+                            High End
                         </TabsTrigger>
                     </TabsList>
 
-                    <TabsContent
-                        value="all"
-                        className="rounded-full text-sky-950"
-                    >
-                        {/* Table MetaData */}
-                        <div className="w-full flex items-center justify-between gap-5 my-5">
+                    <TabsContent value="all">
+                        {/* Stats Cards */}
+                        <div className="flex items-center justify-center gap-5 my-10">
                             <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
                                 <h1 className="text-sky-950 text-base">
                                     Total Diamonds (All Inventory)
                                 </h1>
-                                <h1 className=" text-2xl font-semibold">
-                                    {loading ? "..." : diamonds.length}
+                                <h1 className="text-2xl font-semibold">
+                                    {loading
+                                        ? "..."
+                                        : totalCount.toLocaleString()}
                                 </h1>
                             </div>
                             <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
                                 <h1 className="text-sky-950 text-base">
                                     Available
                                 </h1>
-                                <h1 className=" text-2xl font-semibold">
+                                <h1 className="text-2xl font-semibold">
                                     {loading
                                         ? "..."
-                                        : diamonds.filter(
-                                              (d) => d.Available !== "SOLD"
-                                          ).length}
+                                        : diamonds.filter((d) => d.isAvailable)
+                                              .length}
                                 </h1>
                             </div>
                             <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
                                 <h1 className="text-sky-950 text-base">
-                                    Total Value
+                                    Total Carat Weight
                                 </h1>
-                                <h1 className=" text-2xl font-semibold">
-                                    $
+                                <h1 className="text-2xl font-semibold">
                                     {loading
                                         ? "..."
                                         : diamonds
                                               .reduce(
-                                                  (sum, d) => sum + d.price,
+                                                  (sum, d) =>
+                                                      sum + (d.size || 0),
                                                   0
                                               )
-                                              .toLocaleString()}
-                                </h1>
-                            </div>
-                            <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                <h1 className="text-sky-950 text-base">
-                                    Avg. Size
-                                </h1>
-                                <h1 className=" text-2xl font-semibold">
-                                    {loading
-                                        ? "..."
-                                        : (
-                                              diamonds.reduce(
-                                                  (sum, d) => sum + d.size,
-                                                  0
-                                              ) / diamonds.length
-                                          ).toFixed(2)}{" "}
+                                              .toFixed(2)}{" "}
                                     ct
                                 </h1>
                             </div>
@@ -197,22 +214,17 @@ export default function DiamondPage() {
                                 <Shell>
                                     <div className="flex h-full min-h-screen overflow-x-auto flex-col">
                                         <div className="flex flex-col space-y-8">
-                                            {loading ? (
-                                                <DataTableLoading
-                                                    columnCount={
-                                                        diamondColumns.length
-                                                    }
-                                                    rowCount={10}
-                                                />
-                                            ) : (
-                                                <DataTable
-                                                    data={diamonds}
-                                                    columns={diamondColumns}
-                                                    toolbar={
-                                                        DiamondTableToolbar
-                                                    }
-                                                />
-                                            )}
+                                            <DataTable
+                                                data={diamonds}
+                                                columns={diamondColumns}
+                                                toolbar={DiamondTableToolbar}
+                                                pageCount={pageCount}
+                                                loading={loading}
+                                                onStateChange={
+                                                    handleTableStateChange
+                                                }
+                                                paginationMeta={paginationMeta}
+                                            />
                                         </div>
                                     </div>
                                 </Shell>
@@ -228,33 +240,24 @@ export default function DiamondPage() {
                         </Tabs>
                     </TabsContent>
 
-                    {/* Other tab contents remain the same */}
-                    <TabsContent
-                        value="fancy"
-                        className="rounded-full text-sky-950"
-                    >
+                    <TabsContent value="fancy">
                         Data Unavailable Now
                     </TabsContent>
-                    <TabsContent
-                        value="labGrown"
-                        className="rounded-full text-sky-950"
-                    >
+                    <TabsContent value="labGrown">
                         Data Unavailable Now
                     </TabsContent>
-                    <TabsContent
-                        value="highEnd"
-                        className="rounded-full text-sky-950"
-                    >
-                        Data Unavailable Now
-                    </TabsContent>
-                    <TabsContent
-                        value="lowEnd"
-                        className="rounded-full text-sky-950"
-                    >
+                    <TabsContent value="highEnd">
                         Data Unavailable Now
                     </TabsContent>
                 </Tabs>
             </div>
+
+            {/* Add Diamond Modal */}
+            <AddDiamondModal
+                isOpen={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
+                onSuccess={handleAddDiamondSuccess}
+            />
         </Container>
     );
 }

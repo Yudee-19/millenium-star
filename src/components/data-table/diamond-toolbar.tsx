@@ -13,6 +13,7 @@ import {
     cut_options,
     lab_options,
     flou_options,
+    availability_options,
 } from "../diamond-filters";
 
 interface DiamondTableToolbarProps<TData> {
@@ -27,7 +28,7 @@ export function DiamondTableToolbar<TData>({
     return (
         <div className="flex items-center justify-between">
             <div className="flex flex-1 items-center space-x-2">
-                <Input
+                {/* <Input
                     placeholder="Search diamonds..."
                     value={
                         (table
@@ -40,7 +41,7 @@ export function DiamondTableToolbar<TData>({
                             ?.setFilterValue(event.target.value)
                     }
                     className="h-8 w-[150px] lg:w-[250px]"
-                />
+                /> */}
                 {table.getColumn("LAB") && (
                     <DataTableFacetedFilter
                         column={table.getColumn("LAB")}
@@ -81,6 +82,13 @@ export function DiamondTableToolbar<TData>({
                         column={table.getColumn("FLOU")}
                         title="Fluorescence"
                         options={flou_options}
+                    />
+                )}
+                {table.getColumn("isAvailable") && (
+                    <DataTableFacetedFilter
+                        column={table.getColumn("isAvailable")}
+                        title="Availability"
+                        options={availability_options}
                     />
                 )}
                 {isFiltered && (

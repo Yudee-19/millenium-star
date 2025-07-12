@@ -20,7 +20,7 @@ interface ClientFilterSidebarProps {
     filters: ClientFilters;
     onFiltersChange: (filters: ClientFilters) => void;
     filterOptions: FilterOptions;
-    onSearch: () => void;
+    onSearch: (filters: ClientFilters) => void; // Updated to pass filters
     onReset: () => void;
     loading?: boolean;
 }
@@ -34,10 +34,11 @@ export function ClientFilterSidebar({
     loading = false,
 }: ClientFilterSidebarProps) {
     const updateFilter = (key: keyof ClientFilters, value: any) => {
-        onFiltersChange({
+        const newFilters = {
             ...filters,
             [key]: value,
-        });
+        };
+        onFiltersChange(newFilters);
     };
 
     const updateArrayFilter = (
@@ -51,6 +52,10 @@ export function ClientFilterSidebar({
             : currentValues.filter((v) => v !== value);
 
         updateFilter(key, newValues.length > 0 ? newValues : undefined);
+    };
+
+    const handleSearch = () => {
+        onSearch(filters); // Pass current filters to search
     };
 
     const shapes = [
@@ -196,7 +201,7 @@ export function ClientFilterSidebar({
                 </div>
 
                 {/* Color */}
-                <div>
+                {/* <div>
                     <Label className="text-sm font-medium mb-3 block text-gray-700">
                         COLOR
                     </Label>
@@ -247,7 +252,7 @@ export function ClientFilterSidebar({
                             )}
                         </div>
                     </div>
-                </div>
+                </div> */}
 
                 {/* Clarity */}
                 <div>
@@ -474,7 +479,7 @@ export function ClientFilterSidebar({
                 {/* Buttons */}
                 <div className="flex gap-2 pt-4">
                     <Button
-                        onClick={onSearch}
+                        onClick={handleSearch}
                         disabled={loading}
                         className="flex-1 text-sm"
                     >

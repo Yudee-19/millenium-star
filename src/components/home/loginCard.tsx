@@ -18,11 +18,16 @@ import { useRouter } from "next/navigation";
 interface LoginModalProps {
     isOpen: boolean;
     onClose: () => void;
+    onOpenRegistration?: () => void; // Add this prop for opening registration modal
 }
 
-export function LoginModal({ isOpen, onClose }: LoginModalProps) {
+export function LoginModal({
+    isOpen,
+    onClose,
+    onOpenRegistration,
+}: LoginModalProps) {
     const [formData, setFormData] = useState({
-        username: "",
+        email: "", // Changed from username to email as per API
         password: "",
         rememberMe: false,
     });
@@ -44,38 +49,110 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
         setError("");
 
         try {
-            // Simulate API call - replace with actual authentication logic
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+            console.log("Attempting login with:", { email: formData.email });
 
-            // For demo purposes, accept any non-empty username/password
-            if (formData.username.trim() && formData.password.trim()) {
-                // Store user session (you can use localStorage, cookies, or a state management solution)
-                localStorage.setItem(
-                    "user",
-                    JSON.stringify({
-                        username: formData.username,
-                        loggedIn: true,
-                        timestamp: new Date().toISOString(),
-                    })
-                );
+            const response = await fetch(
+                "http://localhost:5000/api/users/login",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        email: formData.email,
+                        password: formData.password,
+                    }),
+                    credentials: "include", // Important for cookie-based auth
+                }
+            );
 
-                // Close modal and redirect to client page
+            console.log("Login response status:", response.status);
+
+            // Check if response is JSON
+            const contentType = response.headers.get("content-type");
+            console.log("Content-Type:", contentType);
+
+            if (!response.ok) {
+                // Handle error response
+                const responseText = await response.text();
+                console.log("Login error response:", responseText);
+
+                if (contentType && contentType.includes("application/json")) {
+                    try {
+                        const errorData = JSON.parse(responseText);
+                        throw new Error(errorData.message || "Login failed");
+                    } catch (parseError) {
+                        console.error(
+                            "Failed to parse error response:",
+                            parseError
+                        );
+                        throw new Error(
+                            `Login failed. Status: ${response.status}`
+                        );
+                    }
+                } else {
+                    throw new Error(
+                        `Login failed. Status: ${
+                            response.status
+                        }. Response: ${responseText.substring(0, 200)}`
+                    );
+                }
+            }
+
+            // Parse successful response
+            const result = await response.json();
+            console.log("Login successful:", result);
+
+            if (result.success) {
+                // Store user session data from the API response
+                const userData = {
+                    id: result.data.user._id,
+                    username: result.data.user.username,
+                    email: result.data.user.email,
+                    status: result.data.user.status,
+                    role: result.data.user.role,
+                    kyc: result.data.user.kyc || null,
+                    loggedIn: true,
+                    timestamp: new Date().toISOString(),
+                };
+
+                localStorage.setItem("user", JSON.stringify(userData));
+
+                // Close modal and redirect based on user role
                 onClose();
-                router.push("/client");
+
+                // Redirect based on role
+                if (result.data.user.role === "ADMIN") {
+                    router.push("/admin");
+                } else {
+                    router.push("/client");
+                }
             } else {
-                setError("Please enter both username and password");
+                throw new Error(result.message || "Login failed");
             }
         } catch (err) {
-            setError("Login failed. Please try again.");
+            console.error("Login error:", err);
+            setError(
+                err instanceof Error
+                    ? err.message
+                    : "Login failed. Please try again."
+            );
         } finally {
             setIsLoading(false);
         }
     };
 
     const handleClose = () => {
-        setFormData({ username: "", password: "", rememberMe: false });
+        setFormData({ email: "", password: "", rememberMe: false });
         setError("");
         onClose();
+    };
+
+    const handleRegistrationClick = () => {
+        handleClose();
+        if (onOpenRegistration) {
+            onOpenRegistration();
+        }
     };
 
     return (
@@ -84,7 +161,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 <div className="flex flex-col items-center space-y-6 p-6">
                     {/* Header */}
                     <div className="text-center space-y-2">
-                        <DialogTitle className="text-3xl  font-bold font-playfair tracking-wide text-gray-800">
+                        <DialogTitle className="text-3xl font-bold font-playfair tracking-wide text-gray-800">
                             DIAMOND ELITE
                         </DialogTitle>
                         <h2 className="text-2xl font-light font-playfair text-gray-700">
@@ -94,20 +171,20 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
                     {/* Login Form */}
                     <form onSubmit={handleSubmit} className="w-full space-y-4">
-                        {/* Username/Email Field */}
+                        {/* Email Field */}
                         <div className="space-y-2">
                             <Label
-                                htmlFor="username"
+                                htmlFor="email"
                                 className="text-sm font-medium text-gray-700"
                             >
-                                Username or email address*
+                                Email address*
                             </Label>
                             <Input
-                                id="username"
-                                name="username"
-                                type="text"
-                                placeholder="Enter your username or email"
-                                value={formData.username}
+                                id="email"
+                                name="email"
+                                type="email"
+                                placeholder="Enter your email address"
+                                value={formData.email}
                                 onChange={handleInputChange}
                                 className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
                                 required
@@ -185,13 +262,12 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                         <span className="text-gray-600">
                             Don't have an account?{" "}
                         </span>
-                        <Link
-                            href="/register"
-                            className="text-gray-800 font-medium hover:underline"
-                            onClick={handleClose}
+                        <button
+                            onClick={handleRegistrationClick}
+                            className="text-gray-800 font-medium hover:underline bg-transparent border-none cursor-pointer"
                         >
                             Register
-                        </Link>
+                        </button>
                     </div>
                 </div>
             </DialogContent>

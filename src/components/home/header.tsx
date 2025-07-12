@@ -4,10 +4,13 @@ import Container from "../ui/container";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { LoginModal } from "./loginCard";
+import { RegistrationModal } from "./registrationCard";
 
 const Navbar = () => {
     const pathname = usePathname();
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+    const [isRegistrationModalOpen, setIsRegistrationModalOpen] =
+        useState(false);
 
     const navItems = [
         { href: "/home", label: "Home" },
@@ -20,8 +23,21 @@ const Navbar = () => {
         setIsLoginModalOpen(true);
     };
 
-    const handleCloseModal = () => {
+    const handleCloseLoginModal = () => {
         setIsLoginModalOpen(false);
+    };
+
+    const handleRegistrationClick = () => {
+        setIsRegistrationModalOpen(true);
+    };
+
+    const handleCloseRegistrationModal = () => {
+        setIsRegistrationModalOpen(false);
+    };
+
+    const handleOpenRegistrationFromLogin = () => {
+        setIsLoginModalOpen(false);
+        setIsRegistrationModalOpen(true);
     };
 
     return (
@@ -46,14 +62,30 @@ const Navbar = () => {
                         </li>
                     ))}
                 </ul>
-                <div
-                    className="bg-[#4D4D4D] cursor-pointer border-2 rounded-[3px] border-black text-white px-4 py-2 "
-                    onClick={handleLoginClick}
-                >
-                    Register&nbsp;/&nbsp;Login
+                <div className="flex space-x-3">
+                    <div
+                        className="bg-white cursor-pointer border-2 rounded-[3px] border-black text-black px-4 py-2 hover:bg-gray-50 transition-colors"
+                        onClick={handleRegistrationClick}
+                    >
+                        Register
+                    </div>
+                    <div
+                        className="bg-[#4D4D4D] cursor-pointer border-2 rounded-[3px] border-black text-white px-4 py-2 hover:bg-gray-700 transition-colors"
+                        onClick={handleLoginClick}
+                    >
+                        Login
+                    </div>
                 </div>
             </Container>
-            <LoginModal isOpen={isLoginModalOpen} onClose={handleCloseModal} />
+            <LoginModal
+                isOpen={isLoginModalOpen}
+                onClose={handleCloseLoginModal}
+                onOpenRegistration={handleOpenRegistrationFromLogin}
+            />
+            <RegistrationModal
+                isOpen={isRegistrationModalOpen}
+                onClose={handleCloseRegistrationModal}
+            />
         </div>
     );
 };

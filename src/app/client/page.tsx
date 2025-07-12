@@ -1,9 +1,10 @@
-// src/app/client/page.tsx
 "use client";
 
 import React, { useState } from "react";
 import { ClientFilterSidebar } from "@/components/client/client-filter-sidebar";
 import { ClientDiamondTable } from "@/components/client/client-diamond-table";
+import { ClientDiamondGrid } from "@/components/client/client-diamond-grid";
+import { AppliedFilters } from "@/components/client/applied-filters";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -15,23 +16,17 @@ export default function ClientPage() {
     const {
         diamonds,
         filterOptions,
+        pagination,
         loading,
         error,
         searchDiamonds,
         resetFilters,
+        currentFilters,
     } = useClientDiamonds();
 
     const [filters, setFilters] = useState<ClientFilters>({});
     const [searchTerm, setSearchTerm] = useState("");
     const [view, setView] = useState<"table" | "grid">("table");
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 100;
-
-    const totalPages = Math.ceil(diamonds.length / itemsPerPage);
-    const paginatedDiamonds = diamonds.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-    );
 
     const handleSearch = async () => {
         const searchFilters = {
@@ -39,19 +34,68 @@ export default function ClientPage() {
             searchTerm: searchTerm || filters.searchTerm,
         };
 
-        await searchDiamonds(searchFilters);
-        setCurrentPage(1);
+        await searchDiamonds(searchFilters, 1);
     };
 
     const handleReset = async () => {
         setFilters({});
         setSearchTerm("");
-        setCurrentPage(1);
         await resetFilters();
     };
 
     const handleFiltersChange = (newFilters: ClientFilters) => {
         setFilters(newFilters);
+    };
+
+    const handlePageChange = async (page: number) => {
+        await searchDiamonds(currentFilters, page);
+    };
+
+    // Handle removing individual filters - updated for max-only filters
+    const handleRemoveFilter = (key: keyof ClientFilters, value?: string) => {
+        const newFilters = { ...filters };
+
+        if (key === "priceMax") {
+            // Remove price max filter and reset min to range minimum
+            delete newFilters.priceMax;
+            delete newFilters.priceMin;
+        } else if (key === "caratMax") {
+            // Remove carat max filter and reset min to range minimum
+            delete newFilters.caratMax;
+            delete newFilters.caratMin;
+        } else if (key === "discountMax") {
+            // Remove discount max filter and reset min to range minimum
+            delete newFilters.discountMax;
+            delete newFilters.discountMin;
+        } else if (key === "rapListMax") {
+            // Remove rap list max filter and reset min to range minimum
+            delete newFilters.rapListMax;
+            delete newFilters.rapListMin;
+        } else if (Array.isArray(newFilters[key]) && value) {
+            // Remove specific value from array
+            const arrayFilter = newFilters[key] as string[];
+            const updatedArray = arrayFilter.filter((item) => item !== value);
+            if (updatedArray.length === 0) {
+                delete newFilters[key];
+            } else {
+                newFilters[key] = updatedArray as any;
+            }
+        } else {
+            // Remove the entire filter
+            delete newFilters[key];
+        }
+
+        setFilters(newFilters);
+
+        // Auto-search with updated filters
+        searchDiamonds(newFilters, 1);
+    };
+
+    // Handle clearing all filters
+    const handleClearAllFilters = () => {
+        setFilters({});
+        setSearchTerm("");
+        resetFilters();
     };
 
     const exportData = () => {
@@ -122,9 +166,9 @@ export default function ClientPage() {
                     <Button
                         variant="outline"
                         size="sm"
-                        className="bg-gray-900 hover:bg-gray-900 text-white  hover:text-white rounded-full space-x-2 flex justify-center"
+                        className="bg-gray-900 hover:bg-gray-900 text-white hover:text-white rounded-full space-x-2 flex justify-center"
                     >
-                        <div className="h-5 w-5 bg-white/50 hover:bg-white/50  rounded-full"></div>
+                        <div className="h-5 w-5 bg-white/50 hover:bg-white/50 rounded-full"></div>
                         John Doe
                     </Button>
                 </div>
@@ -199,23 +243,29 @@ export default function ClientPage() {
                         </div>
                     </div>
 
-                    {/* Results Summary */}
-                    <div className="mb-4">
-                        <p className="text-sm text-gray-600">
-                            Showing {paginatedDiamonds.length} of{" "}
-                            {diamonds.length} diamonds
-                            {Object.keys(filters).length > 0 && " (filtered)"}
-                        </p>
-                    </div>
-
-                    {/* Diamond Table */}
-                    <ClientDiamondTable
-                        diamonds={paginatedDiamonds}
-                        loading={loading}
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={setCurrentPage}
+                    {/* Applied Filters */}
+                    <AppliedFilters
+                        filters={currentFilters}
+                        onRemoveFilter={handleRemoveFilter}
+                        onClearAll={handleClearAllFilters}
                     />
+
+                    {/* Diamond Display - Conditional based on view */}
+                    {view === "table" ? (
+                        <ClientDiamondTable
+                            diamonds={diamonds}
+                            loading={loading}
+                            pagination={pagination}
+                            onPageChange={handlePageChange}
+                        />
+                    ) : (
+                        <ClientDiamondGrid
+                            diamonds={diamonds}
+                            loading={loading}
+                            pagination={pagination}
+                            onPageChange={handlePageChange}
+                        />
+                    )}
                 </div>
             </div>
         </div>

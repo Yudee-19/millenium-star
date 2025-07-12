@@ -5,26 +5,55 @@ import {
     FilterOptions,
 } from "@/types/client/diamond";
 
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = "http://localhost:5000/api"; // Updated to match API docs
 
 interface ApiResponse<T> {
     success: boolean;
     data: T;
     message?: string;
+    pagination?: {
+        currentPage: number;
+        totalPages: number;
+        totalRecords: number;
+        recordsPerPage: number;
+        hasNextPage: boolean;
+        hasPrevPage: boolean;
+    };
     count?: number;
+}
+
+interface SearchResponse {
+    data: ClientDiamond[];
+    pagination: {
+        currentPage: number;
+        totalPages: number;
+        totalRecords: number;
+        recordsPerPage: number;
+        hasNextPage: boolean;
+        hasPrevPage: boolean;
+    };
 }
 
 class ClientDiamondAPI {
     async searchDiamonds(
-        filters: ClientFilters = {}
-    ): Promise<ClientDiamond[]> {
+        filters: ClientFilters = {},
+        page: number = 1,
+        limit: number = 20
+    ): Promise<SearchResponse> {
         const params = new URLSearchParams();
+
+        // Add pagination parameters
+        params.append("page", page.toString());
+        params.append("limit", limit.toString());
 
         // Add filter parameters
         Object.entries(filters).forEach(([key, value]) => {
             if (value !== undefined && value !== null && value !== "") {
                 if (Array.isArray(value)) {
-                    value.forEach((v) => params.append(key, v.toString()));
+                    // For array filters, add as comma-separated values
+                    if (value.length > 0) {
+                        params.append(key, value.join(","));
+                    }
                 } else {
                     params.append(key, value.toString());
                 }
@@ -32,7 +61,10 @@ class ClientDiamondAPI {
         });
 
         const response = await fetch(
-            `${API_BASE_URL}/diamonds/search?${params}`
+            `${API_BASE_URL}/diamonds/search?${params}`,
+            {
+                credentials: "include", // Include cookies for authentication
+            }
         );
 
         if (!response.ok) {
@@ -45,27 +77,54 @@ class ClientDiamondAPI {
             throw new Error(result.message || "Failed to fetch diamonds");
         }
 
-        return result.data;
+        return {
+            data: result.data,
+            pagination: result.pagination || {
+                currentPage: 1,
+                totalPages: 1,
+                totalRecords: result.data.length,
+                recordsPerPage: limit,
+                hasNextPage: false,
+                hasPrevPage: false,
+            },
+        };
     }
 
     async getFilterOptions(): Promise<FilterOptions> {
-        const response = await fetch(`${API_BASE_URL}/diamonds/filter-options`);
+        const response = await fetch(
+            `${API_BASE_URL}/diamonds/filter-options`,
+            {
+                credentials: "include",
+            }
+        );
 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const result: ApiResponse<FilterOptions> = await response.json();
+        const result: ApiResponse<any> = await response.json();
 
         if (!result.success) {
             throw new Error(result.message || "Failed to fetch filter options");
         }
 
-        return result.data;
+        // Map API response to FilterOptions format
+        return {
+            colors: result.data.colors || [],
+            clarities: result.data.clarities || [],
+            cuts: result.data.cuts || [],
+            polishes: result.data.polishGrades || [],
+            symmetries: result.data.symmetryGrades || [],
+            fluorescences: result.data.fluorescenceTypes || [],
+            shapes: result.data.shapes || [],
+            labs: result.data.labs || [],
+        };
     }
 
     async getAllDiamonds(): Promise<ClientDiamond[]> {
-        const response = await fetch(`${API_BASE_URL}/diamonds/all`);
+        const response = await fetch(`${API_BASE_URL}/diamonds/all`, {
+            credentials: "include",
+        });
 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);

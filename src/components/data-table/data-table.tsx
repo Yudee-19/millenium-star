@@ -32,12 +32,32 @@ interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
     toolbar?: React.ComponentType<{ table: any }>;
+    pageCount?: number;
+    loading?: boolean;
+    onStateChange?: (state: {
+        pagination: { pageIndex: number; pageSize: number };
+        sorting: Array<{ id: string; desc: boolean }>;
+        columnFilters: Array<{ id: string; value: any }>;
+    }) => void;
+    // Add pagination metadata
+    paginationMeta?: {
+        currentPage: number;
+        totalPages: number;
+        totalRecords: number;
+        recordsPerPage: number;
+        hasNextPage: boolean;
+        hasPrevPage: boolean;
+    } | null;
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
     toolbar: Toolbar = DataTableToolbar,
+    pageCount = -1,
+    loading = false,
+    onStateChange,
+    paginationMeta, // Add this
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] =
@@ -45,25 +65,45 @@ export function DataTable<TData, TValue>({
     const [columnVisibility, setColumnVisibility] =
         React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
+    const [pagination, setPagination] = React.useState({
+        pageIndex: 0,
+        pageSize: 10,
+    });
+
+    // Notify parent component of state changes
+    React.useEffect(() => {
+        if (onStateChange) {
+            onStateChange({
+                pagination,
+                sorting,
+                columnFilters,
+            });
+        }
+    }, [pagination, sorting, columnFilters, onStateChange]);
 
     const table = useReactTable({
         data,
         columns,
+        pageCount,
         state: {
             sorting,
             columnVisibility,
             rowSelection,
             columnFilters,
+            pagination,
         },
         enableRowSelection: true,
         onRowSelectionChange: setRowSelection,
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
         onColumnVisibilityChange: setColumnVisibility,
+        onPaginationChange: setPagination,
         getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        getSortedRowModel: getSortedRowModel(),
+        // Disable client-side operations for server-side
+        manualPagination: true,
+        manualSorting: true,
+        manualFiltering: true,
+        // Keep these for UI features
         getFacetedRowModel: getFacetedRowModel(),
         getFacetedUniqueValues: getFacetedUniqueValues(),
     });
@@ -93,7 +133,20 @@ export function DataTable<TData, TValue>({
                         ))}
                     </TableHeader>
                     <TableBody>
-                        {table.getRowModel().rows?.length ? (
+                        {loading ? (
+                            // Loading skeleton
+                            Array.from({ length: pagination.pageSize }).map(
+                                (_, index) => (
+                                    <TableRow key={index}>
+                                        {columns.map((_, cellIndex) => (
+                                            <TableCell key={cellIndex}>
+                                                <div className="h-4 bg-gray-200 rounded animate-pulse" />
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                )
+                            )
+                        ) : table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
                                 <TableRow
                                     key={row.id}
@@ -124,7 +177,10 @@ export function DataTable<TData, TValue>({
                     </TableBody>
                 </Table>
             </div>
-            <DataTablePagination table={table} />
+            <DataTablePagination
+                table={table}
+                paginationMeta={paginationMeta} // Pass to pagination
+            />
         </div>
     );
 }
