@@ -12,6 +12,7 @@ interface RouteGuardProps {
     fallbackPath?: string;
     loadingComponent?: React.ReactNode;
     unauthorizedComponent?: React.ReactNode;
+    allowAdminBypass?: boolean; // New prop to allow admin bypass
 }
 
 const DefaultLoadingComponent = () => (
@@ -44,6 +45,7 @@ export const RouteGuard: React.FC<RouteGuardProps> = ({
     fallbackPath = "/",
     loadingComponent = <DefaultLoadingComponent />,
     unauthorizedComponent,
+    allowAdminBypass = false,
 }) => {
     const { user, loading, isAuthenticated } = useAuth();
     const router = useRouter();
@@ -52,6 +54,11 @@ export const RouteGuard: React.FC<RouteGuardProps> = ({
         if (!loading) {
             if (!isAuthenticated()) {
                 router.push(fallbackPath);
+                return;
+            }
+
+            // Admin bypass logic - if user is ADMIN and bypass is allowed, skip all checks
+            if (allowAdminBypass && user?.role === "ADMIN") {
                 return;
             }
 
@@ -80,6 +87,7 @@ export const RouteGuard: React.FC<RouteGuardProps> = ({
         router,
         fallbackPath,
         unauthorizedComponent,
+        allowAdminBypass,
     ]);
 
     if (loading) {
@@ -88,6 +96,11 @@ export const RouteGuard: React.FC<RouteGuardProps> = ({
 
     if (!isAuthenticated()) {
         return null; // Will redirect
+    }
+
+    // Admin bypass logic - if user is ADMIN and bypass is allowed, render children
+    if (allowAdminBypass && user?.role === "ADMIN") {
+        return <>{children}</>;
     }
 
     // Check role requirement
@@ -132,10 +145,20 @@ export const AdminGuard: React.FC<{ children: React.ReactNode }> = ({
     children,
 }) => <RouteGuard requiredRole="ADMIN">{children}</RouteGuard>;
 
-export const ApprovedUserGuard: React.FC<{ children: React.ReactNode }> = ({
+// Updated: Allow both ADMIN users and APPROVED USER users
+export const InventoryGuard: React.FC<{ children: React.ReactNode }> = ({
     children,
 }) => (
-    <RouteGuard requiredRole="USER" requiredStatus="APPROVED">
+    <RouteGuard
+        requiredRole="USER"
+        requiredStatus="APPROVED"
+        allowAdminBypass={true}
+    >
         {children}
     </RouteGuard>
 );
+
+// Keeping the old component for backward compatibility, but it's now an alias
+export const ApprovedUserGuard: React.FC<{ children: React.ReactNode }> = ({
+    children,
+}) => <InventoryGuard>{children}</InventoryGuard>;

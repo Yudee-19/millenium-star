@@ -11,10 +11,12 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ClientFilters } from "@/types/client/diamond";
 import { useClientDiamonds } from "@/hooks/client-table/use-client-diamonds";
 import { Download, Grid3X3, Table as TableIcon } from "lucide-react";
-import { ApprovedUserGuard } from "@/components/auth/routeGuard";
+import { InventoryGuard } from "@/components/auth/routeGuard"; // Updated import
 import { UserStatusHandler } from "@/components/auth/statusGuard";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function ClientPage() {
+    const { user } = useAuth(); // Get user for conditional rendering
     const {
         diamonds,
         filterOptions,
@@ -53,7 +55,6 @@ export default function ClientPage() {
         await searchDiamonds(currentFilters, page);
     };
 
-    // Handle removing individual filters - updated for max-only filters
     const handleRemoveFilter = (key: keyof ClientFilters, value?: string) => {
         const newFilters = { ...filters };
 
@@ -130,7 +131,7 @@ export default function ClientPage() {
     }
 
     return (
-        <ApprovedUserGuard>
+        <InventoryGuard>
             <UserStatusHandler>
                 <div className="min-h-screen bg-gray-50">
                     {/* Header */}
@@ -150,24 +151,24 @@ export default function ClientPage() {
                                         </Button>
                                     </a>
 
+                                    {/* Show Admin link only for ADMIN users */}
+                                    {user?.role === "ADMIN" && (
+                                        <a href="/admin">
+                                            <Button
+                                                variant="ghost"
+                                                className="text-gray-600 hover:text-gray-900"
+                                            >
+                                                Admin Dashboard
+                                            </Button>
+                                        </a>
+                                    )}
+
                                     <Button
                                         variant="ghost"
                                         className="text-gray-600 hover:text-gray-900"
                                     >
                                         Offer Enquiry
                                     </Button>
-                                    {/* <Button
-                                variant="ghost"
-                                className="text-gray-600 hover:text-gray-900"
-                            >
-                                Member Enquiry
-                            </Button> */}
-                                    {/* <Button
-                                variant="ghost"
-                                className="text-gray-600 hover:text-gray-900"
-                            >
-                                My Account
-                            </Button> */}
                                 </nav>
                             </div>
                             <Button
@@ -176,7 +177,7 @@ export default function ClientPage() {
                                 className="bg-gray-900 hover:bg-gray-900 text-white hover:text-white rounded-full space-x-2 flex justify-center"
                             >
                                 <div className="h-5 w-5 bg-white/50 hover:bg-white/50 rounded-full"></div>
-                                John Doe
+                                {user?.username || "User"}
                             </Button>
                         </div>
                     </header>
@@ -281,6 +282,6 @@ export default function ClientPage() {
                     </div>
                 </div>
             </UserStatusHandler>
-        </ApprovedUserGuard>
+        </InventoryGuard>
     );
 }

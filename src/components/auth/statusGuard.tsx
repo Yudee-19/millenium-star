@@ -159,21 +159,26 @@ export const UserStatusHandler: React.FC<UserStatusHandlerProps> = ({
         );
     }
 
-    if (!user || user.role !== "USER") {
+    // UPDATED: Don't interfere with ADMIN users - let them through regardless of status
+    if (!user || user.role === "ADMIN") {
         return <>{children}</>;
     }
 
-    // Handle different user statuses
-    switch (user.status) {
-        case "DEFAULT":
-            return <StatusDefaultComponent />;
-        case "PENDING":
-            return <StatusPendingComponent />;
-        case "REJECTED":
-            return <StatusRejectedComponent />;
-        case "APPROVED":
-            return <>{children}</>;
-        default:
-            return <>{children}</>;
+    // Only apply status checks for USER role
+    if (user.role === "USER") {
+        switch (user.status) {
+            case "DEFAULT":
+                return <StatusDefaultComponent />;
+            case "PENDING":
+                return <StatusPendingComponent />;
+            case "REJECTED":
+                return <StatusRejectedComponent />;
+            case "APPROVED":
+                return <>{children}</>;
+            default:
+                return <>{children}</>;
+        }
     }
+
+    return <>{children}</>;
 };

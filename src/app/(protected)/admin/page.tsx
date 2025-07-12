@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AddDiamondModal } from "@/components/modals/add-diamond";
 import { AdminGuard } from "@/components/auth/routeGuard";
 import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
 
 export default function DiamondPage() {
     const { user, logout } = useAuth();
@@ -77,13 +78,29 @@ export default function DiamondPage() {
         <AdminGuard>
             <Container>
                 {/* Header Section */}
-                <SiteHeader />
-
-                {/* Navbar Buttons */}
-                <div className="flex items-center justify-evenly gap-2 my-5">
-                    <CustomButton variant="dark">Inventory</CustomButton>
-                    <CustomButton variant="secondary">Application</CustomButton>
-                    <CustomButton variant="secondary">Rapnet</CustomButton>
+                <div className="flex items-center justify-between mb-6">
+                    <SiteHeader />
+                    <div className="flex items-center space-x-4 h-16  border-b">
+                        {/* Add navigation to inventory for admin */}
+                        <a href="/inventory">
+                            <Button variant="outline">View Inventory</Button>
+                        </a>
+                        <Button
+                            onClick={logout}
+                            variant="outline"
+                            className="text-red-600 hover:text-red-700"
+                        >
+                            Logout
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="bg-gray-900 hover:bg-gray-900 border-none p-4 text-white hover:text-white rounded-full space-x-2 flex justify-center items-center"
+                        >
+                            <div className="h-5 w-5 bg-white/50 hover:bg-white/50 rounded-full"></div>
+                            {user?.username || "User"}
+                        </Button>
+                    </div>
                 </div>
 
                 {/* Search and Action Buttons */}
@@ -145,7 +162,13 @@ export default function DiamondPage() {
                                 value="highEnd"
                                 className="rounded-full text-sky-950 p-3"
                             >
-                                High End
+                                Rapnet Data
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="excelData"
+                                className="rounded-full text-sky-950 p-3"
+                            >
+                                Excel Data
                             </TabsTrigger>
                         </TabsList>
 
@@ -176,7 +199,24 @@ export default function DiamondPage() {
                                 </div>
                                 <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
                                     <h1 className="text-sky-950 text-base">
-                                        Total Carat Weight
+                                        Total Value
+                                    </h1>
+                                    <h1 className="text-2xl font-semibold">
+                                        $
+                                        {loading
+                                            ? "..."
+                                            : diamonds
+                                                  .reduce(
+                                                      (sum, d) =>
+                                                          sum + (d.price || 0),
+                                                      0
+                                                  )
+                                                  .toFixed(2)}{" "}
+                                    </h1>
+                                </div>
+                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-sky-950 text-base">
+                                        Total Size
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
                                         {loading
@@ -256,6 +296,9 @@ export default function DiamondPage() {
                             Data Unavailable Now
                         </TabsContent>
                         <TabsContent value="highEnd">
+                            Data Unavailable Now
+                        </TabsContent>
+                        <TabsContent value="excelData">
                             Data Unavailable Now
                         </TabsContent>
                     </Tabs>
