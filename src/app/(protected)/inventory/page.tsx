@@ -14,9 +14,11 @@ import { Download, Grid3X3, Table as TableIcon } from "lucide-react";
 import { InventoryGuard } from "@/components/auth/routeGuard"; // Updated import
 import { UserStatusHandler } from "@/components/auth/statusGuard";
 import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
 
 export default function ClientPage() {
     const { user } = useAuth(); // Get user for conditional rendering
+    const router = useRouter();
     const {
         diamonds,
         filterOptions,
@@ -163,12 +165,37 @@ export default function ClientPage() {
                                         </a>
                                     )}
 
-                                    <Button
-                                        variant="ghost"
-                                        className="text-gray-600 hover:text-gray-900"
-                                    >
-                                        Offer Enquiry
-                                    </Button>
+                                    {user?.role === "ADMIN" && (
+                                        <Button
+                                            variant="ghost"
+                                            className="text-gray-600 hover:text-gray-900"
+                                        >
+                                            Offer Enquiry
+                                        </Button>
+                                    )}
+
+                                    {user?.role === "ADMIN" && (
+                                        <Button
+                                            variant="ghost"
+                                            className="text-gray-600 hover:text-gray-900"
+                                            onClick={() =>
+                                                router.push(
+                                                    "/admin/members-enquiry"
+                                                )
+                                            }
+                                        >
+                                            Member Enquiry
+                                        </Button>
+                                    )}
+                                    {/* USER buttons */}
+                                    {user?.role === "USER" && (
+                                        <Button
+                                            variant="ghost"
+                                            className="text-gray-600 hover:text-gray-900"
+                                        >
+                                            Make an Offer
+                                        </Button>
+                                    )}
                                 </nav>
                             </div>
                             <Button

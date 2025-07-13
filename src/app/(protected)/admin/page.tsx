@@ -85,6 +85,9 @@ export default function DiamondPage() {
                         <a href="/inventory">
                             <Button variant="outline">View Inventory</Button>
                         </a>
+                        <a href="/member-enquiry">
+                            <Button variant="outline">Member Enquiry</Button>
+                        </a>
                         <Button
                             onClick={logout}
                             variant="outline"
