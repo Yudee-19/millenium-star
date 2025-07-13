@@ -27,7 +27,7 @@ export function LoginModal({
     onOpenRegistration,
 }: LoginModalProps) {
     const [formData, setFormData] = useState({
-        email: "", // Changed from username to email as per API
+        email: "",
         password: "",
         rememberMe: false,
     });
@@ -66,41 +66,23 @@ export function LoginModal({
                 }
             );
 
-            console.log("Login response status:", response.status);
+            // console.log("Login response status:", response.status);
+            // console.log("Login Json response Object:", await response.json());
+            const result = await response.json();
 
-            // Check if response is JSON
+            // // Check if response is JSON
             const contentType = response.headers.get("content-type");
             console.log("Content-Type:", contentType);
 
             if (!response.ok) {
-                // Handle error response
-                const responseText = await response.text();
-                console.log("Login error response:", responseText);
-
-                if (contentType && contentType.includes("application/json")) {
-                    try {
-                        const errorData = JSON.parse(responseText);
-                        throw new Error(errorData.message || "Login failed");
-                    } catch (parseError) {
-                        console.error(
-                            "Failed to parse error response:",
-                            parseError
-                        );
-                        throw new Error(
-                            `Login failed. Status: ${response.status}`
-                        );
-                    }
-                } else {
-                    throw new Error(
-                        `Login failed. Status: ${
-                            response.status
-                        }. Response: ${responseText.substring(0, 200)}`
-                    );
-                }
+                // Parse error response
+                const errorMessage = result.error;
+                throw new Error(
+                    errorMessage || "Login failed. Please try again."
+                );
             }
 
             // Parse successful response
-            const result = await response.json();
             console.log("Login successful:", result);
 
             if (result.success) {
@@ -131,7 +113,6 @@ export function LoginModal({
                 throw new Error(result.message || "Login failed");
             }
         } catch (err) {
-            console.error("Login error:", err);
             setError(
                 err instanceof Error
                     ? err.message
