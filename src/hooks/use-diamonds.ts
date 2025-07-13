@@ -144,7 +144,7 @@ export function useDiamonds(): UseDiamondsReturn {
                 });
 
                 const response = await fetch(
-                    `http://localhost:5000/api/${endpoint}?${queryParams.toString()}`
+                    `https://diamond-inventory.onrender.com/api/${endpoint}?${queryParams.toString()}`
                 );
 
                 if (!response.ok) {

@@ -5,7 +5,7 @@ import {
     FilterOptions,
 } from "@/types/client/diamond";
 
-const API_BASE_URL = "http://localhost:5000/api"; // Updated to match API docs
+const API_BASE_URL = "https://diamond-inventory.onrender.com/api"; // Updated to match API docs
 
 interface ApiResponse<T> {
     success: boolean;

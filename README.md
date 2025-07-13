@@ -118,7 +118,7 @@ npm run dev
 ### Environment Setup
 ```env
 # Add to .env.local
-NEXT_PUBLIC_API_URL=http://localhost:5000/api
+NEXT_PUBLIC_API_URL=https://diamond-inventory.onrender.com/api
 MONGODB_URI=mongodb://localhost:27017/diamond-inventory
 JWT_SECRET=your-jwt-secret
 ```

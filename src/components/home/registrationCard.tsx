@@ -176,7 +176,7 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
             console.log("Registering user:", registerData);
 
             const registerResponse = await fetch(
-                "http://localhost:5000/api/users/register",
+                "https://diamond-inventory.onrender.com/api/users/register",
                 {
                     method: "POST",
                     headers: {
@@ -254,7 +254,7 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
 
             // Login first to get authentication for KYC submission
             const loginResponse = await fetch(
-                "http://localhost:5000/api/users/login",
+                "https://diamond-inventory.onrender.com/api/users/login",
                 {
                     method: "POST",
                     headers: {
@@ -294,7 +294,7 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
             console.log("KYC Payload:", kycPayload);
 
             const kycResponse = await fetch(
-                "http://localhost:5000/api/users/kyc",
+                "https://diamond-inventory.onrender.com/api/users/kyc",
                 {
                     method: "POST",
                     headers: {

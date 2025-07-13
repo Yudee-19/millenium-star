@@ -52,7 +52,7 @@ export function LoginModal({
             console.log("Attempting login with:", { email: formData.email });
 
             const response = await fetch(
-                "http://localhost:5000/api/users/login",
+                "https://diamond-inventory.onrender.com/api/users/login",
                 {
                     method: "POST",
                     headers: {

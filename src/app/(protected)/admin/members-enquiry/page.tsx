@@ -68,7 +68,7 @@ export default function MembersEnquiry() {
     const fetchPendingUsers = async () => {
         try {
             const response = await fetch(
-                "http://localhost:5000/api/users/kyc-pending",
+                "https://diamond-inventory.onrender.com/api/users/kyc-pending",
                 {
                     credentials: "include",
                 }
@@ -96,7 +96,7 @@ export default function MembersEnquiry() {
 
             do {
                 const response = await fetch(
-                    `http://localhost:5000/api/users?page=${currentPage}&limit=50`,
+                    `https://diamond-inventory.onrender.com/api/users?page=${currentPage}&limit=50`,
                     {
                         credentials: "include",
                     }
@@ -134,7 +134,7 @@ export default function MembersEnquiry() {
         setActionLoading(userId);
         try {
             const response = await fetch(
-                `http://localhost:5000/api/users/${userId}/approve`,
+                `https://diamond-inventory.onrender.com/api/users/${userId}/approve`,
                 {
                     method: "POST",
                     credentials: "include",
@@ -162,7 +162,7 @@ export default function MembersEnquiry() {
         setActionLoading(userId);
         try {
             const response = await fetch(
-                `http://localhost:5000/api/users/${userId}/reject`,
+                `https://diamond-inventory.onrender.com/api/users/${userId}/reject`,
                 {
                     method: "POST",
                     credentials: "include",

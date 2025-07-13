@@ -49,7 +49,7 @@ export const useAuth = () => {
             setAuthState((prev) => ({ ...prev, loading: true, error: null }));
 
             const response = await fetch(
-                "http://localhost:5000/api/users/profile",
+                "https://diamond-inventory.onrender.com/api/users/profile",
                 {
                     method: "GET",
                     credentials: "include",
@@ -96,10 +96,13 @@ export const useAuth = () => {
 
     const logout = useCallback(async () => {
         try {
-            await fetch("http://localhost:5000/api/users/logout", {
-                method: "POST",
-                credentials: "include",
-            });
+            await fetch(
+                "https://diamond-inventory.onrender.com/api/users/logout",
+                {
+                    method: "POST",
+                    credentials: "include",
+                }
+            );
         } catch (error) {
             console.error("Logout error:", error);
         } finally {
