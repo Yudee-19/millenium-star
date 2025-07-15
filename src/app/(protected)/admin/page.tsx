@@ -85,7 +85,7 @@ export default function DiamondPage() {
                         <a href="/inventory">
                             <Button variant="outline">View Inventory</Button>
                         </a>
-                        <a href="/member-enquiry">
+                        <a href="/admin/members-enquiry">
                             <Button variant="outline">Member Enquiry</Button>
                         </a>
                         <Button
@@ -156,22 +156,16 @@ export default function DiamondPage() {
                                 Fancy
                             </TabsTrigger>
                             <TabsTrigger
-                                value="labGrown"
-                                className="rounded-full text-sky-950 p-3"
-                            >
-                                Lab Grown
-                            </TabsTrigger>
-                            <TabsTrigger
                                 value="highEnd"
                                 className="rounded-full text-sky-950 p-3"
                             >
-                                Rapnet Data
+                                High End
                             </TabsTrigger>
                             <TabsTrigger
-                                value="excelData"
+                                value="lowEnd"
                                 className="rounded-full text-sky-950 p-3"
                             >
-                                Excel Data
+                                Low End
                             </TabsTrigger>
                         </TabsList>
 
@@ -295,13 +289,10 @@ export default function DiamondPage() {
                         <TabsContent value="fancy">
                             Data Unavailable Now
                         </TabsContent>
-                        <TabsContent value="labGrown">
-                            Data Unavailable Now
-                        </TabsContent>
                         <TabsContent value="highEnd">
                             Data Unavailable Now
                         </TabsContent>
-                        <TabsContent value="excelData">
+                        <TabsContent value="lowEnd">
                             Data Unavailable Now
                         </TabsContent>
                     </Tabs>
