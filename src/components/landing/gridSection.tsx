@@ -3,33 +3,39 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import React from "react";
 
-const gridCardsData = [
-    {
-        id: 1,
-        title: "Loose Certified Diamonds",
-        imageUrl: "/assets/diamond-img-1.png",
-        buttonText: "Order Now",
-    },
-    {
-        id: 2,
-        title: "Custom Cut Diamonds",
-        imageUrl: "/assets/diamond-img-2.png",
-        buttonText: "Order Now",
-    },
-    {
-        id: 3,
-        title: "Jewellery-Ready Stones",
-        imageUrl: "/assets/diamond-img-3.png",
-        buttonText: "Order Now",
-    },
-];
+// const gridCardsData = [
+//     {
+//         id: 1,
+//         title: "Loose Certified Diamonds",
+//         imageUrl: "/assets/diamond-img-1.png",
+//         buttonText: "Order Now",
+//     },
+//     {
+//         id: 2,
+//         title: "Custom Cut Diamonds",
+//         imageUrl: "/assets/diamond-img-2.png",
+//         buttonText: "Order Now",
+//     },
+//     {
+//         id: 3,
+//         title: "Jewellery-Ready Stones",
+//         imageUrl: "/assets/diamond-img-3.png",
+//         buttonText: "Order Now",
+//     },
+// ];
 
 interface GridSectionProps {
     children?: React.ReactNode;
     className?: string;
+    gridData: {
+        id: number;
+        title: string;
+        imageUrl: string;
+        buttonText?: string;
+    }[];
 }
 
-const GridSection = ({ children, className }: GridSectionProps) => {
+const GridSection = ({ children, className, gridData }: GridSectionProps) => {
     return (
         <section className={cn("py-20 px-6 bg-[#F4F4F5]", className)}>
             <div className="max-w-7xl mx-auto">
@@ -40,7 +46,7 @@ const GridSection = ({ children, className }: GridSectionProps) => {
 
                 {/* Cards Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {gridCardsData.map((card) => (
+                    {gridData.map((card) => (
                         <GridCard
                             key={card.id}
                             title={card.title}
@@ -105,7 +111,7 @@ export const GridCard = ({
 
             {/* Content */}
             <div className="p-6 text-center">
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                <h3 className="text-xl font-light text-gray-900 mb-4">
                     {title}
                 </h3>
                 <button
