@@ -273,7 +273,9 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             <DataTableColumnHeader column={column} title="Length" />
         ),
         cell: ({ row }) => (
-            <div className="w-[80px]">{row.getValue("length") || "-"} mm</div>
+            <div className="w-[80px]">
+                {row.original.measurements?.length || "-"} mm
+            </div>
         ),
     },
     {
@@ -282,7 +284,9 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             <DataTableColumnHeader column={column} title="Width" />
         ),
         cell: ({ row }) => (
-            <div className="w-[80px]">{row.getValue("width") || "-"} mm</div>
+            <div className="w-[80px]">
+                {row.original.measurements?.width || "-"} mm
+            </div>
         ),
     },
     {
@@ -291,7 +295,9 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             <DataTableColumnHeader column={column} title="Depth" />
         ),
         cell: ({ row }) => (
-            <div className="w-[80px]">{row.getValue("depth") || "-"} mm</div>
+            <div className="w-[80px]">
+                {row.original.measurements?.depth || "-"} mm
+            </div>
         ),
     },
     {

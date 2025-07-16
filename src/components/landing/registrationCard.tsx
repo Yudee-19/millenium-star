@@ -726,7 +726,7 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
                             htmlFor="address.postalCode"
                             className="text-sm font-medium text-gray-700"
                         >
-                            Postal Code*
+                            Postal/Zip Code*
                         </Label>
                         <Input
                             id="address.postalCode"

@@ -82,9 +82,9 @@ export default function DiamondPage() {
                     <SiteHeader />
                     <div className="flex items-center space-x-4 h-16  border-b">
                         {/* Add navigation to inventory for admin */}
-                        <a href="/inventory">
+                        {/* <a href="/inventory">
                             <Button variant="outline">View Inventory</Button>
-                        </a>
+                        </a> */}
                         <a href="/admin/members-enquiry">
                             <Button variant="outline">Member Enquiry</Button>
                         </a>
