@@ -21,30 +21,32 @@ interface RegistrationModalProps {
 interface RegisterData {
     username: string;
     email: string;
-    phoneNumber: string;
     password: string;
     confirmPassword: string;
 }
 
-interface KYCData {
-    idNumber: string;
-    shopName: string;
-    shopRegistrationNumber: string;
-    taxNumber: string;
+interface OTPData {
+    email: string;
+    otp: string;
 }
 
-interface PersonalData {
+interface CustomerData {
     firstName: string;
     lastName: string;
-    recoveryEmail: string;
-    identityNumber: string;
-    dateOfBirth: string;
+    phoneNumber: string;
+    countryCode: string;
     address: {
         street: string;
         city: string;
         state: string;
-        zipCode: string;
+        postalCode: string;
         country: string;
+    };
+    businessInfo: {
+        companyName: string;
+        businessType: string;
+        vatNumber: string;
+        websiteUrl: string;
     };
 }
 
@@ -52,38 +54,39 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
     const [currentStep, setCurrentStep] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
-    const [isUserRegistered, setIsUserRegistered] = useState(false);
-    const [registeredUserData, setRegisteredUserData] = useState<any>(null);
+    const [isRegistrationComplete, setIsRegistrationComplete] = useState(false);
     const router = useRouter();
 
     // Form data states
     const [registerData, setRegisterData] = useState<RegisterData>({
         username: "",
         email: "",
-        phoneNumber: "",
         password: "",
         confirmPassword: "",
     });
 
-    const [kycData, setKycData] = useState<KYCData>({
-        idNumber: "",
-        shopName: "",
-        shopRegistrationNumber: "",
-        taxNumber: "",
+    const [otpData, setOtpData] = useState<OTPData>({
+        email: "",
+        otp: "",
     });
 
-    const [personalData, setPersonalData] = useState<PersonalData>({
+    const [customerData, setCustomerData] = useState<CustomerData>({
         firstName: "",
         lastName: "",
-        recoveryEmail: "",
-        identityNumber: "",
-        dateOfBirth: "",
+        phoneNumber: "",
+        countryCode: "+1",
         address: {
             street: "",
             city: "",
             state: "",
-            zipCode: "",
+            postalCode: "",
             country: "",
+        },
+        businessInfo: {
+            companyName: "",
+            businessType: "",
+            vatNumber: "",
+            websiteUrl: "",
         },
     });
 
@@ -97,29 +100,42 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
         }));
     };
 
-    const handleKycInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setKycData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
+    const handleOtpInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { value } = e.target;
+        // Only allow 4 digits
+        if (value.length <= 4 && /^\d*$/.test(value)) {
+            setOtpData((prev) => ({
+                ...prev,
+                otp: value,
+            }));
+        }
     };
 
-    const handlePersonalInputChange = (
-        e: React.ChangeEvent<HTMLInputElement>
+    const handleCustomerInputChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) => {
         const { name, value } = e.target;
+
         if (name.startsWith("address.")) {
             const addressField = name.split(".")[1];
-            setPersonalData((prev) => ({
+            setCustomerData((prev) => ({
                 ...prev,
                 address: {
                     ...prev.address,
                     [addressField]: value,
                 },
             }));
+        } else if (name.startsWith("businessInfo.")) {
+            const businessField = name.split(".")[1];
+            setCustomerData((prev) => ({
+                ...prev,
+                businessInfo: {
+                    ...prev.businessInfo,
+                    [businessField]: value,
+                },
+            }));
         } else {
-            setPersonalData((prev) => ({
+            setCustomerData((prev) => ({
                 ...prev,
                 [name]: value,
             }));
@@ -129,7 +145,8 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
     const validateRegisterStep = () => {
         if (!registerData.username.trim()) return "Username is required";
         if (!registerData.email.trim()) return "Email is required";
-        if (!registerData.phoneNumber.trim()) return "Phone number is required";
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(registerData.email))
+            return "Please enter a valid email address";
         if (!registerData.password.trim()) return "Password is required";
         if (!registerData.confirmPassword.trim())
             return "Confirm password is required";
@@ -140,34 +157,34 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
         return null;
     };
 
-    const validateKycStep = () => {
-        if (!kycData.idNumber.trim()) return "ID Number is required";
-        if (!kycData.shopName.trim()) return "Shop Name is required";
-        if (!kycData.shopRegistrationNumber.trim())
-            return "Shop Registration Number is required";
-        if (!kycData.taxNumber.trim()) return "TAX Number is required";
+    const validateOtpStep = () => {
+        if (!otpData.otp.trim()) return "OTP is required";
+        if (otpData.otp.length !== 4) return "OTP must be 4 digits";
         return null;
     };
 
-    const validatePersonalStep = () => {
-        if (!personalData.firstName.trim()) return "First Name is required";
-        if (!personalData.lastName.trim()) return "Last Name is required";
-        if (!personalData.recoveryEmail.trim())
-            return "Recovery Email is required";
-        if (!personalData.identityNumber.trim())
-            return "Identity Number is required";
-        if (!personalData.dateOfBirth.trim())
-            return "Date of Birth is required";
-        if (!personalData.address.street.trim())
+    const validateCustomerStep = () => {
+        if (!customerData.firstName.trim()) return "First Name is required";
+        if (!customerData.lastName.trim()) return "Last Name is required";
+        if (!customerData.phoneNumber.trim()) return "Phone Number is required";
+        if (!customerData.countryCode.trim()) return "Country Code is required";
+        if (!customerData.address.street.trim())
             return "Street address is required";
-        if (!personalData.address.city.trim()) return "City is required";
-        if (!personalData.address.state.trim()) return "State is required";
-        if (!personalData.address.zipCode.trim()) return "Zip Code is required";
-        if (!personalData.address.country.trim()) return "Country is required";
+        if (!customerData.address.city.trim()) return "City is required";
+        if (!customerData.address.state.trim()) return "State is required";
+        if (!customerData.address.postalCode.trim())
+            return "Postal Code is required";
+        if (!customerData.address.country.trim()) return "Country is required";
+        if (!customerData.businessInfo.companyName.trim())
+            return "Company Name is required";
+        if (!customerData.businessInfo.businessType.trim())
+            return "Business Type is required";
+        if (!customerData.businessInfo.vatNumber.trim())
+            return "VAT Number is required";
         return null;
     };
 
-    // Handle registration after first step
+    // Handle registration (step 1)
     const handleRegisterUser = async (): Promise<boolean> => {
         setIsLoading(true);
         setError("");
@@ -190,47 +207,29 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
                 }
             );
 
-            // Check if response is JSON
-            const contentType = registerResponse.headers.get("content-type");
-            console.log("Register response status:", registerResponse.status);
-            console.log("Register content-type:", contentType);
+            const result = await registerResponse.json();
+            console.log("Register response:", result);
 
             if (!registerResponse.ok) {
-                const responseText = await registerResponse.text();
-                console.log("Register error response:", responseText);
-
-                if (contentType && contentType.includes("application/json")) {
-                    try {
-                        const errorData = JSON.parse(responseText);
-                        throw new Error(
-                            errorData.message || "Registration failed"
-                        );
-                    } catch (parseError) {
-                        console.error(
-                            "Failed to parse error response:",
-                            parseError
-                        );
-                        throw new Error(
-                            `Registration failed. Status: ${registerResponse.status}`
-                        );
-                    }
-                } else {
-                    throw new Error(
-                        `Registration failed. Status: ${
-                            registerResponse.status
-                        }. Response: ${responseText.substring(0, 200)}`
-                    );
-                }
+                // Parse error from the API response structure
+                throw new Error(
+                    result.error || result.message || "Registration failed"
+                );
             }
 
-            const registerResult = await registerResponse.json();
-            console.log("Registration successful:", registerResult);
-
-            // Store the registered user data for later use
-            setRegisteredUserData(registerResult.data.user);
-            setIsUserRegistered(true);
-
-            return true; // Registration successful
+            if (result.success) {
+                // Set email for OTP verification
+                setOtpData((prev) => ({
+                    ...prev,
+                    email: registerData.email,
+                }));
+                return true;
+            } else {
+                // Handle case where response is ok but success is false
+                throw new Error(
+                    result.error || result.message || "Registration failed"
+                );
+            }
         } catch (err) {
             console.error("Registration error:", err);
             setError(
@@ -238,126 +237,120 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
                     ? err.message
                     : "Registration failed. Please try again."
             );
-            return false; // Registration failed
+            return false;
         } finally {
             setIsLoading(false);
         }
     };
 
-    // Handle KYC submission after final step
-    const handleSubmitKYC = async () => {
+    // Handle OTP verification (step 2)
+    const handleVerifyOTP = async (): Promise<boolean> => {
         setIsLoading(true);
         setError("");
 
         try {
-            console.log("Submitting KYC data...");
+            console.log("Verifying OTP:", otpData);
 
-            // Login first to get authentication for KYC submission
-            const loginResponse = await fetch(
-                "https://diamond-inventory.onrender.com/api/users/login",
+            const otpResponse = await fetch(
+                "https://diamond-inventory.onrender.com/api/users/verify-otp",
                 {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        email: registerData.email,
-                        password: registerData.password,
+                        email: otpData.email,
+                        otp: otpData.otp,
                     }),
                     credentials: "include",
                 }
             );
 
-            if (!loginResponse.ok) {
-                const loginErrorText = await loginResponse.text();
-                console.log("Login error:", loginErrorText);
-                throw new Error("Failed to authenticate for KYC submission");
+            const result = await otpResponse.json();
+            console.log("OTP verification response:", result);
+
+            if (!otpResponse.ok) {
+                throw new Error(result.message || "OTP verification failed");
             }
 
-            const loginResult = await loginResponse.json();
-            console.log("Login successful for KYC:", loginResult);
+            if (result.success) {
+                setIsRegistrationComplete(true);
+                return true;
+            } else {
+                throw new Error(result.message || "OTP verification failed");
+            }
+        } catch (err) {
+            console.error("OTP verification error:", err);
+            setError(
+                err instanceof Error
+                    ? err.message
+                    : "OTP verification failed. Please try again."
+            );
+            return false;
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-            // Now submit KYC with all required data
-            const kycPayload = {
-                firstName: personalData.firstName,
-                lastName: personalData.lastName,
-                dateOfBirth: personalData.dateOfBirth,
-                phoneNumber: registerData.phoneNumber, // From registration data
-                address: personalData.address,
-                businessInfo: {
-                    companyName: kycData.shopName,
-                    businessType: "Retail", // You can make this configurable
-                    registrationNumber: kycData.shopRegistrationNumber,
-                },
-            };
+    // Handle customer data submission (step 3)
+    const handleSubmitCustomerData = async () => {
+        setIsLoading(true);
+        setError("");
 
-            console.log("KYC Payload:", kycPayload);
+        try {
+            console.log("Submitting customer data:", customerData);
 
-            const kycResponse = await fetch(
-                "https://diamond-inventory.onrender.com/api/users/kyc",
+            const customerResponse = await fetch(
+                "https://diamond-inventory.onrender.com/api/users/customer-data",
                 {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify(kycPayload),
+                    body: JSON.stringify(customerData),
                     credentials: "include",
                 }
             );
 
-            const contentType = kycResponse.headers.get("content-type");
-            console.log("KYC response status:", kycResponse.status);
+            const result = await customerResponse.json();
+            console.log("Customer data submission response:", result);
 
-            if (!kycResponse.ok) {
-                const responseText = await kycResponse.text();
-                console.log("KYC error response:", responseText);
-
-                if (contentType && contentType.includes("application/json")) {
-                    try {
-                        const errorData = JSON.parse(responseText);
-                        throw new Error(
-                            errorData.message || "KYC submission failed"
-                        );
-                    } catch (parseError) {
-                        console.error("Failed to parse KYC error:", parseError);
-                        throw new Error(
-                            `KYC submission failed. Status: ${kycResponse.status}`
-                        );
-                    }
-                } else {
-                    throw new Error(
-                        `KYC submission failed. Status: ${kycResponse.status}`
-                    );
-                }
+            if (!customerResponse.ok) {
+                throw new Error(
+                    result.message || "Customer data submission failed"
+                );
             }
 
-            const kycResult = await kycResponse.json();
-            console.log("KYC submission successful:", kycResult);
+            if (result.success) {
+                // Store user session data
+                localStorage.setItem(
+                    "user",
+                    JSON.stringify({
+                        id: result.data.user._id,
+                        username: result.data.user.username,
+                        email: result.data.user.email,
+                        status: result.data.user.status,
+                        role: result.data.user.role,
+                        customerData: result.data.user.customerData,
+                        loggedIn: true,
+                        timestamp: new Date().toISOString(),
+                    })
+                );
 
-            // Store user session with KYC data
-            localStorage.setItem(
-                "user",
-                JSON.stringify({
-                    id: registeredUserData?._id,
-                    username: registerData.username,
-                    email: registerData.email,
-                    status: "PENDING", // After KYC submission, status becomes PENDING
-                    role: "USER",
-                    kyc: kycResult.data.user.kyc,
-                    loggedIn: true,
-                    timestamp: new Date().toISOString(),
-                })
-            );
-
-            // Close modal and redirect
-            onClose();
-            router.push("/client");
+                // Close modal and redirect
+                onClose();
+                router.push("/inventory");
+            } else {
+                throw new Error(
+                    result.message || "Customer data submission failed"
+                );
+            }
         } catch (err) {
-            console.error("KYC submission error:", err);
+            console.error("Customer data submission error:", err);
             setError(
                 err instanceof Error
                     ? err.message
-                    : "KYC submission failed. Please try again."
+                    : "Customer data submission failed. Please try again."
             );
         } finally {
             setIsLoading(false);
@@ -368,38 +361,29 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
         setError("");
 
         if (currentStep === 1) {
-            // Check if user is already registered
-            if (isUserRegistered) {
-                // User is already registered, just proceed to next step
-                setCurrentStep(2);
-                return;
-            }
-
-            // Validate first step
+            // Validate and register user
             const validationError = validateRegisterStep();
             if (validationError) {
                 setError(validationError);
                 return;
             }
 
-            // Register user and wait for completion
             const registrationSuccessful = await handleRegisterUser();
-
-            // Only proceed if registration was successful
             if (registrationSuccessful) {
                 setCurrentStep(2);
             }
-            // If registration failed, error will be shown by handleRegisterUser
         } else if (currentStep === 2) {
-            // Validate second step
-            const validationError = validateKycStep();
+            // Validate and verify OTP
+            const validationError = validateOtpStep();
             if (validationError) {
                 setError(validationError);
                 return;
             }
 
-            // Proceed to final step
-            setCurrentStep(3);
+            const otpSuccessful = await handleVerifyOTP();
+            if (otpSuccessful) {
+                setCurrentStep(3);
+            }
         }
     };
 
@@ -410,45 +394,45 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
 
     const handleSubmit = async () => {
         setError("");
-        const personalError = validatePersonalStep();
-        if (personalError) {
-            setError(personalError);
+        const customerError = validateCustomerStep();
+        if (customerError) {
+            setError(customerError);
             return;
         }
 
-        // Submit KYC data
-        await handleSubmitKYC();
+        await handleSubmitCustomerData();
     };
 
     const handleClose = () => {
         setCurrentStep(1);
-        setIsUserRegistered(false);
-        setRegisteredUserData(null);
+        setIsRegistrationComplete(false);
         setRegisterData({
             username: "",
             email: "",
-            phoneNumber: "",
             password: "",
             confirmPassword: "",
         });
-        setKycData({
-            idNumber: "",
-            shopName: "",
-            shopRegistrationNumber: "",
-            taxNumber: "",
+        setOtpData({
+            email: "",
+            otp: "",
         });
-        setPersonalData({
+        setCustomerData({
             firstName: "",
             lastName: "",
-            recoveryEmail: "",
-            identityNumber: "",
-            dateOfBirth: "",
+            phoneNumber: "",
+            countryCode: "+1",
             address: {
                 street: "",
                 city: "",
                 state: "",
-                zipCode: "",
+                postalCode: "",
                 country: "",
+            },
+            businessInfo: {
+                companyName: "",
+                businessType: "",
+                vatNumber: "",
+                websiteUrl: "",
             },
         });
         setError("");
@@ -473,7 +457,6 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
                     onChange={handleRegisterInputChange}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
                     required
-                    disabled={isUserRegistered}
                 />
             </div>
 
@@ -493,27 +476,6 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
                     onChange={handleRegisterInputChange}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
                     required
-                    disabled={isUserRegistered}
-                />
-            </div>
-
-            <div className="space-y-2">
-                <Label
-                    htmlFor="phoneNumber"
-                    className="text-sm font-medium text-gray-700"
-                >
-                    Phone Number*
-                </Label>
-                <Input
-                    id="phoneNumber"
-                    name="phoneNumber"
-                    type="tel"
-                    placeholder="Enter your phone number"
-                    value={registerData.phoneNumber}
-                    onChange={handleRegisterInputChange}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
-                    required
-                    disabled={isUserRegistered}
                 />
             </div>
 
@@ -533,7 +495,6 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
                     onChange={handleRegisterInputChange}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
                     required
-                    disabled={isUserRegistered}
                 />
             </div>
 
@@ -553,310 +514,338 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
                     onChange={handleRegisterInputChange}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
                     required
-                    disabled={isUserRegistered}
-                />
-            </div>
-
-            {isUserRegistered && (
-                <div className="text-green-600 text-sm text-center bg-green-50 p-2 rounded">
-                    ✅ Registration successful! Please continue with your KYC
-                    details.
-                </div>
-            )}
-        </div>
-    );
-
-    const renderKycStep = () => (
-        <div className="w-full space-y-4">
-            <div className="space-y-2">
-                <Label
-                    htmlFor="idNumber"
-                    className="text-sm font-medium text-gray-700"
-                >
-                    ID Number*
-                </Label>
-                <Input
-                    id="idNumber"
-                    name="idNumber"
-                    type="text"
-                    placeholder="Enter your ID number"
-                    value={kycData.idNumber}
-                    onChange={handleKycInputChange}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
-                    required
-                />
-            </div>
-
-            <div className="space-y-2">
-                <Label
-                    htmlFor="shopName"
-                    className="text-sm font-medium text-gray-700"
-                >
-                    Shop Name*
-                </Label>
-                <Input
-                    id="shopName"
-                    name="shopName"
-                    type="text"
-                    placeholder="Enter your shop name"
-                    value={kycData.shopName}
-                    onChange={handleKycInputChange}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
-                    required
-                />
-            </div>
-
-            <div className="space-y-2">
-                <Label
-                    htmlFor="shopRegistrationNumber"
-                    className="text-sm font-medium text-gray-700"
-                >
-                    Shop Registration Number*
-                </Label>
-                <Input
-                    id="shopRegistrationNumber"
-                    name="shopRegistrationNumber"
-                    type="text"
-                    placeholder="Enter your shop registration number"
-                    value={kycData.shopRegistrationNumber}
-                    onChange={handleKycInputChange}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
-                    required
-                />
-            </div>
-
-            <div className="space-y-2">
-                <Label
-                    htmlFor="taxNumber"
-                    className="text-sm font-medium text-gray-700"
-                >
-                    TAX Number*
-                </Label>
-                <Input
-                    id="taxNumber"
-                    name="taxNumber"
-                    type="text"
-                    placeholder="Enter your TAX number"
-                    value={kycData.taxNumber}
-                    onChange={handleKycInputChange}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
-                    required
                 />
             </div>
         </div>
     );
 
-    const renderPersonalStep = () => (
+    const renderOtpStep = () => (
         <div className="w-full space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                    <Label
-                        htmlFor="firstName"
-                        className="text-sm font-medium text-gray-700"
-                    >
-                        First Name*
-                    </Label>
-                    <Input
-                        id="firstName"
-                        name="firstName"
-                        type="text"
-                        placeholder="Enter your first name"
-                        value={personalData.firstName}
-                        onChange={handlePersonalInputChange}
-                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
-                        required
-                    />
-                </div>
-
-                <div className="space-y-2">
-                    <Label
-                        htmlFor="lastName"
-                        className="text-sm font-medium text-gray-700"
-                    >
-                        Last Name*
-                    </Label>
-                    <Input
-                        id="lastName"
-                        name="lastName"
-                        type="text"
-                        placeholder="Enter your last name"
-                        value={personalData.lastName}
-                        onChange={handlePersonalInputChange}
-                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
-                        required
-                    />
-                </div>
+            <div className="text-center space-y-2">
+                <p className="text-sm text-gray-600">
+                    We've sent a 4-digit verification code to
+                </p>
+                <p className="text-sm font-medium text-gray-800">
+                    {otpData.email}
+                </p>
             </div>
 
             <div className="space-y-2">
                 <Label
-                    htmlFor="recoveryEmail"
+                    htmlFor="otp"
                     className="text-sm font-medium text-gray-700"
                 >
-                    Recovery Email*
+                    Enter 4-digit OTP*
                 </Label>
                 <Input
-                    id="recoveryEmail"
-                    name="recoveryEmail"
-                    type="email"
-                    placeholder="Enter your recovery email"
-                    value={personalData.recoveryEmail}
-                    onChange={handlePersonalInputChange}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
-                    required
-                />
-            </div>
-
-            <div className="space-y-2">
-                <Label
-                    htmlFor="identityNumber"
-                    className="text-sm font-medium text-gray-700"
-                >
-                    Identity Number*
-                </Label>
-                <Input
-                    id="identityNumber"
-                    name="identityNumber"
+                    id="otp"
+                    name="otp"
                     type="text"
-                    placeholder="Enter your identity number"
-                    value={personalData.identityNumber}
-                    onChange={handlePersonalInputChange}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
+                    placeholder="Enter OTP"
+                    value={otpData.otp}
+                    onChange={handleOtpInputChange}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent text-center text-2xl tracking-widest"
+                    maxLength={4}
                     required
                 />
             </div>
 
-            <div className="space-y-2">
-                <Label
-                    htmlFor="dateOfBirth"
-                    className="text-sm font-medium text-gray-700"
-                >
-                    Date of Birth*
-                </Label>
-                <Input
-                    id="dateOfBirth"
-                    name="dateOfBirth"
-                    type="date"
-                    value={personalData.dateOfBirth}
-                    onChange={handlePersonalInputChange}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
-                    required
-                />
+            <div className="text-center">
+                <p className="text-xs text-gray-500">
+                    Didn't receive the code? Check your spam folder or try
+                    again.
+                </p>
             </div>
+        </div>
+    );
 
-            <div className="space-y-2">
-                <Label
-                    htmlFor="address.street"
-                    className="text-sm font-medium text-gray-700"
-                >
-                    Street Address*
-                </Label>
-                <Input
-                    id="address.street"
-                    name="address.street"
-                    type="text"
-                    placeholder="Enter your street address"
-                    value={personalData.address.street}
-                    onChange={handlePersonalInputChange}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
-                    required
-                />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                    <Label
-                        htmlFor="address.city"
-                        className="text-sm font-medium text-gray-700"
-                    >
-                        City*
-                    </Label>
-                    <Input
-                        id="address.city"
-                        name="address.city"
-                        type="text"
-                        placeholder="Enter your city"
-                        value={personalData.address.city}
-                        onChange={handlePersonalInputChange}
-                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
-                        required
-                    />
-                </div>
-
-                <div className="space-y-2">
-                    <Label
-                        htmlFor="address.state"
-                        className="text-sm font-medium text-gray-700"
-                    >
-                        State*
-                    </Label>
-                    <Input
-                        id="address.state"
-                        name="address.state"
-                        type="text"
-                        placeholder="Enter your state"
-                        value={personalData.address.state}
-                        onChange={handlePersonalInputChange}
-                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
-                        required
-                    />
-                </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                    <Label
-                        htmlFor="address.zipCode"
-                        className="text-sm font-medium text-gray-700"
-                    >
-                        Zip Code*
-                    </Label>
-                    <Input
-                        id="address.zipCode"
-                        name="address.zipCode"
-                        type="text"
-                        placeholder="Enter your zip code"
-                        value={personalData.address.zipCode}
-                        onChange={handlePersonalInputChange}
-                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
-                        required
-                    />
-                </div>
-
-                <div className="space-y-2">
-                    <Label
-                        htmlFor="address.country"
-                        className="text-sm font-medium text-gray-700"
-                    >
-                        Country*
-                    </Label>
-                    <Input
-                        id="address.country"
-                        name="address.country"
-                        type="text"
-                        placeholder="Enter your country"
-                        value={personalData.address.country}
-                        onChange={handlePersonalInputChange}
-                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
-                        required
-                    />
-                </div>
-            </div>
-
-            {/* Summary of registration data */}
-            <div className="mt-6 p-4 bg-blue-50 rounded-md">
-                <h4 className="text-sm font-medium text-blue-900 mb-2">
-                    Registration Summary:
+    const renderCustomerStep = () => (
+        <div className="w-full space-y-4 max-h-96 overflow-y-auto">
+            {/* Personal Information */}
+            <div className="space-y-4">
+                <h4 className="text-sm font-semibold text-gray-800 border-b pb-2">
+                    Personal Information
                 </h4>
-                <p className="text-xs text-blue-700">
-                    <strong>Email:</strong> {registerData.email}
-                </p>
-                <p className="text-xs text-blue-700">
-                    <strong>Phone:</strong> {registerData.phoneNumber}
-                </p>
-                <p className="text-xs text-blue-700">
-                    <strong>Company:</strong> {kycData.shopName}
-                </p>
+
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label
+                            htmlFor="firstName"
+                            className="text-sm font-medium text-gray-700"
+                        >
+                            First Name*
+                        </Label>
+                        <Input
+                            id="firstName"
+                            name="firstName"
+                            type="text"
+                            placeholder="Enter your first name"
+                            value={customerData.firstName}
+                            onChange={handleCustomerInputChange}
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
+                            required
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label
+                            htmlFor="lastName"
+                            className="text-sm font-medium text-gray-700"
+                        >
+                            Last Name*
+                        </Label>
+                        <Input
+                            id="lastName"
+                            name="lastName"
+                            type="text"
+                            placeholder="Enter your last name"
+                            value={customerData.lastName}
+                            onChange={handleCustomerInputChange}
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
+                            required
+                        />
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                        <Label
+                            htmlFor="countryCode"
+                            className="text-sm font-medium text-gray-700"
+                        >
+                            Country Code*
+                        </Label>
+                        <select
+                            id="countryCode"
+                            name="countryCode"
+                            value={customerData.countryCode}
+                            onChange={handleCustomerInputChange}
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
+                            required
+                        >
+                            <option value="+1">+1 (US/CA)</option>
+                            <option value="+91">+91 (IN)</option>
+                            <option value="+44">+44 (UK)</option>
+                            <option value="+49">+49 (DE)</option>
+                            <option value="+33">+33 (FR)</option>
+                            <option value="+61">+61 (AU)</option>
+                            <option value="+81">+81 (JP)</option>
+                            <option value="+86">+86 (CN)</option>
+                        </select>
+                    </div>
+
+                    <div className="space-y-2 col-span-2">
+                        <Label
+                            htmlFor="phoneNumber"
+                            className="text-sm font-medium text-gray-700"
+                        >
+                            Phone Number*
+                        </Label>
+                        <Input
+                            id="phoneNumber"
+                            name="phoneNumber"
+                            type="tel"
+                            placeholder="Enter your phone number"
+                            value={customerData.phoneNumber}
+                            onChange={handleCustomerInputChange}
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
+                            required
+                        />
+                    </div>
+                </div>
+            </div>
+
+            {/* Address Information */}
+            <div className="space-y-4">
+                <h4 className="text-sm font-semibold text-gray-800 border-b pb-2">
+                    Address Information
+                </h4>
+
+                <div className="space-y-2">
+                    <Label
+                        htmlFor="address.street"
+                        className="text-sm font-medium text-gray-700"
+                    >
+                        Street Address*
+                    </Label>
+                    <Input
+                        id="address.street"
+                        name="address.street"
+                        type="text"
+                        placeholder="Enter your street address"
+                        value={customerData.address.street}
+                        onChange={handleCustomerInputChange}
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
+                        required
+                    />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label
+                            htmlFor="address.city"
+                            className="text-sm font-medium text-gray-700"
+                        >
+                            City*
+                        </Label>
+                        <Input
+                            id="address.city"
+                            name="address.city"
+                            type="text"
+                            placeholder="Enter your city"
+                            value={customerData.address.city}
+                            onChange={handleCustomerInputChange}
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
+                            required
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label
+                            htmlFor="address.state"
+                            className="text-sm font-medium text-gray-700"
+                        >
+                            State*
+                        </Label>
+                        <Input
+                            id="address.state"
+                            name="address.state"
+                            type="text"
+                            placeholder="Enter your state"
+                            value={customerData.address.state}
+                            onChange={handleCustomerInputChange}
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
+                            required
+                        />
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label
+                            htmlFor="address.postalCode"
+                            className="text-sm font-medium text-gray-700"
+                        >
+                            Postal Code*
+                        </Label>
+                        <Input
+                            id="address.postalCode"
+                            name="address.postalCode"
+                            type="text"
+                            placeholder="Enter your postal code"
+                            value={customerData.address.postalCode}
+                            onChange={handleCustomerInputChange}
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
+                            required
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label
+                            htmlFor="address.country"
+                            className="text-sm font-medium text-gray-700"
+                        >
+                            Country*
+                        </Label>
+                        <Input
+                            id="address.country"
+                            name="address.country"
+                            type="text"
+                            placeholder="Enter your country"
+                            value={customerData.address.country}
+                            onChange={handleCustomerInputChange}
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
+                            required
+                        />
+                    </div>
+                </div>
+            </div>
+
+            {/* Business Information */}
+            <div className="space-y-4">
+                <h4 className="text-sm font-semibold text-gray-800 border-b pb-2">
+                    Business Information
+                </h4>
+
+                <div className="space-y-2">
+                    <Label
+                        htmlFor="businessInfo.companyName"
+                        className="text-sm font-medium text-gray-700"
+                    >
+                        Company Name*
+                    </Label>
+                    <Input
+                        id="businessInfo.companyName"
+                        name="businessInfo.companyName"
+                        type="text"
+                        placeholder="Enter your company name"
+                        value={customerData.businessInfo.companyName}
+                        onChange={handleCustomerInputChange}
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
+                        required
+                    />
+                </div>
+
+                <div className="space-y-2">
+                    <Label
+                        htmlFor="businessInfo.businessType"
+                        className="text-sm font-medium text-gray-700"
+                    >
+                        Business Type*
+                    </Label>
+                    <select
+                        id="businessInfo.businessType"
+                        name="businessInfo.businessType"
+                        value={customerData.businessInfo.businessType}
+                        onChange={handleCustomerInputChange}
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
+                        required
+                    >
+                        <option value="">Select Business Type</option>
+                        <option value="Retail">Retail</option>
+                        <option value="Wholesale">Wholesale</option>
+                        <option value="Manufacturing">Manufacturing</option>
+                        <option value="Trading">Trading</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div className="space-y-2">
+                    <Label
+                        htmlFor="businessInfo.vatNumber"
+                        className="text-sm font-medium text-gray-700"
+                    >
+                        VAT Number*
+                    </Label>
+                    <Input
+                        id="businessInfo.vatNumber"
+                        name="businessInfo.vatNumber"
+                        type="text"
+                        placeholder="Enter your VAT number"
+                        value={customerData.businessInfo.vatNumber}
+                        onChange={handleCustomerInputChange}
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
+                        required
+                    />
+                </div>
+
+                <div className="space-y-2">
+                    <Label
+                        htmlFor="businessInfo.websiteUrl"
+                        className="text-sm font-medium text-gray-700"
+                    >
+                        Website URL (Optional)
+                    </Label>
+                    <Input
+                        id="businessInfo.websiteUrl"
+                        name="businessInfo.websiteUrl"
+                        type="url"
+                        placeholder="Enter your website URL"
+                        value={customerData.businessInfo.websiteUrl}
+                        onChange={handleCustomerInputChange}
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-300 focus:border-transparent"
+                    />
+                </div>
             </div>
         </div>
     );
@@ -864,11 +853,11 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
     const getStepTitle = () => {
         switch (currentStep) {
             case 1:
-                return "Register";
+                return "Create Account";
             case 2:
-                return "KYC Details";
+                return "Verify Email";
             case 3:
-                return "Personal Details";
+                return "Customer Details";
             default:
                 return "Register";
         }
@@ -893,8 +882,8 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
 
                     {/* Step Content */}
                     {currentStep === 1 && renderRegisterStep()}
-                    {currentStep === 2 && renderKycStep()}
-                    {currentStep === 3 && renderPersonalStep()}
+                    {currentStep === 2 && renderOtpStep()}
+                    {currentStep === 3 && renderCustomerStep()}
 
                     {/* Error Message */}
                     {error && (
@@ -911,8 +900,10 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
                                 disabled={isLoading}
                                 className="w-full bg-black hover:bg-black text-white py-3 rounded-full font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                {isLoading && currentStep === 1
-                                    ? "Registering..."
+                                {isLoading
+                                    ? currentStep === 1
+                                        ? "Sending OTP..."
+                                        : "Verifying..."
                                     : "Next"}
                             </Button>
                         ) : (
@@ -922,7 +913,7 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
                                 className="w-full bg-black hover:bg-black text-white py-3 rounded-full font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {isLoading
-                                    ? "Submitting KYC..."
+                                    ? "Submitting..."
                                     : "Complete Registration"}
                             </Button>
                         )}

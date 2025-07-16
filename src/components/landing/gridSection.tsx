@@ -1,44 +1,59 @@
+"use client";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import Link from "next/link";
 import React from "react";
-import { Button } from "../ui/button";
-interface CardData {
-    id: number;
-    title: string;
-    imageUrl: string;
-    buttonText?: string; // Optional if it might not always be present
-}
-const GridSection = ({
-    children,
-    className,
-    gridData,
-}: {
+
+const gridCardsData = [
+    {
+        id: 1,
+        title: "Loose Certified Diamonds",
+        imageUrl: "/assets/diamond-img-1.png",
+        buttonText: "Order Now",
+    },
+    {
+        id: 2,
+        title: "Custom Cut Diamonds",
+        imageUrl: "/assets/diamond-img-2.png",
+        buttonText: "Order Now",
+    },
+    {
+        id: 3,
+        title: "Jewellery-Ready Stones",
+        imageUrl: "/assets/diamond-img-3.png",
+        buttonText: "Order Now",
+    },
+];
+
+interface GridSectionProps {
     children?: React.ReactNode;
     className?: string;
-    gridData: CardData[];
-}) => {
+}
+
+const GridSection = ({ children, className }: GridSectionProps) => {
     return (
-        <div
-            className={cn(
-                "w-full py-20 px-6 bg-[#F4F4F5] inline-flex flex-col justify-center items-center gap-5",
-                className
-            )}
-        >
-            {children}
-            <div className="w-full max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-10">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-center items-stretch gap-6 lg:gap-8">
-                    {gridData.map((card) => (
+        <section className={cn("py-20 px-6 bg-[#F4F4F5]", className)}>
+            <div className="max-w-7xl mx-auto">
+                {/* Section Header */}
+                {children && (
+                    <div className="text-center mb-12">{children}</div>
+                )}
+
+                {/* Cards Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {gridCardsData.map((card) => (
                         <GridCard
                             key={card.id}
                             title={card.title}
                             imageUrl={card.imageUrl}
                             buttonText={card.buttonText}
+                            onButtonClick={() =>
+                                console.log(`${card.title} clicked`)
+                            }
                         />
                     ))}
                 </div>
             </div>
-        </div>
+        </section>
     );
 };
 
@@ -49,6 +64,7 @@ interface GridCardProps {
     imageUrl: string;
     buttonText?: string;
     onButtonClick?: () => void;
+    usePlaceholder?: boolean;
 }
 
 export const GridCard = ({
@@ -56,34 +72,48 @@ export const GridCard = ({
     imageUrl,
     buttonText = "Order Now",
     onButtonClick,
+    usePlaceholder = false,
 }: GridCardProps) => {
     return (
-        <div className="flex-1 min-w-[280px] h-[480px] group  transform transition-all duration-300 hover:-translate-y-2 hover:scale-105">
-            <div className=" h-full flex flex-col justify-center items-center gap-6 p-4">
-                {/* Image Container */}
-                <div className="relative self-stretch flex-1 overflow-hidden rounded-lg shadow-md group-hover:shadow-xl transition-shadow duration-300">
-                    <Image
-                        src={imageUrl}
-                        alt={title}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-110"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                    {/* Overlay on hover */}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
-                </div>
+        <div className="group bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+            {/* Image Container */}
+            <div className="aspect-square relative overflow-hidden">
+                {usePlaceholder ? (
+                    // Placeholder with diamond icon
+                    <div className="bg-gradient-to-br from-gray-100 to-gray-200 h-full">
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="text-6xl text-gray-400 group-hover:text-gray-500 transition-colors duration-300">
+                                💎
+                            </div>
+                        </div>
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300"></div>
+                    </div>
+                ) : (
+                    // Actual image
+                    <>
+                        <Image
+                            src={imageUrl}
+                            alt={title}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-110"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300"></div>
+                    </>
+                )}
+            </div>
 
-                {/* Title */}
-                <div className="self-stretch text-center text-black/80 text-xl font-light  group-hover:text-black transition-colors duration-300">
+            {/* Content */}
+            <div className="p-6 text-center">
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">
                     {title}
-                </div>
-
-                {/* Button */}
-                <Link href="#" className="cursor-pointer">
-                    <Button className="rounded-sm cursor-pointer">
-                        {buttonText}
-                    </Button>
-                </Link>
+                </h3>
+                <button
+                    onClick={onButtonClick}
+                    className="bg-gray-800 text-white px-6 py-2 rounded-md font-medium hover:bg-gray-700 transition-colors duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                >
+                    {buttonText}
+                </button>
             </div>
         </div>
     );

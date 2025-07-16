@@ -1,77 +1,85 @@
-# Diamond Inventory Backend - API Documentation
+# Diamond Inventory API Documentation
 
-This document provides comprehensive information about all the APIs available in the Diamond Inventory backend system.
+## Overview
+This document provides comprehensive documentation for all API endpoints in the Diamond Inventory backend system.
 
-## Table of Contents
-1. [Base Information](#base-information)
-2. [Authentication](#authentication)
-3. [Diamond APIs](#diamond-apis)
-4. [User Management APIs](#user-management-apis)
-5. [Admin APIs](#admin-apis)
-6. [Error Handling](#error-handling)
-7. [Rate Limiting](#rate-limiting)
+**Base URL:** `/api`
+
+## Authentication
+The API uses JWT tokens stored in HTTP-only cookies for authentication. Protected routes require a valid `accessToken` cookie.
+
+### Authentication Responses
+All authentication errors return:
+```json
+{
+  "success": false,
+  "message": "Error message",
+  "error": "Detailed error"
+}
+```
+
+**Status Codes:**
+- `401`: Authentication required / Invalid token / Token expired
+- `403`: Admin access required (for admin-only routes)
 
 ---
 
-## Base Information
+## 1. Health Check
 
-**Base URL:** `http://localhost:3000/api` (or your deployed URL)
-**Content-Type:** `application/json`
-**Authentication:** Cookie-based JWT tokens (HTTP-only cookies)
+### GET /api/health
+Check if the API is running.
 
-### Health Check
-```
-GET /api/health
-```
+**Access:** Public
+**Rate Limit:** None
 
-**Response:**
+#### Response
+**Status:** `200 OK`
 ```json
 {
   "success": true,
   "message": "Diamond Inventory API is running",
-  "timestamp": "2025-01-12T10:30:00.000Z",
+  "timestamp": "2025-01-16T10:30:00.000Z",
   "environment": "development"
+}
+```
+
+**Status:** `500 Internal Server Error`
+```json
+{
+  "success": false,
+  "error": "Health check failed"
 }
 ```
 
 ---
 
-## Authentication
+## 2. Authentication Endpoints (`/api/users`)
 
-### Register User
-```
-POST /api/users/register
-```
+### POST /api/users/register
+Register a new user account (sends OTP to email).
 
-**Request Body:**
+**Access:** Public
+**Rate Limit:** None
+
+#### Request Body
 ```json
 {
-  "username": "john_doe",
-  "email": "john@example.com",
-  "password": "password123"
+  "username": "string (required)",
+  "email": "string (required, valid email)",
+  "password": "string (required)"
 }
 ```
 
-**Success Response (201):**
+#### Responses
+**Status:** `200 OK`
 ```json
 {
   "success": true,
-  "message": "User registered successfully. Please complete KYC.",
-  "data": {
-    "user": {
-      "_id": "64a1b2c3d4e5f6789abcdef0",
-      "username": "john_doe",
-      "email": "john@example.com",
-      "status": "DEFAULT",
-      "role": "USER",
-      "createdAt": "2025-01-12T10:30:00.000Z",
-      "updatedAt": "2025-01-12T10:30:00.000Z"
-    }
-  }
+  "message": "OTP sent to email. Please verify to complete registration."
 }
 ```
 
-**Error Response (400):**
+**Status:** `400 Bad Request`
 ```json
 {
   "success": false,
@@ -79,52 +87,85 @@ POST /api/users/register
 }
 ```
 
-### Login User
-```
-POST /api/users/login
-```
+### POST /api/users/verify-otp
+Verify OTP and complete registration.
 
-**Request Body:**
+**Access:** Public
+**Rate Limit:** None
+
+#### Request Body
 ```json
 {
-  "email": "john@example.com",
-  "password": "password123"
+  "email": "string (required)",
+  "otp": "string (required, 4 digits)"
 }
 ```
 
-**Success Response (200):**
+#### Responses
+**Status:** `201 Created`
+```json
+{
+  "success": true,
+  "message": "Registration complete. You are now logged in.",
+  "data": {
+    "user": {
+      "_id": "string",
+      "username": "string",
+      "email": "string",
+      "role": "USER",
+      "status": "APPROVED",
+      "createdAt": "date",
+      "updatedAt": "date"
+    }
+  }
+}
+```
+
+**Status:** `400 Bad Request`
+```json
+{
+  "success": false,
+  "message": "Invalid OTP" | "OTP expired. Please register again." | "No pending registration found. Please register first."
+}
+```
+
+### POST /api/users/login
+Login user.
+
+**Access:** Public
+**Rate Limit:** None
+
+#### Request Body
+```json
+{
+  "email": "string (required)",
+  "password": "string (required)"
+}
+```
+
+#### Responses
+**Status:** `200 OK`
 ```json
 {
   "success": true,
   "message": "Login successful",
   "data": {
     "user": {
-      "_id": "64a1b2c3d4e5f6789abcdef0",
-      "username": "john_doe",
-      "email": "john@example.com",
-      "status": "APPROVED",
-      "role": "USER",
-      "kyc": {
-        "firstName": "John",
-        "lastName": "Doe",
-        "phoneNumber": "+1234567890",
-        "address": {
-          "street": "123 Main St",
-          "city": "New York",
-          "state": "NY",
-          "zipCode": "10001",
-          "country": "USA"
-        },
-        "submittedAt": "2025-01-12T10:30:00.000Z"
-      },
-      "createdAt": "2025-01-12T10:30:00.000Z",
-      "updatedAt": "2025-01-12T10:30:00.000Z"
+      "_id": "string",
+      "username": "string",
+      "email": "string",
+      "role": "USER" | "ADMIN",
+      "status": "DEFAULT" | "PENDING" | "APPROVED" | "REJECTED",
+      "customerData": "object (if submitted)",
+      "quotations": "array (if any)",
+      "createdAt": "date",
+      "updatedAt": "date"
     }
   }
 }
 ```
 
-**Error Response (401):**
+**Status:** `401 Unauthorized`
 ```json
 {
   "success": false,
@@ -132,13 +173,14 @@ POST /api/users/login
 }
 ```
 
-### Logout User
-```
-POST /api/users/logout
-```
-*Requires Authentication*
+### POST /api/users/logout
+Logout user (clears authentication cookie).
 
-**Success Response (200):**
+**Access:** Protected (requires authentication)
+**Rate Limit:** None
+
+#### Responses
+**Status:** `200 OK`
 ```json
 {
   "success": true,
@@ -146,628 +188,29 @@ POST /api/users/logout
 }
 ```
 
-### Get User Profile
-```
-GET /api/users/profile
-```
-*Requires Authentication*
+### POST /api/users/otp
+Send OTP to user's email for password reset.
 
-**Success Response (200):**
+**Access:** Public
+**Rate Limit:** None
+
+#### Request Body
+```json
+{
+  "email": "string (required)"
+}
+```
+
+#### Responses
+**Status:** `200 OK`
 ```json
 {
   "success": true,
-  "data": {
-    "user": {
-      "_id": "64a1b2c3d4e5f6789abcdef0",
-      "username": "john_doe",
-      "email": "john@example.com",
-      "status": "APPROVED",
-      "role": "USER",
-      "kyc": {
-        "firstName": "John",
-        "lastName": "Doe",
-        "dateOfBirth": "1990-05-15T00:00:00.000Z",
-        "phoneNumber": "+1234567890",
-        "address": {
-          "street": "123 Main St",
-          "city": "New York",
-          "state": "NY",
-          "zipCode": "10001",
-          "country": "USA"
-        },
-        "businessInfo": {
-          "companyName": "Tech Corp",
-          "businessType": "Technology",
-          "registrationNumber": "TC123456"
-        },
-        "submittedAt": "2025-01-12T10:30:00.000Z"
-      },
-      "createdAt": "2025-01-12T10:30:00.000Z",
-      "updatedAt": "2025-01-12T10:30:00.000Z"
-    }
-  }
+  "message": "OTP sent to email"
 }
 ```
 
-### Submit KYC
-```
-POST /api/users/kyc
-```
-*Requires Authentication*
-
-**Request Body:**
-```json
-{
-  "firstName": "John",
-  "lastName": "Doe",
-  "dateOfBirth": "1990-05-15",
-  "phoneNumber": "+1234567890",
-  "address": {
-    "street": "123 Main St",
-    "city": "New York",
-    "state": "NY",
-    "zipCode": "10001",
-    "country": "USA"
-  },
-  "businessInfo": {
-    "companyName": "Tech Corp",
-    "businessType": "Technology",
-    "registrationNumber": "TC123456"
-  }
-}
-```
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "KYC submitted successfully.",
-  "data": {
-    "user": {
-      "_id": "64a1b2c3d4e5f6789abcdef0",
-      "username": "john_doe",
-      "email": "john@example.com",
-      "status": "PENDING",
-      "role": "USER",
-      "kyc": {
-        "firstName": "John",
-        "lastName": "Doe",
-        "dateOfBirth": "1990-05-15T00:00:00.000Z",
-        "phoneNumber": "+1234567890",
-        "address": {
-          "street": "123 Main St",
-          "city": "New York",
-          "state": "NY",
-          "zipCode": "10001",
-          "country": "USA"
-        },
-        "businessInfo": {
-          "companyName": "Tech Corp",
-          "businessType": "Technology",
-          "registrationNumber": "TC123456"
-        },
-        "submittedAt": "2025-01-12T10:30:00.000Z"
-      },
-      "createdAt": "2025-01-12T10:30:00.000Z",
-      "updatedAt": "2025-01-12T10:30:00.000Z"
-    }
-  }
-}
-```
-
-**Error Response (400):**
-```json
-{
-  "success": false,
-  "message": "KYC already submitted"
-}
-```
-
----
-
-## Diamond APIs
-
-### Get All Diamonds (Paginated)
-```
-GET /api/diamonds
-```
-
-**Query Parameters:**
-- `page` (number, default: 1) - Page number
-- `limit` (number, default: 10) - Number of records per page
-- `sortBy` (string, default: 'createdAt') - Field to sort by
-- `sortOrder` (string, default: 'desc') - Sort order ('asc' or 'desc')
-
-**Example:**
-```
-GET /api/diamonds?page=2&limit=20&sortBy=price&sortOrder=asc
-```
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "Diamonds fetched successfully",
-  "data": [
-    {
-      "_id": "64a1b2c3d4e5f6789abcdef0",
-      "color": "D",
-      "clarity": "FL",
-      "rapList": 5000,
-      "discount": -10,
-      "cut": "EX",
-      "polish": "EX",
-      "symmetry": "EX",
-      "fluorescence": "NON",
-      "measurements": {
-        "length": 6.5,
-        "width": 6.3,
-        "depth": 4.2
-      },
-      "totalDepth": 62.5,
-      "table": 57,
-      "certificateNumber": "GIA12345678",
-      "price": 4500,
-      "noBgm": "optional",
-      "fromTab": "optional",
-      "isAvailable": true,
-      "createdAt": "2025-01-12T10:30:00.000Z",
-      "updatedAt": "2025-01-12T10:30:00.000Z"
-    }
-  ],
-  "pagination": {
-    "currentPage": 2,
-    "totalPages": 10,
-    "totalRecords": 200,
-    "recordsPerPage": 20,
-    "hasNextPage": true,
-    "hasPrevPage": true
-  }
-}
-```
-
-### Get All Diamonds (No Pagination)
-```
-GET /api/diamonds/all
-```
-
-**Query Parameters:**
-- `sortBy` (string, default: 'createdAt') - Field to sort by
-- `sortOrder` (string, default: 'desc') - Sort order ('asc' or 'desc')
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "All diamonds fetched successfully",
-  "data": [
-    {
-      "_id": "64a1b2c3d4e5f6789abcdef0",
-      "color": "D",
-      "clarity": "FL",
-      "rapList": 5000,
-      "discount": -10,
-      "cut": "EX",
-      "polish": "EX",
-      "symmetry": "EX",
-      "fluorescence": "NON",
-      "measurements": {
-        "length": 6.5,
-        "width": 6.3,
-        "depth": 4.2
-      },
-      "totalDepth": 62.5,
-      "table": 57,
-      "certificateNumber": "GIA12345678",
-      "price": 4500,
-      "isAvailable": true,
-      "createdAt": "2025-01-12T10:30:00.000Z",
-      "updatedAt": "2025-01-12T10:30:00.000Z"
-    }
-  ],
-  "totalRecords": 500
-}
-```
-
-### Search Diamonds with Filters
-```
-GET /api/diamonds/search
-```
-*Rate Limited: 50 requests per 15 minutes*
-
-**Query Parameters:**
-- **Pagination:**
-  - `page` (number, default: 1)
-  - `limit` (number, default: 10)
-  - `sortBy` (string, default: 'createdAt')
-  - `sortOrder` (string, default: 'desc')
-
-- **Basic Filters:**
-  - `color` (string or array) - Diamond color (D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z)
-  - `clarity` (string or array) - Diamond clarity (FL, IF, VVS1, VVS2, VS1, VS2, SI1, SI2, I1, I2, I3)
-  - `cut` (string or array) - Diamond cut (EX, VG, G, F, P)
-  - `polish` (string or array) - Polish grade (EX, VG, G, F, P)
-  - `symmetry` (string or array) - Symmetry grade (EX, VG, G, F, P)
-  - `fluorescence` (string or array) - Fluorescence (NON, FAINT, MEDIUM, STRONG, VERY STRONG)
-
-- **Price Filters:**
-  - `priceMin` (number) - Minimum price
-  - `priceMax` (number) - Maximum price
-
-- **Size Filters:**
-  - `caratMin` (number) - Minimum carat weight
-  - `caratMax` (number) - Maximum carat weight
-
-- **Measurement Filters:**
-  - `lengthMin` (number) - Minimum length
-  - `lengthMax` (number) - Maximum length
-  - `widthMin` (number) - Minimum width
-  - `widthMax` (number) - Maximum width
-  - `depthMin` (number) - Minimum depth
-  - `depthMax` (number) - Maximum depth
-
-- **Table and Depth Percentage Filters:**
-  - `tableMin` (number) - Minimum table percentage
-  - `tableMax` (number) - Maximum table percentage
-  - `totalDepthMin` (number) - Minimum total depth percentage
-  - `totalDepthMax` (number) - Maximum total depth percentage
-
-- **Discount and Rap List Filters:**
-  - `discountMin` (number) - Minimum discount percentage
-  - `discountMax` (number) - Maximum discount percentage
-  - `rapListMin` (number) - Minimum rap list value
-  - `rapListMax` (number) - Maximum rap list value
-
-- **Other Filters:**
-  - `isAvailable` (boolean) - Availability status
-  - `searchTerm` (string) - Search in certificate number or general search
-
-**Example:**
-```
-GET /api/diamonds/search?color=D,E,F&clarity=FL,IF&priceMin=1000&priceMax=10000&cut=EX&isAvailable=true&page=1&limit=20
-```
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "Diamond search completed successfully",
-  "data": [
-    {
-      "_id": "64a1b2c3d4e5f6789abcdef0",
-      "color": "D",
-      "clarity": "FL",
-      "rapList": 5000,
-      "discount": -10,
-      "cut": "EX",
-      "polish": "EX",
-      "symmetry": "EX",
-      "fluorescence": "NON",
-      "measurements": {
-        "length": 6.5,
-        "width": 6.3,
-        "depth": 4.2
-      },
-      "totalDepth": 62.5,
-      "table": 57,
-      "certificateNumber": "GIA12345678",
-      "price": 4500,
-      "isAvailable": true,
-      "createdAt": "2025-01-12T10:30:00.000Z",
-      "updatedAt": "2025-01-12T10:30:00.000Z"
-    }
-  ],
-  "pagination": {
-    "currentPage": 1,
-    "totalPages": 5,
-    "totalRecords": 95,
-    "recordsPerPage": 20,
-    "hasNextPage": true,
-    "hasPrevPage": false
-  },
-  "appliedFilters": {
-    "color": ["D", "E", "F"],
-    "clarity": ["FL", "IF"],
-    "priceMin": 1000,
-    "priceMax": 10000,
-    "cut": ["EX"],
-    "isAvailable": true
-  },
-  "totalFilteredRecords": 95
-}
-```
-
-### Get Filter Options
-```
-GET /api/diamonds/filter-options
-```
-*Rate Limited: 50 requests per 15 minutes*
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "Filter options fetched successfully",
-  "data": {
-    "colors": ["D", "E", "F", "G", "H", "I", "J", "K", "L", "M"],
-    "clarities": ["FL", "IF", "VVS1", "VVS2", "VS1", "VS2", "SI1", "SI2"],
-    "cuts": ["EX", "VG", "G", "F"],
-    "polishGrades": ["EX", "VG", "G", "F"],
-    "symmetryGrades": ["EX", "VG", "G", "F"],
-    "fluorescenceTypes": ["NON", "FAINT", "MEDIUM", "STRONG"],
-    "priceRange": {
-      "min": 500,
-      "max": 50000
-    },
-    "caratRange": {
-      "min": 0.3,
-      "max": 5.0
-    },
-    "discountRange": {
-      "min": -50,
-      "max": 10
-    },
-    "rapListRange": {
-      "min": 1000,
-      "max": 100000
-    }
-  }
-}
-```
-
-### Create Diamond
-```
-POST /api/diamonds/create
-```
-*Rate Limited: 10 requests per minute*
-
-**Request Body:**
-```json
-{
-  "color": "D",
-  "clarity": "FL",
-  "rapList": 5000,
-  "discount": -10,
-  "cut": "EX",
-  "polish": "EX",
-  "symmetry": "EX",
-  "fluorescence": "NON",
-  "measurements": {
-    "length": 6.5,
-    "width": 6.3,
-    "depth": 4.2
-  },
-  "totalDepth": 62.5,
-  "table": 57,
-  "certificateNumber": "GIA12345678",
-  "price": 4500,
-  "noBgm": "optional field",
-  "fromTab": "optional field",
-  "isAvailable": true
-}
-```
-
-**Required Fields:**
-- `color`, `clarity`, `rapList`, `discount`, `cut`, `polish`, `symmetry`, `fluorescence`, `totalDepth`, `table`, `certificateNumber`, `price`
-- `measurements` (object with `length`, `width`, `depth`)
-
-**Success Response (201):**
-```json
-{
-  "success": true,
-  "message": "Diamond created successfully",
-  "data": {
-    "_id": "64a1b2c3d4e5f6789abcdef0",
-    "color": "D",
-    "clarity": "FL",
-    "rapList": 5000,
-    "discount": -10,
-    "cut": "EX",
-    "polish": "EX",
-    "symmetry": "EX",
-    "fluorescence": "NON",
-    "measurements": {
-      "length": 6.5,
-      "width": 6.3,
-      "depth": 4.2
-    },
-    "totalDepth": 62.5,
-    "table": 57,
-    "certificateNumber": "GIA12345678",
-    "price": 4500,
-    "isAvailable": true,
-    "createdAt": "2025-01-12T10:30:00.000Z",
-    "updatedAt": "2025-01-12T10:30:00.000Z"
-  }
-}
-```
-
-**Validation Error Response (400):**
-```json
-{
-  "success": false,
-  "message": "Validation failed",
-  "errors": [
-    "color is required",
-    "price must be a positive number",
-    "measurements.length is required"
-  ]
-}
-```
-
-### Create Multiple Diamonds (Bulk)
-```
-POST /api/diamonds/bulk-create
-```
-*Rate Limited: 5 requests per 5 minutes*
-
-**Request Body:**
-```json
-[
-  {
-    "color": "D",
-    "clarity": "FL",
-    "rapList": 5000,
-    "discount": -10,
-    "cut": "EX",
-    "polish": "EX",
-    "symmetry": "EX",
-    "fluorescence": "NON",
-    "measurements": {
-      "length": 6.5,
-      "width": 6.3,
-      "depth": 4.2
-    },
-    "totalDepth": 62.5,
-    "table": 57,
-    "certificateNumber": "GIA12345678",
-    "price": 4500,
-    "isAvailable": true
-  },
-  {
-    "color": "E",
-    "clarity": "VVS1",
-    "rapList": 4000,
-    "discount": -15,
-    "cut": "VG",
-    "polish": "VG",
-    "symmetry": "VG",
-    "fluorescence": "FAINT",
-    "measurements": {
-      "length": 6.2,
-      "width": 6.0,
-      "depth": 3.9
-    },
-    "totalDepth": 61.0,
-    "table": 58,
-    "certificateNumber": "GIA87654321",
-    "price": 3400,
-    "isAvailable": true
-  }
-]
-```
-
-**Success Response (201):**
-```json
-{
-  "success": true,
-  "message": "2 diamonds created successfully",
-  "data": [
-    {
-      "_id": "64a1b2c3d4e5f6789abcdef0",
-      "color": "D",
-      "clarity": "FL",
-      "certificateNumber": "GIA12345678",
-      "price": 4500,
-      "createdAt": "2025-01-12T10:30:00.000Z"
-    },
-    {
-      "_id": "64a1b2c3d4e5f6789abcdef1",
-      "color": "E",
-      "clarity": "VVS1",
-      "certificateNumber": "GIA87654321",
-      "price": 3400,
-      "createdAt": "2025-01-12T10:30:00.000Z"
-    }
-  ],
-  "count": 2
-}
-```
-
-**Error Response (400):**
-```json
-{
-  "success": false,
-  "message": "Array of diamond data is required"
-}
-```
-
----
-
-## User Management APIs
-
-### Get All Users (Admin Only)
-```
-GET /api/users
-```
-*Requires Authentication + Admin Role*
-
-**Query Parameters:**
-- `page` (number, default: 1) - Page number
-- `limit` (number, default: 10) - Number of records per page
-- `sortBy` (string, default: 'createdAt') - Field to sort by
-- `sortOrder` (string, default: 'desc') - Sort order ('asc' or 'desc')
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "Users fetched successfully",
-  "data": [
-    {
-      "_id": "64a1b2c3d4e5f6789abcdef0",
-      "username": "john_doe",
-      "email": "john@example.com",
-      "status": "APPROVED",
-      "role": "USER",
-      "kyc": {
-        "firstName": "John",
-        "lastName": "Doe",
-        "phoneNumber": "+1234567890",
-        "submittedAt": "2025-01-12T10:30:00.000Z"
-      },
-      "createdAt": "2025-01-12T10:30:00.000Z",
-      "updatedAt": "2025-01-12T10:30:00.000Z"
-    }
-  ],
-  "pagination": {
-    "currentPage": 1,
-    "totalPages": 5,
-    "totalRecords": 50,
-    "recordsPerPage": 10,
-    "hasNextPage": true,
-    "hasPrevPage": false
-  }
-}
-```
-
-### Get User by ID (Admin Only)
-```
-GET /api/users/:id
-```
-*Requires Authentication + Admin Role*
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "data": {
-    "_id": "64a1b2c3d4e5f6789abcdef0",
-    "username": "john_doe",
-    "email": "john@example.com",
-    "status": "APPROVED",
-    "role": "USER",
-    "kyc": {
-      "firstName": "John",
-      "lastName": "Doe",
-      "dateOfBirth": "1990-05-15T00:00:00.000Z",
-      "phoneNumber": "+1234567890",
-      "address": {
-        "street": "123 Main St",
-        "city": "New York",
-        "state": "NY",
-        "zipCode": "10001",
-        "country": "USA"
-      },
-      "submittedAt": "2025-01-12T10:30:00.000Z"
-    },
-    "createdAt": "2025-01-12T10:30:00.000Z",
-    "updatedAt": "2025-01-12T10:30:00.000Z"
-  }
-}
-```
-
-**Error Response (404):**
+**Status:** `404 Not Found`
 ```json
 {
   "success": false,
@@ -775,135 +218,287 @@ GET /api/users/:id
 }
 ```
 
-### Update User (Admin Only)
-```
-PUT /api/users/:id
-```
-*Requires Authentication + Admin Role*
+### GET /api/users/profile
+Get current user's profile.
 
-**Request Body:**
-```json
-{
-  "username": "updated_username",
-  "email": "updated@example.com",
-  "status": "APPROVED",
-  "role": "USER"
-}
-```
+**Access:** Protected (requires authentication)
+**Rate Limit:** None
 
-**Success Response (200):**
+#### Responses
+**Status:** `200 OK`
 ```json
 {
   "success": true,
   "data": {
-    "_id": "64a1b2c3d4e5f6789abcdef0",
-    "username": "updated_username",
-    "email": "updated@example.com",
-    "status": "APPROVED",
-    "role": "USER",
-    "createdAt": "2025-01-12T10:30:00.000Z",
-    "updatedAt": "2025-01-12T11:00:00.000Z"
-  },
-  "message": "User updated successfully"
-}
-```
-
-### Search Users (Admin Only)
-```
-GET /api/users/search
-```
-*Requires Authentication + Admin Role*
-
-**Query Parameters:**
-- **Pagination:**
-  - `page` (number, default: 1)
-  - `limit` (number, default: 10)
-  - `sortBy` (string, default: 'createdAt')
-  - `sortOrder` (string, default: 'desc')
-
-- **Filters:**
-  - `status` (string) - User status (DEFAULT, PENDING, APPROVED, REJECTED)
-  - `role` (string) - User role (USER, ADMIN)
-  - `hasKyc` (boolean) - Whether user has submitted KYC
-
-**Example:**
-```
-GET /api/users/search?status=PENDING&hasKyc=true&page=1&limit=20
-```
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "User search completed successfully",
-  "data": [
-    {
-      "_id": "64a1b2c3d4e5f6789abcdef0",
-      "username": "john_doe",
-      "email": "john@example.com",
-      "status": "PENDING",
-      "role": "USER",
-      "kyc": {
-        "firstName": "John",
-        "lastName": "Doe",
-        "submittedAt": "2025-01-12T10:30:00.000Z"
+    "user": {
+      "_id": "string",
+      "username": "string",
+      "email": "string",
+      "role": "USER" | "ADMIN",
+      "status": "DEFAULT" | "PENDING" | "APPROVED" | "REJECTED",
+      "customerData": {
+        "firstName": "string",
+        "lastName": "string",
+        "phoneNumber": "string",
+        "countryCode": "string",
+        "address": {
+          "street": "string",
+          "city": "string",
+          "state": "string",
+          "postalCode": "string",
+          "country": "string"
+        },
+        "businessInfo": {
+          "companyName": "string",
+          "businessType": "string",
+          "vatNumber": "string",
+          "websiteUrl": "string (optional)"
+        },
+        "submittedAt": "date"
       },
-      "createdAt": "2025-01-12T10:30:00.000Z",
-      "updatedAt": "2025-01-12T10:30:00.000Z"
+      "quotations": [
+        {
+          "quotationId": "string",
+          "carat": "number",
+          "noOfPieces": "number",
+          "quotePrice": "number",
+          "status": "PENDING" | "APPROVED" | "REJECTED",
+          "submittedAt": "date"
+        }
+      ],
+      "createdAt": "date",
+      "updatedAt": "date"
     }
-  ],
-  "pagination": {
-    "currentPage": 1,
-    "totalPages": 3,
-    "totalRecords": 25,
-    "recordsPerPage": 20,
-    "hasNextPage": true,
-    "hasPrevPage": false
   }
 }
 ```
 
-### Create User (Admin Only)
-```
-POST /api/users/create
-```
-*Requires Authentication + Admin Role*
+### POST /api/users/customer-data
+Submit customer data (KYC).
 
-**Request Body:**
+**Access:** Protected (requires authentication, USER role only)
+**Rate Limit:** None
+
+#### Request Body
 ```json
 {
-  "username": "new_user",
-  "email": "newuser@example.com",
-  "password": "password123",
-  "role": "USER",
-  "status": "APPROVED"
+  "firstName": "string (required)",
+  "lastName": "string (required)",
+  "phoneNumber": "string (required)",
+  "countryCode": "string (required)",
+  "address": {
+    "street": "string (required)",
+    "city": "string (required)",
+    "state": "string (required)",
+    "postalCode": "string (required)",
+    "country": "string (required)"
+  },
+  "businessInfo": {
+    "companyName": "string (optional)",
+    "businessType": "string (optional)",
+    "vatNumber": "string (optional)",
+    "websiteUrl": "string (optional)"
+  }
 }
 ```
 
-**Success Response (201):**
+#### Responses
+**Status:** `200 OK`
 ```json
 {
   "success": true,
+  "message": "Customer data submitted successfully.",
   "data": {
-    "_id": "64a1b2c3d4e5f6789abcdef0",
-    "username": "new_user",
-    "email": "newuser@example.com",
-    "status": "APPROVED",
-    "role": "USER",
-    "createdAt": "2025-01-12T10:30:00.000Z",
-    "updatedAt": "2025-01-12T10:30:00.000Z"
-  },
+    "user": "updated user object"
+  }
+}
+```
+
+**Status:** `400 Bad Request`
+```json
+{
+  "success": false,
+  "message": "Customer data already submitted"
+}
+```
+
+**Status:** `403 Forbidden`
+```json
+{
+  "success": false,
+  "message": "Admins are not allowed to submit customer data"
+}
+```
+
+---
+
+## 3. Admin User Management (`/api/users`)
+
+### GET /api/users
+Get all users with pagination.
+
+**Access:** Protected (requires authentication + admin role)
+**Rate Limit:** None
+
+#### Query Parameters
+- `page`: number (default: 1)
+- `limit`: number (default: 10)
+- `sortBy`: string (default: 'createdAt')
+- `sortOrder`: 'asc' | 'desc' (default: 'desc')
+
+#### Responses
+**Status:** `200 OK`
+```json
+{
+  "success": true,
+  "message": "Users fetched successfully",
+  "data": ["array of user objects"],
+  "pagination": {
+    "currentPage": "number",
+    "totalPages": "number",
+    "totalRecords": "number",
+    "recordsPerPage": "number",
+    "hasNextPage": "boolean",
+    "hasPrevPage": "boolean"
+  }
+}
+```
+
+### GET /api/users/search
+Search users with filters.
+
+**Access:** Protected (requires authentication + admin role)
+**Rate Limit:** None
+
+#### Query Parameters
+- `page`: number (default: 1)
+- `limit`: number (default: 10)
+- `sortBy`: string (default: 'createdAt')
+- `sortOrder`: 'asc' | 'desc' (default: 'desc')
+- `status`: 'DEFAULT' | 'PENDING' | 'APPROVED' | 'REJECTED'
+- `role`: 'USER' | 'ADMIN'
+- `hasCustomerData`: 'true' | 'false'
+
+#### Responses
+**Status:** `200 OK`
+```json
+{
+  "success": true,
+  "message": "User search completed successfully",
+  "data": ["array of user objects"],
+  "pagination": {
+    "currentPage": "number",
+    "totalPages": "number",
+    "totalRecords": "number",
+    "recordsPerPage": "number",
+    "hasNextPage": "boolean",
+    "hasPrevPage": "boolean"
+  }
+}
+```
+
+### GET /api/users/:id
+Get user by ID.
+
+**Access:** Protected (requires authentication + admin role)
+**Rate Limit:** None
+
+#### URL Parameters
+- `id`: string (required) - User ID
+
+#### Responses
+**Status:** `200 OK`
+```json
+{
+  "success": true,
+  "data": "user object"
+}
+```
+
+**Status:** `404 Not Found`
+```json
+{
+  "success": false,
+  "message": "User not found"
+}
+```
+
+### POST /api/users/create
+Create a new user.
+
+**Access:** Protected (requires authentication + admin role)
+**Rate Limit:** None
+
+#### Request Body
+```json
+{
+  "username": "string (required)",
+  "email": "string (required)",
+  "password": "string (required)",
+  "role": "USER" | "ADMIN" (optional, default: USER),
+  "status": "DEFAULT" | "PENDING" | "APPROVED" | "REJECTED" (optional, default: DEFAULT)
+}
+```
+
+#### Responses
+**Status:** `201 Created`
+```json
+{
+  "success": true,
+  "data": "created user object",
   "message": "User created successfully"
 }
 ```
 
-### Delete User (Admin Only)
-```
-DELETE /api/users/:id
-```
-*Requires Authentication + Admin Role*
+### PUT /api/users/:id
+Update user by ID.
 
-**Success Response (200):**
+**Access:** Protected (requires authentication + admin role)
+**Rate Limit:** None
+
+#### URL Parameters
+- `id`: string (required) - User ID
+
+#### Request Body
+```json
+{
+  "username": "string (optional)",
+  "email": "string (optional)",
+  "role": "USER" | "ADMIN" (optional),
+  "status": "DEFAULT" | "PENDING" | "APPROVED" | "REJECTED" (optional)",
+  "customerData": "object (optional)"
+}
+```
+
+#### Responses
+**Status:** `200 OK`
+```json
+{
+  "success": true,
+  "data": "updated user object",
+  "message": "User updated successfully"
+}
+```
+
+**Status:** `404 Not Found`
+```json
+{
+  "success": false,
+  "message": "User not found"
+}
+```
+
+### DELETE /api/users/:id
+Delete user by ID.
+
+**Access:** Protected (requires authentication + admin role)
+**Rate Limit:** None
+
+#### URL Parameters
+- `id`: string (required) - User ID
+
+#### Responses
+**Status:** `200 OK`
 ```json
 {
   "success": true,
@@ -911,167 +506,766 @@ DELETE /api/users/:id
 }
 ```
 
----
-
-## Admin APIs
-
-### Get KYC Pending Users
-```
-GET /api/users/kyc-pending
-```
-*Requires Authentication + Admin Role*
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "_id": "64a1b2c3d4e5f6789abcdef0",
-      "username": "john_doe",
-      "email": "john@example.com",
-      "status": "PENDING",
-      "role": "USER",
-      "kyc": {
-        "firstName": "John",
-        "lastName": "Doe",
-        "dateOfBirth": "1990-05-15T00:00:00.000Z",
-        "phoneNumber": "+1234567890",
-        "address": {
-          "street": "123 Main St",
-          "city": "New York",
-          "state": "NY",
-          "zipCode": "10001",
-          "country": "USA"
-        },
-        "submittedAt": "2025-01-12T10:30:00.000Z"
-      },
-      "createdAt": "2025-01-12T10:30:00.000Z",
-      "updatedAt": "2025-01-12T10:30:00.000Z"
-    }
-  ],
-  "count": 1,
-  "message": "Found 1 users with pending KYC"
-}
-```
-
-### Approve KYC
-```
-POST /api/users/:id/approve
-```
-*Requires Authentication + Admin Role*
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "data": {
-    "_id": "64a1b2c3d4e5f6789abcdef0",
-    "username": "john_doe",
-    "email": "john@example.com",
-    "status": "APPROVED",
-    "role": "USER",
-    "kyc": {
-      "firstName": "John",
-      "lastName": "Doe",
-      "submittedAt": "2025-01-12T10:30:00.000Z"
-    },
-    "createdAt": "2025-01-12T10:30:00.000Z",
-    "updatedAt": "2025-01-12T11:00:00.000Z"
-  },
-  "message": "User KYC approved successfully"
-}
-```
-
-### Reject KYC
-```
-POST /api/users/:id/reject
-```
-*Requires Authentication + Admin Role*
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "data": {
-    "_id": "64a1b2c3d4e5f6789abcdef0",
-    "username": "john_doe",
-    "email": "john@example.com",
-    "status": "REJECTED",
-    "role": "USER",
-    "kyc": {
-      "firstName": "John",
-      "lastName": "Doe",
-      "submittedAt": "2025-01-12T10:30:00.000Z"
-    },
-    "createdAt": "2025-01-12T10:30:00.000Z",
-    "updatedAt": "2025-01-12T11:00:00.000Z"
-  },
-  "message": "User KYC rejected successfully"
-}
-```
-
----
-
-## Error Handling
-
-### Common Error Response Format
+**Status:** `404 Not Found`
 ```json
 {
   "success": false,
-  "message": "Error description",
-  "error": "Detailed error message (in development)"
+  "message": "User not found"
 }
 ```
 
-### HTTP Status Codes
+### GET /api/users/customer-data-pending
+Get users with pending customer data.
 
-| Status Code | Description |
-|-------------|-------------|
-| 200 | Success |
-| 201 | Created |
-| 400 | Bad Request (Validation errors, invalid input) |
-| 401 | Unauthorized (Invalid or missing authentication) |
-| 403 | Forbidden (Insufficient permissions) |
-| 404 | Not Found (Resource not found) |
-| 429 | Too Many Requests (Rate limit exceeded) |
-| 500 | Internal Server Error |
+**Access:** Protected (requires authentication + admin role)
+**Rate Limit:** None
 
-### Specific Error Types
+#### Responses
+**Status:** `200 OK`
+```json
+{
+  "success": true,
+  "data": ["array of users with pending customer data"],
+  "count": "number",
+  "message": "Found X users with pending customer data"
+}
+```
 
-**Validation Errors (400):**
+### POST /api/users/:id/approve-customer-data
+Approve user's customer data.
+
+**Access:** Protected (requires authentication + admin role)
+**Rate Limit:** None
+
+#### URL Parameters
+- `id`: string (required) - User ID
+
+#### Responses
+**Status:** `200 OK`
+```json
+{
+  "success": true,
+  "data": "updated user object",
+  "message": "User customer data approved successfully"
+}
+```
+
+### POST /api/users/:id/reject-customer-data
+Reject user's customer data.
+
+**Access:** Protected (requires authentication + admin role)
+**Rate Limit:** None
+
+#### URL Parameters
+- `id`: string (required) - User ID
+
+#### Responses
+**Status:** `200 OK`
+```json
+{
+  "success": true,
+  "data": "updated user object",
+  "message": "User customer data rejected successfully"
+}
+```
+
+---
+
+## 4. Diamond Management (`/api/diamonds`)
+
+### GET /api/diamonds
+Get all diamonds with pagination.
+
+**Access:** Public
+**Rate Limit:** None
+
+#### Query Parameters
+- `page`: number (default: 1)
+- `limit`: number (default: 10)
+- `sortBy`: string (default: 'createdAt')
+- `sortOrder`: 'asc' | 'desc' (default: 'desc')
+
+#### Responses
+**Status:** `200 OK`
+```json
+{
+  "success": true,
+  "message": "Diamonds fetched successfully",
+  "data": ["array of diamond objects"],
+  "pagination": {
+    "currentPage": "number",
+    "totalPages": "number",
+    "totalRecords": "number",
+    "recordsPerPage": "number",
+    "hasNextPage": "boolean",
+    "hasPrevPage": "boolean"
+  }
+}
+```
+
+**Status:** `500 Internal Server Error`
+```json
+{
+  "success": false,
+  "message": "Failed to fetch diamonds",
+  "error": "error message"
+}
+```
+
+### GET /api/diamonds/all
+Get all diamonds without pagination.
+
+**Access:** Public
+**Rate Limit:** None
+
+#### Query Parameters
+- `sortBy`: string (default: 'createdAt')
+- `sortOrder`: 'asc' | 'desc' (default: 'desc')
+
+#### Responses
+**Status:** `200 OK`
+```json
+{
+  "success": true,
+  "message": "All diamonds fetched successfully",
+  "data": ["array of all diamond objects"],
+  "totalRecords": "number"
+}
+```
+
+### GET /api/diamonds/search
+Search diamonds with advanced filters.
+
+**Access:** Public
+**Rate Limit:** 50 requests per 15 minutes
+
+#### Query Parameters
+
+**Pagination:**
+- `page`: number (default: 1)
+- `limit`: number (default: 10)
+- `sortBy`: string (default: 'createdAt')
+- `sortOrder`: 'asc' | 'desc' (default: 'desc')
+
+**Filters:**
+- `color`: string | string[] - Diamond color (D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z)
+- `clarity`: string | string[] - Diamond clarity (FL, IF, VVS1, VVS2, VS1, VS2, SI1, SI2, I1, I2, I3)
+- `cut`: string | string[] - Cut grade (EX, VG, G, F, P)
+- `polish`: string | string[] - Polish grade (EX, VG, G, F, P)
+- `symmetry`: string | string[] - Symmetry grade (EX, VG, G, F, P)
+- `fluorescence`: string | string[] - Fluorescence (NON, FAINT, MEDIUM, STRONG, VERY STRONG)
+- `shape`: string - Diamond shape
+- `notShape`: string - Exclude this shape
+- `priceMin`: number - Minimum price
+- `priceMax`: number - Maximum price
+- `sizeMin`: boolean - If true, size < 1 carat
+- `sizeMax`: boolean - If true, size >= 1 carat
+- `lengthMin`: number - Minimum length
+- `lengthMax`: number - Maximum length
+- `widthMin`: number - Minimum width
+- `widthMax`: number - Maximum width
+- `depthMin`: number - Minimum depth
+- `depthMax`: number - Maximum depth
+- `tableMin`: number - Minimum table percentage
+- `tableMax`: number - Maximum table percentage
+- `totalDepthMin`: number - Minimum total depth percentage
+- `totalDepthMax`: number - Maximum total depth percentage
+- `discountMin`: number - Minimum discount percentage
+- `discountMax`: number - Maximum discount percentage
+- `rapListMin`: number - Minimum rap list price
+- `rapListMax`: number - Maximum rap list price
+- `isAvailable`: boolean - Availability filter
+- `searchTerm`: string - Search term for certificate number or general search
+
+#### Responses
+**Status:** `200 OK`
+```json
+{
+  "success": true,
+  "message": "Diamond search completed successfully",
+  "data": ["array of filtered diamond objects"],
+  "pagination": {
+    "currentPage": "number",
+    "totalPages": "number",
+    "totalRecords": "number",
+    "recordsPerPage": "number",
+    "hasNextPage": "boolean",
+    "hasPrevPage": "boolean"
+  },
+  "appliedFilters": "object with applied filters",
+  "totalFilteredRecords": "number"
+}
+```
+
+### GET /api/diamonds/filter-options
+Get available filter options for UI dropdowns.
+
+**Access:** Public
+**Rate Limit:** 50 requests per 15 minutes
+
+#### Responses
+**Status:** `200 OK`
+```json
+{
+  "success": true,
+  "message": "Filter options fetched successfully",
+  "data": {
+    "colors": ["array of available colors"],
+    "clarities": ["array of available clarities"],
+    "cuts": ["array of available cuts"],
+    "polishGrades": ["array of available polish grades"],
+    "symmetryGrades": ["array of available symmetry grades"],
+    "fluorescenceTypes": ["array of available fluorescence types"],
+    "priceRange": {
+      "min": "number",
+      "max": "number"
+    },
+    "caratRange": {
+      "min": "number",
+      "max": "number"
+    },
+    "discountRange": {
+      "min": "number",
+      "max": "number"
+    },
+    "rapListRange": {
+      "min": "number",
+      "max": "number"
+    }
+  }
+}
+```
+
+### POST /api/diamonds/create
+Create a new diamond.
+
+**Access:** Public
+**Rate Limit:** 10 requests per minute
+
+#### Request Body
+```json
+{
+  "color": "string (required) - D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z",
+  "clarity": "string (required) - FL,IF,VVS1,VVS2,VS1,VS2,SI1,SI2,I1,I2,I3",
+  "rapList": "number (required) - >= 0",
+  "discount": "number (required) - between -100 and 100",
+  "cut": "string (required) - EX,VG,G,F,P",
+  "polish": "string (required) - EX,VG,G,F,P",
+  "symmetry": "string (required) - EX,VG,G,F,P",
+  "fluorescence": "string (required) - NON,FAINT,MEDIUM,STRONG,VERY STRONG",
+  "lab": "string (optional)",
+  "shape": "string (optional)",
+  "measurements": {
+    "length": "number (required) - > 0",
+    "width": "number (required) - > 0",
+    "depth": "number (required) - > 0"
+  },
+  "totalDepth": "number (required) - > 0 and <= 100",
+  "table": "number (required) - > 0 and <= 100",
+  "certificateNumber": "string (required) - non-empty",
+  "price": "number (required) - >= 0",
+  "isAvailable": "boolean (optional, default: true)",
+  "noBgm": "string (optional)",
+  "fromTab": "string (optional)"
+}
+```
+
+#### Responses
+**Status:** `201 Created`
+```json
+{
+  "success": true,
+  "message": "Diamond created successfully",
+  "data": "created diamond object"
+}
+```
+
+**Status:** `400 Bad Request`
 ```json
 {
   "success": false,
   "message": "Validation failed",
+  "errors": ["array of validation error messages"]
+}
+```
+
+**Status:** `500 Internal Server Error`
+```json
+{
+  "success": false,
+  "message": "Failed to create diamond",
+  "error": "error message"
+}
+```
+
+### POST /api/diamonds/bulk-create
+Create multiple diamonds in bulk.
+
+**Access:** Public
+**Rate Limit:** 5 requests per 5 minutes
+
+#### Request Body
+```json
+[
+  {
+    "color": "string (required)",
+    "clarity": "string (required)",
+    // ... other diamond properties (same as single create)
+  },
+  // ... more diamond objects
+]
+```
+
+#### Responses
+**Status:** `201 Created`
+```json
+{
+  "success": true,
+  "message": "X diamonds created successfully",
+  "data": ["array of created diamond objects"],
+  "count": "number"
+}
+```
+
+**Status:** `400 Bad Request`
+```json
+{
+  "success": false,
+  "message": "Array of diamond data is required"
+}
+```
+
+### PUT /api/diamonds/:id
+Update a diamond by ID.
+
+**Access:** Public
+**Rate Limit:** 10 requests per minute
+
+#### URL Parameters
+- `id`: string (required) - Diamond ID
+
+#### Request Body
+```json
+{
+  // Any diamond properties (partial update)
+  // Same validation rules as create, but all fields are optional
+  "color": "string (optional)",
+  "clarity": "string (optional)",
+  "price": "number (optional)",
+  // ... other properties
+}
+```
+
+#### Responses
+**Status:** `200 OK`
+```json
+{
+  "success": true,
+  "message": "Diamond updated successfully",
+  "data": "updated diamond object"
+}
+```
+
+**Status:** `400 Bad Request`
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "errors": ["array of validation error messages"]
+}
+```
+
+**Status:** `404 Not Found`
+```json
+{
+  "success": false,
+  "message": "Diamond not found"
+}
+```
+
+### DELETE /api/diamonds/:id
+Delete a diamond by ID.
+
+**Access:** Public
+**Rate Limit:** 10 requests per minute
+
+#### URL Parameters
+- `id`: string (required) - Diamond ID
+
+#### Responses
+**Status:** `200 OK`
+```json
+{
+  "success": true,
+  "message": "Diamond deleted successfully"
+}
+```
+
+**Status:** `404 Not Found`
+```json
+{
+  "success": false,
+  "message": "Diamond not found"
+}
+```
+
+---
+
+## 5. Quotation Management (`/api/quotations`)
+
+### POST /api/quotations
+Submit quotation(s) - user can submit single quotation or array of quotations.
+
+**Access:** Protected (requires authentication, USER role only)
+**Rate Limit:** None
+
+#### Request Body (Single Quotation)
+```json
+{
+  "carat": "number (required) - > 0",
+  "noOfPieces": "number (required) - > 0",
+  "quotePrice": "number (required) - > 0"
+}
+```
+
+#### Request Body (Multiple Quotations)
+```json
+[
+  {
+    "carat": "number (required)",
+    "noOfPieces": "number (required)",
+    "quotePrice": "number (required)"
+  },
+  // ... more quotation objects
+]
+```
+
+#### Responses
+**Status:** `201 Created` (All successful)
+```json
+{
+  "message": "Quotation submitted successfully" | "Quotations submitted successfully",
+  "quotation": "single quotation object" | ["array of quotation objects"]
+}
+```
+
+**Status:** `207 Multi-Status` (Partial success)
+```json
+{
+  "message": "Some quotations submitted successfully",
+  "quotation": ["array of successful quotations"],
+  "duplicates": [
+    {
+      "index": "number",
+      "quotation": "duplicate quotation object"
+    }
+  ],
   "errors": [
-    "color is required",
-    "price must be a positive number"
+    {
+      "index": "number",
+      "quotation": "failed quotation object",
+      "error": "error message"
+    }
+  ],
+  "partialSuccess": true
+}
+```
+
+**Status:** `400 Bad Request` (All failed)
+```json
+{
+  "message": "Failed to submit quotation(s)",
+  "errors": [
+    {
+      "index": "number",
+      "quotation": "failed quotation object",
+      "error": "error message"
+    }
   ]
 }
 ```
 
-**Authentication Errors (401):**
+**Status:** `401 Unauthorized`
 ```json
 {
-  "success": false,
-  "message": "Access token required"
+  "error": "User not authenticated"
 }
 ```
 
-**Authorization Errors (403):**
+**Status:** `403 Forbidden`
 ```json
 {
-  "success": false,
-  "message": "Admin access required"
+  "error": "Admins cannot submit quotations. Only regular users can submit quotations."
 }
 ```
 
-**Rate Limit Errors (429):**
+### GET /api/quotations
+Get quotations - admin can view all users with quotations or specific user's quotations.
+
+**Access:** Protected (requires authentication + admin role)
+**Rate Limit:** None
+
+#### Query Parameters
+- `userId`: string (optional) - Get quotations for specific user
+
+#### Responses (Without userId)
+**Status:** `200 OK`
 ```json
 {
-  "success": false,
-  "message": "Too many requests, please try again later"
+  "message": "Users with quotations retrieved successfully",
+  "data": {
+    "users": [
+      {
+        "userId": "string",
+        "username": "string",
+        "email": "string",
+        "quotationCount": "number",
+        "quotations": [
+          {
+            "quotationId": "string",
+            "carat": "number",
+            "noOfPieces": "number",
+            "quotePrice": "number",
+            "status": "PENDING" | "APPROVED" | "REJECTED",
+            "submittedAt": "date"
+          }
+        ]
+      }
+    ],
+    "summary": {
+      "totalUsers": "number",
+      "totalQuotations": "number"
+    }
+  }
+}
+```
+
+#### Responses (With userId)
+**Status:** `200 OK`
+```json
+{
+  "message": "User quotations retrieved successfully",
+  "data": {
+    "userId": "string",
+    "username": "string",
+    "email": "string",
+    "quotations": ["array of quotation objects"]
+  }
+}
+```
+
+### GET /api/quotations/:quotationId
+Get specific quotation details.
+
+**Access:** Protected (requires authentication + admin role)
+**Rate Limit:** None
+
+#### URL Parameters
+- `quotationId`: string (required) - Quotation ID
+
+#### Responses
+**Status:** `200 OK`
+```json
+{
+  "message": "Quotation retrieved successfully",
+  "data": {
+    "quotation": {
+      "quotationId": "string",
+      "carat": "number",
+      "noOfPieces": "number",
+      "quotePrice": "number",
+      "status": "PENDING" | "APPROVED" | "REJECTED",
+      "submittedAt": "date"
+    },
+    "user": {
+      "userId": "string",
+      "username": "string",
+      "email": "string"
+    }
+  }
+}
+```
+
+**Status:** `400 Bad Request`
+```json
+{
+  "error": "Quotation ID is required"
+}
+```
+
+**Status:** `404 Not Found`
+```json
+{
+  "error": "Quotation not found"
+}
+```
+
+### POST /api/quotations/:quotationId/approve
+Approve a quotation.
+
+**Access:** Protected (requires authentication + admin role)
+**Rate Limit:** None
+
+#### URL Parameters
+- `quotationId`: string (required) - Quotation ID
+
+#### Responses
+**Status:** `200 OK`
+```json
+{
+  "message": "Quotation approved successfully",
+  "quotation": {
+    "quotationId": "string",
+    "carat": "number",
+    "noOfPieces": "number",
+    "quotePrice": "number",
+    "status": "APPROVED",
+    "submittedAt": "date"
+  }
+}
+```
+
+**Status:** `400 Bad Request`
+```json
+{
+  "error": "Quotation ID is required"
+}
+```
+
+**Status:** `404 Not Found`
+```json
+{
+  "error": "Quotation not found"
+}
+```
+
+### POST /api/quotations/:quotationId/reject
+Reject a quotation.
+
+**Access:** Protected (requires authentication + admin role)
+**Rate Limit:** None
+
+#### URL Parameters
+- `quotationId`: string (required) - Quotation ID
+
+#### Responses
+**Status:** `200 OK`
+```json
+{
+  "message": "Quotation rejected successfully",
+  "quotation": {
+    "quotationId": "string",
+    "carat": "number",
+    "noOfPieces": "number",
+    "quotePrice": "number",
+    "status": "REJECTED",
+    "submittedAt": "date"
+  }
+}
+```
+
+**Status:** `400 Bad Request`
+```json
+{
+  "error": "Quotation ID is required"
+}
+```
+
+**Status:** `404 Not Found`
+```json
+{
+  "error": "Quotation not found"
+}
+```
+
+---
+
+## Data Models
+
+### Diamond Object
+```json
+{
+  "_id": "string",
+  "color": "string (D-Z)",
+  "clarity": "string (FL,IF,VVS1,VVS2,VS1,VS2,SI1,SI2,I1,I2,I3)",
+  "rapList": "number",
+  "discount": "number (-100 to 100)",
+  "cut": "string (EX,VG,G,F,P)",
+  "polish": "string (EX,VG,G,F,P)",
+  "symmetry": "string (EX,VG,G,F,P)",
+  "fluorescence": "string (NON,FAINT,MEDIUM,STRONG,VERY STRONG)",
+  "lab": "string",
+  "shape": "string",
+  "measurements": {
+    "length": "number",
+    "width": "number",
+    "depth": "number"
+  },
+  "totalDepth": "number",
+  "table": "number",
+  "certificateNumber": "string",
+  "price": "number",
+  "size": "number (optional)",
+  "isAvailable": "boolean",
+  "noBgm": "string (optional)",
+  "fromTab": "string (optional)",
+  "createdAt": "date",
+  "updatedAt": "date"
+}
+```
+
+### User Object
+```json
+{
+  "_id": "string",
+  "username": "string",
+  "email": "string",
+  "role": "USER | ADMIN",
+  "status": "DEFAULT | PENDING | APPROVED | REJECTED",
+  "customerData": {
+    "firstName": "string",
+    "lastName": "string",
+    "phoneNumber": "string",
+    "countryCode": "string",
+    "address": {
+      "street": "string",
+      "city": "string",
+      "state": "string",
+      "postalCode": "string",
+      "country": "string"
+    },
+    "businessInfo": {
+      "companyName": "string",
+      "businessType": "string",
+      "vatNumber": "string",
+      "websiteUrl": "string"
+    },
+    "submittedAt": "date"
+  },
+  "quotations": [
+    {
+      "quotationId": "string",
+      "carat": "number",
+      "noOfPieces": "number",
+      "quotePrice": "number",
+      "status": "PENDING | APPROVED | REJECTED",
+      "submittedAt": "date"
+    }
+  ],
+  "createdAt": "date",
+  "updatedAt": "date"
+}
+```
+
+### Quotation Object
+```json
+{
+  "quotationId": "string",
+  "carat": "number",
+  "noOfPieces": "number",
+  "quotePrice": "number",
+  "status": "PENDING | APPROVED | REJECTED",
+  "submittedAt": "date"
 }
 ```
 
@@ -1079,111 +1273,85 @@ POST /api/users/:id/reject
 
 ## Rate Limiting
 
-The API implements rate limiting on certain endpoints to prevent abuse:
+The following endpoints have rate limiting:
 
-| Endpoint | Limit |
-|----------|-------|
-| `GET /api/diamonds/search` | 50 requests per 15 minutes |
-| `GET /api/diamonds/filter-options` | 50 requests per 15 minutes |
-| `POST /api/diamonds/create` | 10 requests per minute |
-| `POST /api/diamonds/bulk-create` | 5 requests per 5 minutes |
+- **Diamond Search:** `GET /api/diamonds/search` - 50 requests per 15 minutes
+- **Filter Options:** `GET /api/diamonds/filter-options` - 50 requests per 15 minutes
+- **Create Diamond:** `POST /api/diamonds/create` - 10 requests per minute
+- **Bulk Create:** `POST /api/diamonds/bulk-create` - 5 requests per 5 minutes
+- **Update Diamond:** `PUT /api/diamonds/:id` - 10 requests per minute
+- **Delete Diamond:** `DELETE /api/diamonds/:id` - 10 requests per minute
 
-When rate limit is exceeded, the API returns a 429 status code with an appropriate error message.
-
----
-
-## Data Models
-
-### Diamond Data Model
-```typescript
+Rate limit responses return:
+```json
 {
-  color: string; // D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z
-  clarity: string; // FL, IF, VVS1, VVS2, VS1, VS2, SI1, SI2, I1, I2, I3
-  rapList: number;
-  discount: number; // -100 to 100
-  cut: string; // EX, VG, G, F, P
-  polish: string; // EX, VG, G, F, P
-  symmetry: string; // EX, VG, G, F, P
-  fluorescence: string; // NON, FAINT, MEDIUM, STRONG, VERY STRONG
-  measurements: {
-    length: number;
-    width: number;
-    depth: number;
-  };
-  totalDepth: number; // 0-100
-  table: number; // 0-100
-  certificateNumber: string;
-  price: number;
-  noBgm?: string;
-  fromTab?: string;
-  isAvailable?: boolean; // default: true
-  createdAt: Date;
-  updatedAt: Date;
-}
-```
-
-### User Data Model
-```typescript
-{
-  username: string;
-  email: string;
-  password: string; // hashed
-  status: "DEFAULT" | "PENDING" | "APPROVED" | "REJECTED";
-  role: "USER" | "ADMIN";
-  kyc?: {
-    firstName: string;
-    lastName: string;
-    dateOfBirth: Date;
-    phoneNumber: string;
-    address: {
-      street: string;
-      city: string;
-      state: string;
-      zipCode: string;
-      country: string;
-    };
-    businessInfo?: {
-      companyName: string;
-      businessType: string;
-      registrationNumber: string;
-    };
-    submittedAt: Date;
-  };
-  createdAt: Date;
-  updatedAt: Date;
+  "success": false,
+  "message": "Too many requests, please try again later."
 }
 ```
 
 ---
 
-## Authentication Flow
+## Error Handling
 
-1. **Registration:** User registers with username, email, and password
-2. **Login:** User logs in with email and password, receives JWT token in HTTP-only cookie
-3. **KYC Submission:** User submits KYC information (optional business info)
-4. **Admin Approval:** Admin reviews and approves/rejects KYC
-5. **Access:** Approved users can access protected endpoints
-
-### User Status Flow
-```
-DEFAULT → (Submit KYC) → PENDING → (Admin Action) → APPROVED/REJECTED
+### Global Error Response Format
+```json
+{
+  "success": false,
+  "message": "Error description",
+  "error": "Detailed error message (in development mode)"
+}
 ```
 
-### Role-Based Access
-- **USER:** Can access profile, submit KYC, view diamonds
-- **ADMIN:** Full access to all endpoints including user management and KYC approval
+### Common HTTP Status Codes
+- `200`: Success
+- `201`: Created
+- `207`: Multi-Status (partial success)
+- `400`: Bad Request (validation errors, missing required fields)
+- `401`: Unauthorized (authentication required/failed)
+- `403`: Forbidden (insufficient permissions)
+- `404`: Not Found (resource not found)
+- `500`: Internal Server Error (server-side errors)
+
+### Validation Errors
+Validation errors return detailed error arrays:
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "errors": [
+    "Field 'color' is required",
+    "Price must be greater than or equal to 0",
+    "Cut must be EX, VG, G, F, or P"
+  ]
+}
+```
 
 ---
 
 ## Notes
 
-1. All authenticated endpoints require a valid JWT token in the `accessToken` HTTP-only cookie
-2. Admin endpoints require both authentication and admin role
-3. All dates are returned in ISO 8601 format
-4. Pagination uses 1-based indexing
-5. Array filters support both single values and comma-separated multiple values
-6. Rate limiting is applied per IP address
-7. CORS is configured to allow credentials (cookies)
-8. All endpoints return JSON responses with consistent structure
+1. **Authentication:** JWT tokens are stored in HTTP-only cookies (`accessToken`) with 7-day expiration.
 
-This documentation covers all available APIs in the Diamond Inventory backend system. For any additional questions or clarifications, please refer to the source code or contact the development team.
+2. **CORS:** The API supports CORS with credentials enabled for cross-origin requests.
+
+3. **Request/Response Format:** All requests and responses use JSON format.
+
+4. **Pagination:** Uses standard pagination with `page` and `limit` parameters. Returns pagination metadata with results.
+
+5. **Timestamps:** All timestamps are in ISO 8601 format.
+
+6. **User Roles:** 
+   - `USER`: Regular user who can submit quotations and manage their profile
+   - `ADMIN`: Administrator with full access to user management and quotation approval
+
+7. **User Status:**
+   - `DEFAULT`: Initial user status
+   - `PENDING`: Customer data submitted, awaiting admin approval
+   - `APPROVED`: Customer data approved by admin
+   - `REJECTED`: Customer data rejected by admin
+
+8. **Quotation Status:**
+   - `PENDING`: Awaiting admin review
+   - `APPROVED`: Approved by admin
+   - `REJECTED`: Rejected by admin

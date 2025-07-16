@@ -193,7 +193,7 @@ export function LoginModal({
                         </div>
 
                         {/* Remember Me & Forgot Password */}
-                        <div className="flex items-center justify-between">
+                        {/* <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-2">
                                 <Checkbox
                                     className="border-black border-1"
@@ -219,7 +219,7 @@ export function LoginModal({
                             >
                                 Forgot Password?
                             </Link>
-                        </div>
+                        </div> */}
 
                         {/* Error Message */}
                         {error && (
