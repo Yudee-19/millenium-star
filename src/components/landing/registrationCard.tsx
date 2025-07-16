@@ -55,6 +55,7 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
     const [isRegistrationComplete, setIsRegistrationComplete] = useState(false);
+    const [submittedUserData, setSubmittedUserData] = useState<any>(null); // Store user data after submission
     const router = useRouter();
 
     // Form data states
@@ -322,24 +323,18 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
             }
 
             if (result.success) {
-                // Store user session data
-                localStorage.setItem(
-                    "user",
-                    JSON.stringify({
-                        id: result.data.user._id,
-                        username: result.data.user.username,
-                        email: result.data.user.email,
-                        status: result.data.user.status,
-                        role: result.data.user.role,
-                        customerData: result.data.user.customerData,
-                        loggedIn: true,
-                        timestamp: new Date().toISOString(),
-                    })
-                );
+                // Store user data for the success message
+                setSubmittedUserData({
+                    username: result.data.user.username,
+                    email: result.data.user.email,
+                    firstName: customerData.firstName,
+                    lastName: customerData.lastName,
+                    companyName: customerData.businessInfo.companyName,
+                });
 
-                // Close modal and redirect
-                onClose();
-                router.push("/inventory");
+                // Set registration as complete to show success message
+                setIsRegistrationComplete(true);
+                setCurrentStep(4); // Move to success step
             } else {
                 throw new Error(
                     result.message || "Customer data submission failed"
@@ -406,6 +401,7 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
     const handleClose = () => {
         setCurrentStep(1);
         setIsRegistrationComplete(false);
+        setSubmittedUserData(null);
         setRegisterData({
             username: "",
             email: "",
@@ -437,6 +433,12 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
         });
         setError("");
         onClose();
+    };
+
+    const handleBackToLogin = () => {
+        handleClose();
+        // You can trigger the login modal here if needed
+        // onOpenLogin(); // If you have this prop
     };
 
     const renderRegisterStep = () => (
@@ -850,6 +852,134 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
         </div>
     );
 
+    // New success step component
+    const renderSuccessStep = () => (
+        <div className="w-full space-y-6 text-center">
+            {/* Success Icon */}
+            <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
+                <svg
+                    className="w-10 h-10 text-green-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                </svg>
+            </div>
+
+            {/* Success Title */}
+            <div className="space-y-2">
+                <h3 className="text-2xl font-bold text-gray-900">
+                    Registration Submitted Successfully!
+                </h3>
+                <p className="text-gray-600">
+                    Thank you for completing your registration,{" "}
+                    {submittedUserData?.firstName}!
+                </p>
+            </div>
+
+            {/* Success Message */}
+            <div className="bg-blue-50 border-l-4 border-blue-400 p-4 text-left">
+                <div className="space-y-3">
+                    <div className="flex">
+                        <div className="flex-shrink-0">
+                            <svg
+                                className="h-5 w-5 text-blue-400"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                            >
+                                <path
+                                    fillRule="evenodd"
+                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                    clipRule="evenodd"
+                                />
+                            </svg>
+                        </div>
+                        <div className="ml-3">
+                            <h4 className="text-sm font-medium text-blue-800">
+                                What happens next?
+                            </h4>
+                            <div className="mt-2 text-sm text-blue-700">
+                                <ul className="space-y-2">
+                                    <li>
+                                        • Your KYC information has been
+                                        submitted for admin review
+                                    </li>
+                                    <li>
+                                        • You will receive an email notification
+                                        once your account is approved
+                                    </li>
+                                    <li>
+                                        • This process typically takes 24-48
+                                        hours
+                                    </li>
+                                    <li>
+                                        • Once approved, you can log in and
+                                        access the diamond inventory
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* User Details Summary */}
+            <div className="bg-gray-50 rounded-lg p-4 text-left">
+                <h4 className="text-sm font-medium text-gray-900 mb-3">
+                    Registration Summary:
+                </h4>
+                <div className="space-y-2 text-sm text-gray-600">
+                    <div className="flex justify-between">
+                        <span>Username:</span>
+                        <span className="font-medium">
+                            {submittedUserData?.username}
+                        </span>
+                    </div>
+                    <div className="flex justify-between">
+                        <span>Email:</span>
+                        <span className="font-medium">
+                            {submittedUserData?.email}
+                        </span>
+                    </div>
+                    <div className="flex justify-between">
+                        <span>Name:</span>
+                        <span className="font-medium">
+                            {submittedUserData?.firstName}{" "}
+                            {submittedUserData?.lastName}
+                        </span>
+                    </div>
+                    <div className="flex justify-between">
+                        <span>Company:</span>
+                        <span className="font-medium">
+                            {submittedUserData?.companyName}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            {/* Contact Information */}
+            <div className="text-sm text-gray-500">
+                <p>
+                    If you have any questions, please contact our support team
+                    at{" "}
+                    <Link
+                        href="/contact"
+                        className="text-blue-600 hover:text-blue-700 font-medium"
+                        onClick={handleClose}
+                    >
+                        support@diamondelite.com
+                    </Link>
+                </p>
+            </div>
+        </div>
+    );
+
     const getStepTitle = () => {
         switch (currentStep) {
             case 1:
@@ -858,6 +988,8 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
                 return "Verify Email";
             case 3:
                 return "Customer Details";
+            case 4:
+                return "Registration Complete";
             default:
                 return "Register";
         }
@@ -875,18 +1007,21 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
                         <h2 className="text-2xl font-light font-playfair text-gray-700">
                             {getStepTitle()}
                         </h2>
-                        <div className="text-sm text-gray-500">
-                            Step {currentStep} of 3
-                        </div>
+                        {currentStep < 4 && (
+                            <div className="text-sm text-gray-500">
+                                Step {currentStep} of 3
+                            </div>
+                        )}
                     </div>
 
                     {/* Step Content */}
                     {currentStep === 1 && renderRegisterStep()}
                     {currentStep === 2 && renderOtpStep()}
                     {currentStep === 3 && renderCustomerStep()}
+                    {currentStep === 4 && renderSuccessStep()}
 
                     {/* Error Message */}
-                    {error && (
+                    {error && currentStep < 4 && (
                         <div className="text-red-500 text-sm text-center bg-red-50 p-2 rounded w-full">
                             {error}
                         </div>
@@ -894,7 +1029,24 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
 
                     {/* Navigation Buttons */}
                     <div className="w-full space-y-3">
-                        {currentStep < 3 ? (
+                        {currentStep === 4 ? (
+                            /* Success step buttons */
+                            <div className="space-y-3">
+                                <Button
+                                    onClick={handleBackToLogin}
+                                    className="w-full bg-black hover:bg-black text-white py-3 rounded-full font-medium transition-colors"
+                                >
+                                    Continue to Login
+                                </Button>
+                                <Button
+                                    onClick={handleClose}
+                                    variant="outline"
+                                    className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 py-3 rounded-full font-medium transition-colors"
+                                >
+                                    Close
+                                </Button>
+                            </div>
+                        ) : currentStep < 3 ? (
                             <Button
                                 onClick={handleNext}
                                 disabled={isLoading}
@@ -918,7 +1070,7 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
                             </Button>
                         )}
 
-                        {currentStep > 1 && (
+                        {currentStep > 1 && currentStep < 4 && (
                             <Button
                                 onClick={handleBack}
                                 variant="outline"
@@ -930,19 +1082,21 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
                         )}
                     </div>
 
-                    {/* Login Link */}
-                    <div className="text-center">
-                        <span className="text-gray-600">
-                            Already have an account?{" "}
-                        </span>
-                        <Link
-                            href="#"
-                            className="text-gray-800 font-medium hover:underline"
-                            onClick={handleClose}
-                        >
-                            Log in
-                        </Link>
-                    </div>
+                    {/* Login Link - only show on non-success steps */}
+                    {currentStep < 4 && (
+                        <div className="text-center">
+                            <span className="text-gray-600">
+                                Already have an account?{" "}
+                            </span>
+                            <Link
+                                href="#"
+                                className="text-gray-800 font-medium hover:underline"
+                                onClick={handleClose}
+                            >
+                                Log in
+                            </Link>
+                        </div>
+                    )}
                 </div>
             </DialogContent>
         </Dialog>

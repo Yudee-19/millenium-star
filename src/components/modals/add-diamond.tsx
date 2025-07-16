@@ -28,6 +28,8 @@ import {
     cut_options,
     lab_options,
     flou_options,
+    polish_options,
+    symmetry_options,
 } from "../filters/diamond-filters";
 import { Textarea } from "../ui/textarea";
 
@@ -38,11 +40,10 @@ interface AddDiamondModalProps {
 }
 
 interface DiamondFormData {
-    // Basic Properties
+    // Required Basic Properties
     certificateNumber: string;
     lab: string;
     shape: string;
-    size: number;
     color: string;
     clarity: string;
     cut: string;
@@ -50,36 +51,35 @@ interface DiamondFormData {
     symmetry: string;
     fluorescence: string;
 
-    // Measurements
+    // Required Measurements
     length: number;
     width: number;
     depth: number;
     totalDepth: number;
     table: number;
 
-    // Pricing
+    // Required Pricing
     rapList: number;
     discount: number;
     price: number;
 
-    // Availability
-    isAvailable: boolean;
-
     // Optional fields
-    comments?: string;
+    size?: number; // Legacy field, optional
+    isAvailable: boolean;
+    noBgm?: string; // Additional field for comments
+    fromTab?: string; // Additional field
 }
 
 const initialFormData: DiamondFormData = {
     certificateNumber: "",
     lab: "",
     shape: "",
-    size: 0,
     color: "",
     clarity: "",
     cut: "",
     polish: "",
     symmetry: "",
-    fluorescence: "",
+    fluorescence: "NON", // Default value as per schema
     length: 0,
     width: 0,
     depth: 0,
@@ -88,8 +88,10 @@ const initialFormData: DiamondFormData = {
     rapList: 0,
     discount: 0,
     price: 0,
+    size: undefined,
     isAvailable: true,
-    comments: "",
+    noBgm: "",
+    fromTab: "",
 };
 
 export function AddDiamondModal({
@@ -99,7 +101,9 @@ export function AddDiamondModal({
 }: AddDiamondModalProps) {
     const [formData, setFormData] = useState<DiamondFormData>(initialFormData);
     const [loading, setLoading] = useState(false);
-    const [errors, setErrors] = useState<Partial<DiamondFormData>>({});
+    const [errors, setErrors] = useState<
+        Partial<Record<keyof DiamondFormData, string>>
+    >({});
 
     const handleInputChange = (
         field: keyof DiamondFormData,
@@ -120,16 +124,16 @@ export function AddDiamondModal({
     };
 
     const validateForm = (): boolean => {
-        const newErrors: Partial<DiamondFormData> = {};
+        const newErrors: Partial<Record<keyof DiamondFormData, string>> = {};
 
-        // Required field validations
+        // Required field validations based on schema
         if (!formData.certificateNumber.trim()) {
             newErrors.certificateNumber = "Certificate number is required";
         }
-        if (!formData.lab) {
+        if (!formData.lab.trim()) {
             newErrors.lab = "Lab is required";
         }
-        if (!formData.shape) {
+        if (!formData.shape.trim()) {
             newErrors.shape = "Shape is required";
         }
         if (!formData.color) {
@@ -138,11 +142,51 @@ export function AddDiamondModal({
         if (!formData.clarity) {
             newErrors.clarity = "Clarity is required";
         }
-        if (formData.size <= 0) {
-            newErrors.size = Number("Size must be greater than 0");
+        if (!formData.cut) {
+            newErrors.cut = "Cut is required";
         }
-        if (formData.price <= 0) {
-            newErrors.price = Number("Price must be greater than 0");
+        if (!formData.polish) {
+            newErrors.polish = "Polish is required";
+        }
+        if (!formData.symmetry) {
+            newErrors.symmetry = "Symmetry is required";
+        }
+        if (!formData.fluorescence) {
+            newErrors.fluorescence = "Fluorescence is required";
+        }
+
+        // Measurement validations (all required and > 0)
+        if (formData.length <= 0) {
+            newErrors.length = "Length must be greater than 0";
+        }
+        if (formData.width <= 0) {
+            newErrors.width = "Width must be greater than 0";
+        }
+        if (formData.depth <= 0) {
+            newErrors.depth = "Depth must be greater than 0";
+        }
+        if (formData.totalDepth <= 0 || formData.totalDepth > 100) {
+            newErrors.totalDepth = "Total depth must be between 0 and 100%";
+        }
+        if (formData.table <= 0 || formData.table > 100) {
+            newErrors.table = "Table must be between 0 and 100%";
+        }
+
+        // Pricing validations
+        if (formData.rapList < 0) {
+            newErrors.rapList =
+                "Rap list price must be greater than or equal to 0";
+        }
+        if (formData.discount < -100 || formData.discount > 100) {
+            newErrors.discount = "Discount must be between -100% and 100%";
+        }
+        if (formData.price < 0) {
+            newErrors.price = "Price must be greater than or equal to 0";
+        }
+
+        // Optional size validation
+        if (formData.size !== undefined && formData.size < 0) {
+            newErrors.size = "Size must be greater than or equal to 0";
         }
 
         setErrors(newErrors);
@@ -169,6 +213,8 @@ export function AddDiamondModal({
                 polish: formData.polish,
                 symmetry: formData.symmetry,
                 fluorescence: formData.fluorescence,
+                lab: formData.lab.trim(),
+                shape: formData.shape.trim(),
                 measurements: {
                     length: formData.length,
                     width: formData.width,
@@ -176,11 +222,12 @@ export function AddDiamondModal({
                 },
                 totalDepth: formData.totalDepth,
                 table: formData.table,
-                certificateNumber: formData.certificateNumber,
+                certificateNumber: formData.certificateNumber.trim(),
                 price: formData.price,
-                noBgm: formData.comments || "", // Using comments as noBgm
-                fromTab: "", // You can add this field to the form if needed
+                ...(formData.size !== undefined && { size: formData.size }),
                 isAvailable: formData.isAvailable,
+                ...(formData.noBgm && { noBgm: formData.noBgm.trim() }),
+                ...(formData.fromTab && { fromTab: formData.fromTab.trim() }),
             };
 
             console.log("📤 Sending API data:", apiData);
@@ -198,6 +245,51 @@ export function AddDiamondModal({
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => null);
+
+                // Handle validation errors from backend
+                if (errorData?.errors && Array.isArray(errorData.errors)) {
+                    const backendErrors: Partial<
+                        Record<keyof DiamondFormData, string>
+                    > = {};
+                    errorData.errors.forEach((error: string) => {
+                        // Map backend error messages to form fields
+                        if (error.includes("Certificate number")) {
+                            backendErrors.certificateNumber = error;
+                        } else if (error.includes("Color")) {
+                            backendErrors.color = error;
+                        } else if (error.includes("Clarity")) {
+                            backendErrors.clarity = error;
+                        } else if (error.includes("Lab")) {
+                            backendErrors.lab = error;
+                        } else if (error.includes("Shape")) {
+                            backendErrors.shape = error;
+                        } else if (error.includes("Cut")) {
+                            backendErrors.cut = error;
+                        } else if (error.includes("Polish")) {
+                            backendErrors.polish = error;
+                        } else if (error.includes("Symmetry")) {
+                            backendErrors.symmetry = error;
+                        } else if (error.includes("Fluorescence")) {
+                            backendErrors.fluorescence = error;
+                        } else if (error.includes("Length")) {
+                            backendErrors.length = error;
+                        } else if (error.includes("Width")) {
+                            backendErrors.width = error;
+                        } else if (error.includes("Depth")) {
+                            backendErrors.depth = error;
+                        } else if (error.includes("Table")) {
+                            backendErrors.table = error;
+                        } else if (error.includes("Price")) {
+                            backendErrors.price = error;
+                        } else {
+                            // General error
+                            backendErrors.certificateNumber = error;
+                        }
+                    });
+                    setErrors(backendErrors);
+                    return;
+                }
+
                 throw new Error(
                     errorData?.message ||
                         `HTTP error! status: ${response.status}`
@@ -243,307 +335,365 @@ export function AddDiamondModal({
                 <DialogHeader>
                     <DialogTitle>Add New Diamond</DialogTitle>
                     <DialogDescription>
-                        Fill in the diamond details below. Required fields are
-                        marked with *.
+                        Fill in the diamond details below. Fields marked with *
+                        are required.
                     </DialogDescription>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Basic Information */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="certificateNumber">
-                                Certificate Number *
-                            </Label>
-                            <Input
-                                id="certificateNumber"
-                                value={formData.certificateNumber}
-                                onChange={(e) =>
-                                    handleInputChange(
-                                        "certificateNumber",
-                                        e.target.value
-                                    )
-                                }
-                                placeholder="Enter certificate number"
-                                className={
-                                    errors.certificateNumber
-                                        ? "border-red-500"
-                                        : ""
-                                }
-                            />
-                            {errors.certificateNumber && (
-                                <p className="text-sm text-red-500">
-                                    {errors.certificateNumber}
-                                </p>
-                            )}
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="lab">Lab *</Label>
-                            <Select
-                                value={formData.lab}
-                                onValueChange={(value) =>
-                                    handleInputChange("lab", value)
-                                }
-                            >
-                                <SelectTrigger
+                    <div className="space-y-2">
+                        <Label className="text-base font-semibold">
+                            Basic Information
+                        </Label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="certificateNumber">
+                                    Certificate Number *
+                                </Label>
+                                <Input
+                                    id="certificateNumber"
+                                    value={formData.certificateNumber}
+                                    onChange={(e) =>
+                                        handleInputChange(
+                                            "certificateNumber",
+                                            e.target.value
+                                        )
+                                    }
+                                    placeholder="Enter certificate number"
                                     className={
-                                        errors.lab ? "border-red-500" : ""
+                                        errors.certificateNumber
+                                            ? "border-red-500"
+                                            : ""
+                                    }
+                                />
+                                {errors.certificateNumber && (
+                                    <p className="text-sm text-red-500">
+                                        {errors.certificateNumber}
+                                    </p>
+                                )}
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="lab">Lab *</Label>
+                                <Select
+                                    value={formData.lab}
+                                    onValueChange={(value) =>
+                                        handleInputChange("lab", value)
                                     }
                                 >
-                                    <SelectValue placeholder="Select lab" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {lab_options.map((option) => (
-                                        <SelectItem
-                                            key={option.value}
-                                            value={option.value}
-                                        >
-                                            {option.label}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            {errors.lab && (
-                                <p className="text-sm text-red-500">
-                                    {errors.lab}
-                                </p>
-                            )}
-                        </div>
+                                    <SelectTrigger
+                                        className={
+                                            errors.lab ? "border-red-500" : ""
+                                        }
+                                    >
+                                        <SelectValue placeholder="Select lab" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {lab_options.map((option) => (
+                                            <SelectItem
+                                                key={option.value}
+                                                value={option.value}
+                                            >
+                                                {option.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {errors.lab && (
+                                    <p className="text-sm text-red-500">
+                                        {errors.lab}
+                                    </p>
+                                )}
+                            </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="shape">Shape *</Label>
-                            <Select
-                                value={formData.shape}
-                                onValueChange={(value) =>
-                                    handleInputChange("shape", value)
-                                }
-                            >
-                                <SelectTrigger
-                                    className={
-                                        errors.shape ? "border-red-500" : ""
+                            <div className="space-y-2">
+                                <Label htmlFor="shape">Shape *</Label>
+                                <Select
+                                    value={formData.shape}
+                                    onValueChange={(value) =>
+                                        handleInputChange("shape", value)
                                     }
                                 >
-                                    <SelectValue placeholder="Select shape" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {shape_options.map((option) => (
-                                        <SelectItem
-                                            key={option.value}
-                                            value={option.value}
-                                        >
-                                            {option.label}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            {errors.shape && (
-                                <p className="text-sm text-red-500">
-                                    {errors.shape}
-                                </p>
-                            )}
-                        </div>
+                                    <SelectTrigger
+                                        className={
+                                            errors.shape ? "border-red-500" : ""
+                                        }
+                                    >
+                                        <SelectValue placeholder="Select shape" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {shape_options.map((option) => (
+                                            <SelectItem
+                                                key={option.value}
+                                                value={option.value}
+                                            >
+                                                {option.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {errors.shape && (
+                                    <p className="text-sm text-red-500">
+                                        {errors.shape}
+                                    </p>
+                                )}
+                            </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="size">Carat Weight *</Label>
-                            <Input
-                                id="size"
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                value={formData.size || ""}
-                                onChange={(e) =>
-                                    handleInputChange(
-                                        "size",
-                                        parseFloat(e.target.value) || 0
-                                    )
-                                }
-                                placeholder="0.00"
-                                className={errors.size ? "border-red-500" : ""}
-                            />
-                            {errors.size && (
-                                <p className="text-sm text-red-500">
-                                    {errors.size}
-                                </p>
-                            )}
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="color">Color *</Label>
-                            <Select
-                                value={formData.color}
-                                onValueChange={(value) =>
-                                    handleInputChange("color", value)
-                                }
-                            >
-                                <SelectTrigger
-                                    className={
-                                        errors.color ? "border-red-500" : ""
+                            <div className="space-y-2">
+                                <Label htmlFor="color">Color *</Label>
+                                <Select
+                                    value={formData.color}
+                                    onValueChange={(value) =>
+                                        handleInputChange("color", value)
                                     }
                                 >
-                                    <SelectValue placeholder="Select color" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {color_options.map((option) => (
-                                        <SelectItem
-                                            key={option.value}
-                                            value={option.value}
-                                        >
-                                            {option.label}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            {errors.color && (
-                                <p className="text-sm text-red-500">
-                                    {errors.color}
-                                </p>
-                            )}
-                        </div>
+                                    <SelectTrigger
+                                        className={
+                                            errors.color ? "border-red-500" : ""
+                                        }
+                                    >
+                                        <SelectValue placeholder="Select color" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {color_options.map((option) => (
+                                            <SelectItem
+                                                key={option.value}
+                                                value={option.value}
+                                            >
+                                                {option.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {errors.color && (
+                                    <p className="text-sm text-red-500">
+                                        {errors.color}
+                                    </p>
+                                )}
+                            </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="clarity">Clarity *</Label>
-                            <Select
-                                value={formData.clarity}
-                                onValueChange={(value) =>
-                                    handleInputChange("clarity", value)
-                                }
-                            >
-                                <SelectTrigger
-                                    className={
-                                        errors.clarity ? "border-red-500" : ""
+                            <div className="space-y-2">
+                                <Label htmlFor="clarity">Clarity *</Label>
+                                <Select
+                                    value={formData.clarity}
+                                    onValueChange={(value) =>
+                                        handleInputChange("clarity", value)
                                     }
                                 >
-                                    <SelectValue placeholder="Select clarity" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {clarity_options.map((option) => (
-                                        <SelectItem
-                                            key={option.value}
-                                            value={option.value}
-                                        >
-                                            {option.label}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            {errors.clarity && (
-                                <p className="text-sm text-red-500">
-                                    {errors.clarity}
-                                </p>
-                            )}
+                                    <SelectTrigger
+                                        className={
+                                            errors.clarity
+                                                ? "border-red-500"
+                                                : ""
+                                        }
+                                    >
+                                        <SelectValue placeholder="Select clarity" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {clarity_options.map((option) => (
+                                            <SelectItem
+                                                key={option.value}
+                                                value={option.value}
+                                            >
+                                                {option.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {errors.clarity && (
+                                    <p className="text-sm text-red-500">
+                                        {errors.clarity}
+                                    </p>
+                                )}
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="size">Carat Weight *</Label>
+                                <Input
+                                    id="size"
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    value={formData.size || ""}
+                                    onChange={(e) =>
+                                        handleInputChange(
+                                            "size",
+                                            e.target.value
+                                                ? parseFloat(e.target.value)
+                                                : 0
+                                        )
+                                    }
+                                    placeholder="0.00"
+                                    className={
+                                        errors.size ? "border-red-500" : ""
+                                    }
+                                />
+                                {errors.size && (
+                                    <p className="text-sm text-red-500">
+                                        {errors.size}
+                                    </p>
+                                )}
+                            </div>
                         </div>
                     </div>
 
                     {/* Cut, Polish, Symmetry, Fluorescence */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="cut">Cut</Label>
-                            <Select
-                                value={formData.cut}
-                                onValueChange={(value) =>
-                                    handleInputChange("cut", value)
-                                }
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select cut" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {cut_options.map((option) => (
-                                        <SelectItem
-                                            key={option.value}
-                                            value={option.value}
-                                        >
-                                            {option.label}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
+                    <div className="space-y-2">
+                        <Label className="text-base font-semibold">
+                            Cut Quality
+                        </Label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="cut">Cut *</Label>
+                                <Select
+                                    value={formData.cut}
+                                    onValueChange={(value) =>
+                                        handleInputChange("cut", value)
+                                    }
+                                >
+                                    <SelectTrigger
+                                        className={
+                                            errors.cut ? "border-red-500" : ""
+                                        }
+                                    >
+                                        <SelectValue placeholder="Select cut" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {cut_options.map((option) => (
+                                            <SelectItem
+                                                key={option.value}
+                                                value={option.value}
+                                            >
+                                                {option.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {errors.cut && (
+                                    <p className="text-sm text-red-500">
+                                        {errors.cut}
+                                    </p>
+                                )}
+                            </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="polish">Polish</Label>
-                            <Select
-                                value={formData.polish}
-                                onValueChange={(value) =>
-                                    handleInputChange("polish", value)
-                                }
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select polish" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="EX">
-                                        Excellent
-                                    </SelectItem>
-                                    <SelectItem value="VG">
-                                        Very Good
-                                    </SelectItem>
-                                    <SelectItem value="GD">Good</SelectItem>
-                                    <SelectItem value="FR">Fair</SelectItem>
-                                    <SelectItem value="PR">Poor</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="polish">Polish *</Label>
+                                <Select
+                                    value={formData.polish}
+                                    onValueChange={(value) =>
+                                        handleInputChange("polish", value)
+                                    }
+                                >
+                                    <SelectTrigger
+                                        className={
+                                            errors.polish
+                                                ? "border-red-500"
+                                                : ""
+                                        }
+                                    >
+                                        <SelectValue placeholder="Select polish" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {polish_options.map((option) => (
+                                            <SelectItem
+                                                key={option.value}
+                                                value={option.value}
+                                            >
+                                                {option.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {errors.polish && (
+                                    <p className="text-sm text-red-500">
+                                        {errors.polish}
+                                    </p>
+                                )}
+                            </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="symmetry">Symmetry</Label>
-                            <Select
-                                value={formData.symmetry}
-                                onValueChange={(value) =>
-                                    handleInputChange("symmetry", value)
-                                }
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select symmetry" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="EX">
-                                        Excellent
-                                    </SelectItem>
-                                    <SelectItem value="VG">
-                                        Very Good
-                                    </SelectItem>
-                                    <SelectItem value="GD">Good</SelectItem>
-                                    <SelectItem value="FR">Fair</SelectItem>
-                                    <SelectItem value="PR">Poor</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="symmetry">Symmetry *</Label>
+                                <Select
+                                    value={formData.symmetry}
+                                    onValueChange={(value) =>
+                                        handleInputChange("symmetry", value)
+                                    }
+                                >
+                                    <SelectTrigger
+                                        className={
+                                            errors.symmetry
+                                                ? "border-red-500"
+                                                : ""
+                                        }
+                                    >
+                                        <SelectValue placeholder="Select symmetry" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {symmetry_options.map((option) => (
+                                            <SelectItem
+                                                key={option.value}
+                                                value={option.value}
+                                            >
+                                                {option.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {errors.symmetry && (
+                                    <p className="text-sm text-red-500">
+                                        {errors.symmetry}
+                                    </p>
+                                )}
+                            </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="fluorescence">Fluorescence</Label>
-                            <Select
-                                value={formData.fluorescence}
-                                onValueChange={(value) =>
-                                    handleInputChange("fluorescence", value)
-                                }
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select fluorescence" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {flou_options.map((option) => (
-                                        <SelectItem
-                                            key={option.value}
-                                            value={option.value}
-                                        >
-                                            {option.label}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                            <div className="space-y-2">
+                                <Label htmlFor="fluorescence">
+                                    Fluorescence *
+                                </Label>
+                                <Select
+                                    value={formData.fluorescence}
+                                    onValueChange={(value) =>
+                                        handleInputChange("fluorescence", value)
+                                    }
+                                >
+                                    <SelectTrigger
+                                        className={
+                                            errors.fluorescence
+                                                ? "border-red-500"
+                                                : ""
+                                        }
+                                    >
+                                        <SelectValue placeholder="Select fluorescence" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {flou_options.map((option) => (
+                                            <SelectItem
+                                                key={option.value}
+                                                value={option.value}
+                                            >
+                                                {option.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {errors.fluorescence && (
+                                    <p className="text-sm text-red-500">
+                                        {errors.fluorescence}
+                                    </p>
+                                )}
+                            </div>
                         </div>
                     </div>
 
                     {/* Measurements */}
                     <div className="space-y-2">
                         <Label className="text-base font-semibold">
-                            Measurements
+                            Measurements *
                         </Label>
                         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="length">Length (mm)</Label>
+                                <Label htmlFor="length">Length (mm) *</Label>
                                 <Input
                                     id="length"
                                     type="number"
@@ -557,11 +707,19 @@ export function AddDiamondModal({
                                         )
                                     }
                                     placeholder="0.00"
+                                    className={
+                                        errors.length ? "border-red-500" : ""
+                                    }
                                 />
+                                {errors.length && (
+                                    <p className="text-sm text-red-500">
+                                        {errors.length}
+                                    </p>
+                                )}
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="width">Width (mm)</Label>
+                                <Label htmlFor="width">Width (mm) *</Label>
                                 <Input
                                     id="width"
                                     type="number"
@@ -575,11 +733,19 @@ export function AddDiamondModal({
                                         )
                                     }
                                     placeholder="0.00"
+                                    className={
+                                        errors.width ? "border-red-500" : ""
+                                    }
                                 />
+                                {errors.width && (
+                                    <p className="text-sm text-red-500">
+                                        {errors.width}
+                                    </p>
+                                )}
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="depth">Depth (mm)</Label>
+                                <Label htmlFor="depth">Depth (mm) *</Label>
                                 <Input
                                     id="depth"
                                     type="number"
@@ -593,12 +759,20 @@ export function AddDiamondModal({
                                         )
                                     }
                                     placeholder="0.00"
+                                    className={
+                                        errors.depth ? "border-red-500" : ""
+                                    }
                                 />
+                                {errors.depth && (
+                                    <p className="text-sm text-red-500">
+                                        {errors.depth}
+                                    </p>
+                                )}
                             </div>
 
                             <div className="space-y-2">
                                 <Label htmlFor="totalDepth">
-                                    Total Depth (%)
+                                    Total Depth (%) *
                                 </Label>
                                 <Input
                                     id="totalDepth"
@@ -614,11 +788,21 @@ export function AddDiamondModal({
                                         )
                                     }
                                     placeholder="0.0"
+                                    className={
+                                        errors.totalDepth
+                                            ? "border-red-500"
+                                            : ""
+                                    }
                                 />
+                                {errors.totalDepth && (
+                                    <p className="text-sm text-red-500">
+                                        {errors.totalDepth}
+                                    </p>
+                                )}
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="table">Table (%)</Label>
+                                <Label htmlFor="table">Table (%) *</Label>
                                 <Input
                                     id="table"
                                     type="number"
@@ -633,7 +817,15 @@ export function AddDiamondModal({
                                         )
                                     }
                                     placeholder="0.0"
+                                    className={
+                                        errors.table ? "border-red-500" : ""
+                                    }
                                 />
+                                {errors.table && (
+                                    <p className="text-sm text-red-500">
+                                        {errors.table}
+                                    </p>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -641,11 +833,11 @@ export function AddDiamondModal({
                     {/* Pricing */}
                     <div className="space-y-2">
                         <Label className="text-base font-semibold">
-                            Pricing
+                            Pricing *
                         </Label>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="rapList">Rap List ($)</Label>
+                                <Label htmlFor="rapList">Rap List ($) *</Label>
                                 <Input
                                     id="rapList"
                                     type="number"
@@ -658,15 +850,25 @@ export function AddDiamondModal({
                                         )
                                     }
                                     placeholder="0"
+                                    className={
+                                        errors.rapList ? "border-red-500" : ""
+                                    }
                                 />
+                                {errors.rapList && (
+                                    <p className="text-sm text-red-500">
+                                        {errors.rapList}
+                                    </p>
+                                )}
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="discount">Discount (%)</Label>
+                                <Label htmlFor="discount">Discount (%) *</Label>
                                 <Input
                                     id="discount"
                                     type="number"
                                     step="0.1"
+                                    min="-100"
+                                    max="100"
                                     value={formData.discount || ""}
                                     onChange={(e) =>
                                         handleInputChange(
@@ -675,7 +877,15 @@ export function AddDiamondModal({
                                         )
                                     }
                                     placeholder="0.0"
+                                    className={
+                                        errors.discount ? "border-red-500" : ""
+                                    }
                                 />
+                                {errors.discount && (
+                                    <p className="text-sm text-red-500">
+                                        {errors.discount}
+                                    </p>
+                                )}
                             </div>
 
                             <div className="space-y-2">
@@ -705,8 +915,12 @@ export function AddDiamondModal({
                         </div>
                     </div>
 
-                    {/* Availability and Comments */}
+                    {/* Additional Fields */}
                     <div className="space-y-4">
+                        <Label className="text-base font-semibold">
+                            Additional Information
+                        </Label>
+
                         <div className="flex items-center space-x-2">
                             <Checkbox
                                 id="isAvailable"
@@ -720,22 +934,41 @@ export function AddDiamondModal({
                             </Label>
                         </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="comments">
-                                Comments (Optional)
-                            </Label>
-                            <Textarea
-                                id="comments"
-                                value={formData.comments}
-                                onChange={(e) =>
-                                    handleInputChange(
-                                        "comments",
-                                        e.target.value
-                                    )
-                                }
-                                placeholder="Add any additional notes about this diamond..."
-                                rows={3}
-                            />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="noBgm">
+                                    Comments (Optional)
+                                </Label>
+                                <Textarea
+                                    id="noBgm"
+                                    value={formData.noBgm}
+                                    onChange={(e) =>
+                                        handleInputChange(
+                                            "noBgm",
+                                            e.target.value
+                                        )
+                                    }
+                                    placeholder="Add any additional notes about this diamond..."
+                                    rows={3}
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="fromTab">
+                                    Source Tab (Optional)
+                                </Label>
+                                <Input
+                                    id="fromTab"
+                                    value={formData.fromTab}
+                                    onChange={(e) =>
+                                        handleInputChange(
+                                            "fromTab",
+                                            e.target.value
+                                        )
+                                    }
+                                    placeholder="e.g., Inventory, Import, etc."
+                                />
+                            </div>
                         </div>
                     </div>
 

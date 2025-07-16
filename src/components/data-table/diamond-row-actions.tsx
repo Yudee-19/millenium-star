@@ -97,7 +97,7 @@ export function DataTableRowActions<TData>({
                     Copy Certificate Number
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                {/* <DropdownMenuItem>
                     <Eye className="mr-2 h-4 w-4" />
                     View Details
                 </DropdownMenuItem>
@@ -109,7 +109,7 @@ export function DataTableRowActions<TData>({
                 <DropdownMenuItem className="text-red-600">
                     <Trash2 className="mr-2 h-4 w-4" />
                     Delete Diamond
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
             </DropdownMenuContent>
         </DropdownMenu>
     );
