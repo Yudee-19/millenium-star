@@ -20,22 +20,32 @@ import Container from "@/components/ui/container";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 
-interface UserKYC {
+interface Quotation {
+    quotationId: string;
+    carat: number;
+    noOfPieces: number;
+    quotePrice: number;
+    status: "PENDING" | "APPROVED" | "REJECTED";
+    submittedAt: string;
+}
+
+interface CustomerData {
     firstName: string;
     lastName: string;
-    dateOfBirth?: string;
     phoneNumber: string;
+    countryCode: string;
     address: {
         street: string;
         city: string;
         state: string;
-        zipCode: string;
+        postalCode: string;
         country: string;
     };
-    businessInfo?: {
+    businessInfo: {
         companyName: string;
         businessType: string;
-        registrationNumber: string;
+        vatNumber: string;
+        websiteUrl?: string;
     };
     submittedAt: string;
 }
@@ -44,11 +54,14 @@ interface User {
     _id: string;
     username: string;
     email: string;
+    password: string;
     status: "DEFAULT" | "PENDING" | "APPROVED" | "REJECTED";
     role: "USER" | "ADMIN";
-    kyc?: UserKYC;
+    quotations?: Quotation[];
+    customerData?: CustomerData;
     createdAt: string;
     updatedAt: string;
+    __v: number;
 }
 
 type TabType = "pending" | "rejected" | "approved";
@@ -68,12 +81,13 @@ export default function MembersEnquiry() {
     const fetchPendingUsers = async () => {
         try {
             const response = await fetch(
-                "https://diamond-inventory.onrender.com/api/users/kyc-pending",
+                "https://diamond-inventory.onrender.com/api/users/customer-data-pending",
                 {
                     credentials: "include",
                 }
             );
             const data = await response.json();
+            console.log("Pending Users Data:", data);
 
             if (data.success) {
                 setPendingUsers(data.data || []);
@@ -102,6 +116,7 @@ export default function MembersEnquiry() {
                     }
                 );
                 const data = await response.json();
+                console.log("All Users Data:", data);
 
                 if (data.success) {
                     allUsers = [...allUsers, ...data.data];
@@ -115,11 +130,13 @@ export default function MembersEnquiry() {
 
             // Filter users by status on client side
             const approved = allUsers.filter(
-                (user) => user.status === "APPROVED" && user.kyc
+                (user) => user.status === "APPROVED" && user.customerData
             );
+            console.log("Approved Users:", approved);
             const rejected = allUsers.filter(
-                (user) => user.status === "REJECTED" && user.kyc
+                (user) => user.status === "REJECTED" && user.customerData
             );
+            console.log("Rejected Users:", rejected);
 
             setApprovedUsers(approved);
             setRejectedUsers(rejected);
@@ -134,7 +151,7 @@ export default function MembersEnquiry() {
         setActionLoading(userId);
         try {
             const response = await fetch(
-                `https://diamond-inventory.onrender.com/api/users/${userId}/approve`,
+                `https://diamond-inventory.onrender.com/api/users/${userId}/approve-customer-data`,
                 {
                     method: "POST",
                     credentials: "include",
@@ -162,7 +179,7 @@ export default function MembersEnquiry() {
         setActionLoading(userId);
         try {
             const response = await fetch(
-                `https://diamond-inventory.onrender.com/api/users/${userId}/reject`,
+                `https://diamond-inventory.onrender.com/api/users/${userId}/reject-customer-data`,
                 {
                     method: "POST",
                     credentials: "include",
@@ -223,29 +240,36 @@ export default function MembersEnquiry() {
                     {user._id.slice(-8)}
                 </TableCell>
                 <TableCell className="text-center">
-                    {user.kyc
-                        ? `${user.kyc.firstName} ${user.kyc.lastName}${
-                              user.kyc.businessInfo?.companyName
-                                  ? ` (${user.kyc.businessInfo.companyName})`
+                    {user.customerData
+                        ? `${user.customerData.firstName} ${
+                              user.customerData.lastName
+                          }${
+                              user.customerData.businessInfo?.companyName
+                                  ? ` (${user.customerData.businessInfo.companyName})`
                                   : ""
                           }`
                         : "N/A"}
                 </TableCell>
                 <TableCell className="text-center">
-                    {user.kyc?.businessInfo?.registrationNumber || "N/A"}
+                    {user.customerData?.businessInfo?.vatNumber || "N/A"}
                 </TableCell>
                 <TableCell className="text-center">{user.username}</TableCell>
                 <TableCell className="text-center">{user.email}</TableCell>
                 <TableCell className="text-center">
-                    {user.kyc?.phoneNumber || "N/A"}
+                    {user.customerData?.countryCode &&
+                    user.customerData?.phoneNumber
+                        ? `${user.customerData.countryCode} ${user.customerData.phoneNumber}`
+                        : "N/A"}
                 </TableCell>
                 <TableCell className="text-center">
-                    {user.kyc?.businessInfo?.companyName || "N/A"}
+                    {user.customerData?.businessInfo?.companyName || "N/A"}
                 </TableCell>
                 <TableCell className="text-center">
-                    {user.kyc?.businessInfo?.registrationNumber || "N/A"}
+                    {user.customerData?.businessInfo?.vatNumber || "N/A"}
                 </TableCell>
-                <TableCell className="text-center">N/A</TableCell>
+                <TableCell className="text-center">
+                    {user.customerData?.businessInfo?.vatNumber || "N/A"}
+                </TableCell>
                 {showActions && (
                     <TableCell className="text-center">
                         <div className="flex items-center justify-center space-x-2">
@@ -315,15 +339,6 @@ export default function MembersEnquiry() {
                                             </Button>
                                         </a>
                                     )}
-
-                                    {/* {user?.role === "ADMIN" && (
-                                        <Button
-                                            variant="ghost"
-                                            className="text-gray-600 hover:text-gray-900"
-                                        >
-                                            Offer Enquiry
-                                        </Button>
-                                    )} */}
 
                                     {user?.role === "ADMIN" && (
                                         <Button
@@ -412,7 +427,7 @@ export default function MembersEnquiry() {
                                         Name (Company)
                                     </TableHead>
                                     <TableHead className="text-center">
-                                        Identity Number
+                                        VAT Number
                                     </TableHead>
                                     <TableHead className="text-center">
                                         Username
@@ -424,10 +439,10 @@ export default function MembersEnquiry() {
                                         Phone Number
                                     </TableHead>
                                     <TableHead className="text-center">
-                                        Shop Name
+                                        Company Name
                                     </TableHead>
                                     <TableHead className="text-center">
-                                        Shop Registration Number
+                                        Business Type
                                     </TableHead>
                                     <TableHead className="text-center">
                                         TAX Number
