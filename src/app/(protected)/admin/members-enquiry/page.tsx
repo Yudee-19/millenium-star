@@ -316,14 +316,14 @@ export default function MembersEnquiry() {
                                         </a>
                                     )}
 
-                                    {user?.role === "ADMIN" && (
+                                    {/* {user?.role === "ADMIN" && (
                                         <Button
                                             variant="ghost"
                                             className="text-gray-600 hover:text-gray-900"
                                         >
                                             Offer Enquiry
                                         </Button>
-                                    )}
+                                    )} */}
 
                                     {user?.role === "ADMIN" && (
                                         <Button
@@ -336,15 +336,6 @@ export default function MembersEnquiry() {
                                             }
                                         >
                                             Member Enquiry
-                                        </Button>
-                                    )}
-                                    {/* USER buttons */}
-                                    {user?.role === "USER" && (
-                                        <Button
-                                            variant="ghost"
-                                            className="text-gray-600 hover:text-gray-900"
-                                        >
-                                            Make an Offer
                                         </Button>
                                     )}
                                 </nav>

@@ -9,6 +9,7 @@ import Container from "@/components/ui/container";
 import CustomButton from "@/components/ui/customButton";
 import { Input } from "@/components/ui/input";
 import { useDiamonds } from "@/hooks/use-diamonds";
+import { useFilteredDiamonds } from "@/hooks/use-filtered-diamonds";
 import { DownloadIcon, FileTextIcon, FunnelPlus, PlusIcon } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AddDiamondModal } from "@/components/modals/add-diamond";
@@ -29,10 +30,41 @@ export default function DiamondPage() {
         paginationMeta,
     } = useDiamonds();
 
+    // Filtered diamonds hooks
+    const {
+        diamonds: fancyDiamonds,
+        loading: fancyLoading,
+        error: fancyError,
+        totalCount: fancyTotalCount,
+        pageCount: fancyPageCount,
+        refetch: fancyRefetch,
+        paginationMeta: fancyPaginationMeta,
+    } = useFilteredDiamonds("diamonds/search?notShape=RBC");
+
+    const {
+        diamonds: highEndDiamonds,
+        loading: highEndLoading,
+        error: highEndError,
+        totalCount: highEndTotalCount,
+        pageCount: highEndPageCount,
+        refetch: highEndRefetch,
+        paginationMeta: highEndPaginationMeta,
+    } = useFilteredDiamonds("diamonds/search?shape=RBC&sizeMax=1");
+
+    const {
+        diamonds: lowEndDiamonds,
+        loading: lowEndLoading,
+        error: lowEndError,
+        totalCount: lowEndTotalCount,
+        pageCount: lowEndPageCount,
+        refetch: lowEndRefetch,
+        paginationMeta: lowEndPaginationMeta,
+    } = useFilteredDiamonds("diamonds/search?shape=RBC&sizeMin=1");
+
     // Modal state
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-    // Handle table state changes
+    // Handle table state changes for main table
     const handleTableStateChange = useCallback(
         (state: {
             pagination: { pageIndex: number; pageSize: number };
@@ -45,10 +77,26 @@ export default function DiamondPage() {
         [updateTable]
     );
 
+    // Empty handlers for filtered tables (read-only)
+    const handleFancyTableStateChange = useCallback(() => {
+        // Fancy diamonds table is read-only, no state changes needed
+    }, []);
+
+    const handleHighEndTableStateChange = useCallback(() => {
+        // High-end diamonds table is read-only, no state changes needed
+    }, []);
+
+    const handleLowEndTableStateChange = useCallback(() => {
+        // Low-end diamonds table is read-only, no state changes needed
+    }, []);
+
     // Handle successful diamond addition
     const handleAddDiamondSuccess = () => {
         console.log("✅ Diamond added successfully");
-        refetch(); // Refresh the table data
+        refetch(); // Refresh the main table data
+        fancyRefetch(); // Refresh fancy diamonds
+        highEndRefetch(); // Refresh high-end diamonds
+        lowEndRefetch(); // Refresh low-end diamonds
     };
 
     if (error) {
@@ -81,10 +129,6 @@ export default function DiamondPage() {
                 <div className="flex items-center justify-between mb-6">
                     <SiteHeader />
                     <div className="flex items-center space-x-4 h-16  border-b">
-                        {/* Add navigation to inventory for admin */}
-                        {/* <a href="/inventory">
-                            <Button variant="outline">View Inventory</Button>
-                        </a> */}
                         <a href="/admin/members-enquiry">
                             <Button variant="outline">Member Enquiry</Button>
                         </a>
@@ -287,13 +331,247 @@ export default function DiamondPage() {
                         </TabsContent>
 
                         <TabsContent value="fancy">
-                            Data Unavailable Now
+                            {/* Fancy Diamonds Stats */}
+                            <div className="flex items-center justify-center gap-5 my-10">
+                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-sky-950 text-base">
+                                        Fancy Diamonds (Non-RBC)
+                                    </h1>
+                                    <h1 className="text-2xl font-semibold">
+                                        {fancyLoading
+                                            ? "..."
+                                            : fancyTotalCount.toLocaleString()}
+                                    </h1>
+                                </div>
+                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-sky-950 text-base">
+                                        Available
+                                    </h1>
+                                    <h1 className="text-2xl font-semibold">
+                                        {fancyLoading
+                                            ? "..."
+                                            : fancyDiamonds.filter(
+                                                  (d) => d.isAvailable
+                                              ).length}
+                                    </h1>
+                                </div>
+                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-sky-950 text-base">
+                                        Total Value
+                                    </h1>
+                                    <h1 className="text-2xl font-semibold">
+                                        $
+                                        {fancyLoading
+                                            ? "..."
+                                            : fancyDiamonds
+                                                  .reduce(
+                                                      (sum, d) =>
+                                                          sum + (d.price || 0),
+                                                      0
+                                                  )
+                                                  .toFixed(2)}
+                                    </h1>
+                                </div>
+                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-sky-950 text-base">
+                                        Total Size
+                                    </h1>
+                                    <h1 className="text-2xl font-semibold">
+                                        {fancyLoading
+                                            ? "..."
+                                            : fancyDiamonds
+                                                  .reduce(
+                                                      (sum, d) =>
+                                                          sum + (d.size || 0),
+                                                      0
+                                                  )
+                                                  .toFixed(2)}{" "}
+                                        ct
+                                    </h1>
+                                </div>
+                            </div>
+
+                            <Shell>
+                                <div className="flex h-full min-h-screen overflow-x-auto flex-col">
+                                    <div className="flex flex-col space-y-8">
+                                        <DataTable
+                                            data={fancyDiamonds}
+                                            columns={diamondColumns}
+                                            toolbar={DiamondTableToolbar}
+                                            pageCount={fancyPageCount}
+                                            loading={fancyLoading}
+                                            onStateChange={
+                                                handleFancyTableStateChange
+                                            }
+                                            paginationMeta={fancyPaginationMeta}
+                                        />
+                                    </div>
+                                </div>
+                            </Shell>
                         </TabsContent>
+
                         <TabsContent value="highEnd">
-                            Data Unavailable Now
+                            {/* High End Diamonds Stats */}
+                            <div className="flex items-center justify-center gap-5 my-10">
+                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-sky-950 text-base">
+                                        High End Diamonds (RBC ≤ 1ct)
+                                    </h1>
+                                    <h1 className="text-2xl font-semibold">
+                                        {highEndLoading
+                                            ? "..."
+                                            : highEndTotalCount.toLocaleString()}
+                                    </h1>
+                                </div>
+                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-sky-950 text-base">
+                                        Available
+                                    </h1>
+                                    <h1 className="text-2xl font-semibold">
+                                        {highEndLoading
+                                            ? "..."
+                                            : highEndDiamonds.filter(
+                                                  (d) => d.isAvailable
+                                              ).length}
+                                    </h1>
+                                </div>
+                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-sky-950 text-base">
+                                        Total Value
+                                    </h1>
+                                    <h1 className="text-2xl font-semibold">
+                                        $
+                                        {highEndLoading
+                                            ? "..."
+                                            : highEndDiamonds
+                                                  .reduce(
+                                                      (sum, d) =>
+                                                          sum + (d.price || 0),
+                                                      0
+                                                  )
+                                                  .toFixed(2)}
+                                    </h1>
+                                </div>
+                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-sky-950 text-base">
+                                        Total Size
+                                    </h1>
+                                    <h1 className="text-2xl font-semibold">
+                                        {highEndLoading
+                                            ? "..."
+                                            : highEndDiamonds
+                                                  .reduce(
+                                                      (sum, d) =>
+                                                          sum + (d.size || 0),
+                                                      0
+                                                  )
+                                                  .toFixed(2)}{" "}
+                                        ct
+                                    </h1>
+                                </div>
+                            </div>
+
+                            <Shell>
+                                <div className="flex h-full min-h-screen overflow-x-auto flex-col">
+                                    <div className="flex flex-col space-y-8">
+                                        <DataTable
+                                            data={highEndDiamonds}
+                                            columns={diamondColumns}
+                                            toolbar={DiamondTableToolbar}
+                                            pageCount={highEndPageCount}
+                                            loading={highEndLoading}
+                                            onStateChange={
+                                                handleHighEndTableStateChange
+                                            }
+                                            paginationMeta={
+                                                highEndPaginationMeta
+                                            }
+                                        />
+                                    </div>
+                                </div>
+                            </Shell>
                         </TabsContent>
+
                         <TabsContent value="lowEnd">
-                            Data Unavailable Now
+                            {/* Low End Diamonds Stats */}
+                            <div className="flex items-center justify-center gap-5 my-10">
+                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-sky-950 text-base">
+                                        Low End Diamonds (RBC ≥ 1ct)
+                                    </h1>
+                                    <h1 className="text-2xl font-semibold">
+                                        {lowEndLoading
+                                            ? "..."
+                                            : lowEndTotalCount.toLocaleString()}
+                                    </h1>
+                                </div>
+                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-sky-950 text-base">
+                                        Available
+                                    </h1>
+                                    <h1 className="text-2xl font-semibold">
+                                        {lowEndLoading
+                                            ? "..."
+                                            : lowEndDiamonds.filter(
+                                                  (d) => d.isAvailable
+                                              ).length}
+                                    </h1>
+                                </div>
+                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-sky-950 text-base">
+                                        Total Value
+                                    </h1>
+                                    <h1 className="text-2xl font-semibold">
+                                        $
+                                        {lowEndLoading
+                                            ? "..."
+                                            : lowEndDiamonds
+                                                  .reduce(
+                                                      (sum, d) =>
+                                                          sum + (d.price || 0),
+                                                      0
+                                                  )
+                                                  .toFixed(2)}
+                                    </h1>
+                                </div>
+                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-sky-950 text-base">
+                                        Total Size
+                                    </h1>
+                                    <h1 className="text-2xl font-semibold">
+                                        {lowEndLoading
+                                            ? "..."
+                                            : lowEndDiamonds
+                                                  .reduce(
+                                                      (sum, d) =>
+                                                          sum + (d.size || 0),
+                                                      0
+                                                  )
+                                                  .toFixed(2)}{" "}
+                                        ct
+                                    </h1>
+                                </div>
+                            </div>
+
+                            <Shell>
+                                <div className="flex h-full min-h-screen overflow-x-auto flex-col">
+                                    <div className="flex flex-col space-y-8">
+                                        <DataTable
+                                            data={lowEndDiamonds}
+                                            columns={diamondColumns}
+                                            toolbar={DiamondTableToolbar}
+                                            pageCount={lowEndPageCount}
+                                            loading={lowEndLoading}
+                                            onStateChange={
+                                                handleLowEndTableStateChange
+                                            }
+                                            paginationMeta={
+                                                lowEndPaginationMeta
+                                            }
+                                        />
+                                    </div>
+                                </div>
+                            </Shell>
                         </TabsContent>
                     </Tabs>
                 </div>

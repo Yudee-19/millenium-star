@@ -165,14 +165,14 @@ export default function ClientPage() {
                                         </a>
                                     )}
 
-                                    {user?.role === "ADMIN" && (
+                                    {/* {user?.role === "ADMIN" && (
                                         <Button
                                             variant="ghost"
                                             className="text-gray-600 hover:text-gray-900"
                                         >
                                             Offer Enquiry
                                         </Button>
-                                    )}
+                                    )} */}
 
                                     {user?.role === "ADMIN" && (
                                         <Button
