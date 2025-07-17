@@ -316,7 +316,7 @@ export default function MembersEnquiry() {
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-8">
                                 <h1 className="text-2xl font-bold font-playfair text-gray-900">
-                                    DIAMOND ELITE
+                                    MILLENNIUM&nbsp;STAR
                                 </h1>
                                 <nav className="flex space-x-6">
                                     <a href="/inventory">

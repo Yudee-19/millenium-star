@@ -1,7 +1,7 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-    name: "Elite Diamond Admin Dashboard",
+    name: "MILLENNIUM STAR",
     description: "Admin Dashboard for managing the inventory",
 
     links: {

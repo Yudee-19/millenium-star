@@ -1,11 +1,11 @@
-# Diamond Elite Admin Dashboard
+# MILLENNIUM STAR Admin Dashboard
 
 ## 🚧 Development Status Notice
 
 **This is a work-in-progress codebase and NOT the final production version.**
 
 ### Current Development Phase
-This repository represents an active development state of the Diamond Elite Admin Dashboard. The codebase is continuously evolving with frequent updates, refactoring, and feature additions.
+This repository represents an active development state of the MILLENNIUM STAR Admin Dashboard. The codebase is continuously evolving with frequent updates, refactoring, and feature additions.
 
 ## 📋 Current Implementation Status
 

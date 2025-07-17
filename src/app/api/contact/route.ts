@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
                     </div>
                     
                     <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #718096;">
-                        <p>This email was sent from the contact form on your Diamond Elite website.</p>
+                        <p>This email was sent from the contact form on your MILLENNIUM STAR website.</p>
                         <p>Received at: ${new Date().toLocaleString()}</p>
                     </div>
                 </div>
@@ -75,11 +75,11 @@ export async function POST(request: NextRequest) {
         const customerMailOptions = {
             from: process.env.GMAIL_USER,
             to: email,
-            subject: "Thank you for contacting Diamond Elite",
+            subject: "Thank you for contacting MILLENNIUM STAR",
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <div style="background-color: #2D3748; color: white; padding: 20px; text-align: center;">
-                        <h1 style="margin: 0; font-size: 24px; letter-spacing: 2px;">DIAMOND ELITE</h1>
+                        <h1 style="margin: 0; font-size: 24px; letter-spacing: 2px;">MILLENNIUM STAR</h1>
                     </div>
                     
                     <div style="padding: 30px 20px;">
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
                     </div>
                     
                     <div style="background-color: #f7f7f7; padding: 20px; text-align: center; font-size: 12px; color: #718096;">
-                        <p>© ${new Date().getFullYear()} Diamond Elite. All rights reserved.</p>
+                        <p>© ${new Date().getFullYear()} MILLENNIUM STAR. All rights reserved.</p>
                         <p>This is an automated response. Please do not reply to this email.</p>
                     </div>
                 </div>
