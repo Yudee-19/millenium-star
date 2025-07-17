@@ -421,7 +421,7 @@ export default function MembersEnquiry() {
                                         Sr.
                                     </TableHead>
                                     <TableHead className="text-center">
-                                        ID (Password)
+                                        ID
                                     </TableHead>
                                     <TableHead className="text-center">
                                         Name (Company)
