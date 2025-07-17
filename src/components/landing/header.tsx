@@ -57,7 +57,7 @@ const Navbar = () => {
             <Container className="flex items-center justify-between py-4">
                 {/* Logo */}
                 <h1 className="font-playfair text-xl md:text-2xl font-semibold">
-                    MILLIENIUM&nbsp;START
+                    MILLENNIUM&nbsp;STAR
                 </h1>
 
                 {/* Desktop Navigation */}

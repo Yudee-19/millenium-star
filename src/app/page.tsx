@@ -10,13 +10,13 @@ import React from "react";
 const gridCardsData1 = [
     {
         id: 1,
-        title: "Loose Certified Diamonds",
+        title: "Certified Diamonds",
         imageUrl: "/assets/diamond-img-1.png", // Replace with your actual image path
         buttonText: "Order Now",
     },
     {
         id: 2,
-        title: "Custom Cut Diamonds",
+        title: "Fancy Cut Diamonds",
         imageUrl: "/assets/diamond-img-2.png", // Replace with your actual image path
         buttonText: "Order Now",
     },
@@ -36,13 +36,13 @@ const gridCardsData2 = [
     },
     {
         id: 2,
-        title: "Matched Diamond Pairs & Parcels",
+        title: "Matched Diamond Pairs ",
         imageUrl: "/assets/diamond-img-2.png", // Replace with your actual image path
         buttonText: "Order Now",
     },
     {
         id: 3,
-        title: "Rose Cut & Antique Cuts",
+        title: "Matched Diamond Parcels",
         imageUrl: "/assets/diamond-img-3.png", // Replace with your actual image path
         buttonText: "Order Now",
     },

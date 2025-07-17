@@ -108,7 +108,7 @@ const AboutUs = () => {
                                 </p>
                             </div>
                             <Button className="bg-gray-800 hover:bg-gray-700 text-white px-8 py-3 text-base font-medium">
-                                Get a Free Valuation
+                                Explore our inventory
                             </Button>
                         </div>
 
@@ -153,13 +153,13 @@ const AboutUs = () => {
                                 Your Competitive Edge
                             </h2>
                             <div className="space-y-4">
-                                <p
+                                {/* <p
                                     className={`${inter.className} text-gray-600 text-lg leading-relaxed`}
                                 >
                                     Our extensive network gives you direct
                                     access with over 5K filter criteria, and
                                     acts as your strategic sourcing partner.
-                                </p>
+                                </p> */}
                                 <p
                                     className={`${inter.className} text-gray-600 text-lg leading-relaxed`}
                                 >
