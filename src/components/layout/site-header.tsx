@@ -6,11 +6,13 @@ export function SiteHeader() {
         <header className="z-70 w-full border-b ">
             <div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
                 <div className="flex gap-6 md:gap-10">
-                    {/* <Link href="/admin" className="flex items-center space-x-2"> */}
-                    <span className="inline-block text-xl font-playfair font-bold ">
-                        {siteConfig.name}
-                    </span>
-                    {/* </Link> */}
+                    <Link href="/admin" className="flex items-center space-x-2">
+                        {/* <a href="/" className="flex items-center space-x-2"> */}
+                        <span className="inline-block text-xl font-playfair font-bold ">
+                            {siteConfig.name}
+                        </span>
+                        {/* </a> */}
+                    </Link>
                     {/* {siteConfig.mainNav?.length ? (
                         <nav className="flex gap-6">
                             {siteConfig.mainNav?.map(

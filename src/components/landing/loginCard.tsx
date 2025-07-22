@@ -101,7 +101,7 @@ export function LoginModal({
                 };
 
                 localStorage.setItem("user", JSON.stringify(userData));
-                loadFromStorage();
+                await loadFromStorage();
 
                 // Close modal and redirect based on user role
                 onClose();
@@ -113,7 +113,7 @@ export function LoginModal({
                 if (result.data.user.role === "ADMIN") {
                     router.push("/admin");
                 } else {
-                    router.push("/inventory");
+                    window.location.href = "/inventory";
                 }
             } else {
                 throw new Error(result.message || "Login failed");

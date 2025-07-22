@@ -9,7 +9,7 @@ const Navbar = () => {
 
     return (
         <Container className="">
-            <div className=" bg-background flex items-center justify-between mb-6 px-10">
+            <div className=" flex items-center justify-between  px-10">
                 <SiteHeader />
                 <div className="flex items-center space-x-4 h-16  border-b">
                     <a href="/admin/members-enquiry">
