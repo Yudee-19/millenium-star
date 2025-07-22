@@ -126,29 +126,6 @@ export default function DiamondPage() {
         <AdminGuard>
             <Container>
                 {/* Header Section */}
-                <div className="flex items-center justify-between mb-6">
-                    <SiteHeader />
-                    <div className="flex items-center space-x-4 h-16  border-b">
-                        <a href="/admin/members-enquiry">
-                            <Button variant="outline">Member Enquiry</Button>
-                        </a>
-                        <Button
-                            onClick={logout}
-                            variant="outline"
-                            className="text-red-600 hover:text-red-700"
-                        >
-                            Logout
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className="bg-gray-900 hover:bg-gray-900 border-none p-4 text-white hover:text-white rounded-full space-x-2 flex justify-center items-center"
-                        >
-                            <div className="h-5 w-5 bg-white/50 hover:bg-white/50 rounded-full"></div>
-                            {user?.username || "User"}
-                        </Button>
-                    </div>
-                </div>
 
                 {/* Search and Action Buttons */}
                 <div className="flex items-center justify-center gap-2 my-5">

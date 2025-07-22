@@ -23,8 +23,6 @@ const inter = Inter({
 const AboutUs = () => {
     return (
         <div className="min-h-screen bg-white">
-            <Navbar />
-
             {/* Our Legacy Section */}
             <section className="py-20 px-6 bg-white">
                 <div className="max-w-7xl mx-auto">

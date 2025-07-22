@@ -5,7 +5,9 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { LoginModal } from "./loginCard";
 import { RegistrationModal } from "./registrationCard";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User, LogOut } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
 
 const Navbar = () => {
     const pathname = usePathname();
@@ -13,6 +15,9 @@ const Navbar = () => {
     const [isRegistrationModalOpen, setIsRegistrationModalOpen] =
         useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+    // Add authentication state
+    const { user, isAuthenticated, logout, loading } = useAuth();
 
     const navItems = [
         { href: "/", label: "Home" },
@@ -23,7 +28,7 @@ const Navbar = () => {
 
     const handleLoginClick = () => {
         setIsLoginModalOpen(true);
-        setIsMobileMenuOpen(false); // Close mobile menu when opening modal
+        setIsMobileMenuOpen(false);
     };
 
     const handleCloseLoginModal = () => {
@@ -32,7 +37,7 @@ const Navbar = () => {
 
     const handleRegistrationClick = () => {
         setIsRegistrationModalOpen(true);
-        setIsMobileMenuOpen(false); // Close mobile menu when opening modal
+        setIsMobileMenuOpen(false);
     };
 
     const handleCloseRegistrationModal = () => {
@@ -44,6 +49,21 @@ const Navbar = () => {
         setIsRegistrationModalOpen(true);
     };
 
+    const handleLogout = async () => {
+        await logout();
+        setIsMobileMenuOpen(false);
+    };
+
+    const handleProfileClick = () => {
+        // Navigate to appropriate dashboard based on user role
+        if (user?.role === "ADMIN") {
+            window.location.href = "/admin";
+        } else {
+            window.location.href = "/inventory";
+        }
+        setIsMobileMenuOpen(false);
+    };
+
     const toggleMobileMenu = () => {
         setIsMobileMenuOpen(!isMobileMenuOpen);
     };
@@ -51,6 +71,23 @@ const Navbar = () => {
     const closeMobileMenu = () => {
         setIsMobileMenuOpen(false);
     };
+
+    // Show loading state while checking authentication
+    if (loading) {
+        return (
+            <div className="sticky top-0 z-50 bg-white shadow-md">
+                <Container className="flex items-center justify-between py-4">
+                    <h1 className="font-playfair text-xl md:text-2xl font-semibold">
+                        MILLENNIUM&nbsp;STAR
+                    </h1>
+                    <div className="flex items-center space-x-3">
+                        <div className="w-20 h-8 bg-gray-200 animate-pulse rounded"></div>
+                        <div className="w-16 h-8 bg-gray-200 animate-pulse rounded"></div>
+                    </div>
+                </Container>
+            </div>
+        );
+    }
 
     return (
         <div className="sticky top-0 z-50 bg-white shadow-md">
@@ -78,20 +115,45 @@ const Navbar = () => {
                     ))}
                 </ul>
 
-                {/* Desktop Auth Buttons */}
+                {/* Desktop Auth/Profile Buttons */}
                 <div className="hidden md:flex space-x-3">
-                    <div
-                        className="bg-white cursor-pointer border-2 rounded-[3px] border-black text-black px-4 py-2 hover:bg-gray-50 transition-colors"
-                        onClick={handleRegistrationClick}
-                    >
-                        Register
-                    </div>
-                    <div
-                        className="bg-[#4D4D4D] cursor-pointer border-2 rounded-[3px] border-black text-white px-4 py-2 hover:bg-gray-700 transition-colors"
-                        onClick={handleLoginClick}
-                    >
-                        Login
-                    </div>
+                    {isAuthenticated() ? (
+                        // Authenticated user buttons
+                        <>
+                            <Button
+                                variant="outline"
+                                onClick={handleProfileClick}
+                                className="border-2 border-black text-black hover:bg-gray-50 px-4 py-2 rounded-[3px] flex items-center space-x-2"
+                            >
+                                <User className="h-4 w-4" />
+                                <span>{user?.username || "Profile"}</span>
+                            </Button>
+                            <Button
+                                variant="outline"
+                                onClick={handleLogout}
+                                className="bg-[#4D4D4D] border-2 border-black text-white hover:bg-gray-700 px-4 py-2 rounded-[3px] flex items-center space-x-2"
+                            >
+                                <LogOut className="h-4 w-4" />
+                                <span>Logout</span>
+                            </Button>
+                        </>
+                    ) : (
+                        // Guest user buttons
+                        <>
+                            <div
+                                className="bg-white cursor-pointer border-2 rounded-[3px] border-black text-black px-4 py-2 hover:bg-gray-50 transition-colors"
+                                onClick={handleRegistrationClick}
+                            >
+                                Register
+                            </div>
+                            <div
+                                className="bg-[#4D4D4D] cursor-pointer border-2 rounded-[3px] border-black text-white px-4 py-2 hover:bg-gray-700 transition-colors"
+                                onClick={handleLoginClick}
+                            >
+                                Login
+                            </div>
+                        </>
+                    )}
                 </div>
 
                 {/* Mobile Hamburger Button */}
@@ -131,35 +193,64 @@ const Navbar = () => {
                             ))}
                         </ul>
 
-                        {/* Mobile Auth Buttons */}
+                        {/* Mobile Auth/Profile Buttons */}
                         <div className="space-y-3">
-                            <div
-                                className="w-full text-center bg-white cursor-pointer border-2 rounded-[3px] border-black text-black px-4 py-3 hover:bg-gray-50 transition-colors"
-                                onClick={handleRegistrationClick}
-                            >
-                                Register
-                            </div>
-                            <div
-                                className="w-full text-center bg-[#4D4D4D] cursor-pointer border-2 rounded-[3px] border-black text-white px-4 py-3 hover:bg-gray-700 transition-colors"
-                                onClick={handleLoginClick}
-                            >
-                                Login
-                            </div>
+                            {isAuthenticated() ? (
+                                // Authenticated user mobile buttons
+                                <>
+                                    <Button
+                                        onClick={handleProfileClick}
+                                        className="w-full bg-white border-2 border-black text-black hover:bg-gray-50 py-3 rounded-[3px] flex items-center justify-center space-x-2"
+                                    >
+                                        <User className="h-4 w-4" />
+                                        <span>
+                                            {user?.username || "Profile"}
+                                        </span>
+                                    </Button>
+                                    <Button
+                                        onClick={handleLogout}
+                                        className="w-full bg-[#4D4D4D] border-2 border-black text-white hover:bg-gray-700 py-3 rounded-[3px] flex items-center justify-center space-x-2"
+                                    >
+                                        <LogOut className="h-4 w-4" />
+                                        <span>Logout</span>
+                                    </Button>
+                                </>
+                            ) : (
+                                // Guest user mobile buttons
+                                <>
+                                    <div
+                                        className="w-full text-center bg-white cursor-pointer border-2 rounded-[3px] border-black text-black px-4 py-3 hover:bg-gray-50 transition-colors"
+                                        onClick={handleRegistrationClick}
+                                    >
+                                        Register
+                                    </div>
+                                    <div
+                                        className="w-full text-center bg-[#4D4D4D] cursor-pointer border-2 rounded-[3px] border-black text-white px-4 py-3 hover:bg-gray-700 transition-colors"
+                                        onClick={handleLoginClick}
+                                    >
+                                        Login
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </Container>
                 </div>
             )}
 
-            {/* Modals */}
-            <LoginModal
-                isOpen={isLoginModalOpen}
-                onClose={handleCloseLoginModal}
-                onOpenRegistration={handleOpenRegistrationFromLogin}
-            />
-            <RegistrationModal
-                isOpen={isRegistrationModalOpen}
-                onClose={handleCloseRegistrationModal}
-            />
+            {/* Modals - Only show when not authenticated */}
+            {!isAuthenticated() && (
+                <>
+                    <LoginModal
+                        isOpen={isLoginModalOpen}
+                        onClose={handleCloseLoginModal}
+                        onOpenRegistration={handleOpenRegistrationFromLogin}
+                    />
+                    <RegistrationModal
+                        isOpen={isRegistrationModalOpen}
+                        onClose={handleCloseRegistrationModal}
+                    />
+                </>
+            )}
         </div>
     );
 };

@@ -42,8 +42,44 @@ export const useAuth = () => {
         loading: true,
         error: null,
     });
-    const router = useRouter();
 
+    // Load user from localStorage
+    const loadUserFromStorage = useCallback(() => {
+        try {
+            const storedUser = localStorage.getItem("user");
+            if (storedUser) {
+                const userData = JSON.parse(storedUser);
+
+                // Optional: Add timestamp validation
+                const currentTime = new Date().getTime();
+                const userTimestamp = new Date(
+                    userData.timestamp || 0
+                ).getTime();
+                const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+
+                // If data is older than 24 hours, clear it
+                if (currentTime - userTimestamp > TWENTY_FOUR_HOURS) {
+                    localStorage.removeItem("user");
+                    setAuthState({ user: null, loading: false, error: null });
+                    return;
+                }
+
+                setAuthState({
+                    user: userData,
+                    loading: false,
+                    error: null,
+                });
+            } else {
+                setAuthState({ user: null, loading: false, error: null });
+            }
+        } catch (error) {
+            console.error("Error loading user from storage:", error);
+            localStorage.removeItem("user"); // Clear corrupted data
+            setAuthState({ user: null, loading: false, error: null });
+        }
+    }, []);
+
+    // Optional: Fetch fresh user data from backend (for sync)
     const fetchUserProfile = useCallback(async () => {
         try {
             setAuthState((prev) => ({ ...prev, loading: true, error: null }));
@@ -61,7 +97,8 @@ export const useAuth = () => {
 
             if (!response.ok) {
                 if (response.status === 401) {
-                    // User not authenticated
+                    // User not authenticated, clear localStorage
+                    localStorage.removeItem("user");
                     setAuthState({ user: null, loading: false, error: null });
                     return;
                 }
@@ -73,8 +110,16 @@ export const useAuth = () => {
             const result = await response.json();
 
             if (result.success && result.data?.user) {
+                const userData = {
+                    ...result.data.user,
+                    timestamp: new Date().toISOString(),
+                };
+
+                // Update localStorage with fresh data
+                localStorage.setItem("user", JSON.stringify(userData));
+
                 setAuthState({
-                    user: result.data.user,
+                    user: userData,
                     loading: false,
                     error: null,
                 });
@@ -83,40 +128,52 @@ export const useAuth = () => {
             }
         } catch (error) {
             console.error("Error fetching user profile:", error);
-            setAuthState({
-                user: null,
+            // Don't clear localStorage on network errors, just use cached data
+            setAuthState((prev) => ({
+                ...prev,
                 loading: false,
                 error:
                     error instanceof Error
                         ? error.message
                         : "Authentication failed",
-            });
+            }));
         }
     }, []);
 
     const logout = useCallback(async () => {
         try {
-            await fetch(
+            setAuthState((prev) => ({ ...prev, loading: true }));
+
+            const response = await fetch(
                 "https://diamond-inventory.onrender.com/api/users/logout",
                 {
                     method: "POST",
                     credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
                 }
             );
+            const data = await response.json();
+            console.log("Logout response:", data);
         } catch (error) {
-            console.error("Logout error:", error);
+            console.error("Logout API error:", error);
         } finally {
-            // Clear local state regardless of logout API success
+            // Always clear local state and storage
             setAuthState({ user: null, loading: false, error: null });
             localStorage.removeItem("user");
-            router.push("/");
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("authToken");
+            localStorage.removeItem("token");
+            sessionStorage.clear();
+            window.location.href = "/"; // Redirect to login
         }
-    }, [router]);
+    }, []);
 
-    // Check for existing session on mount
+    // Load from localStorage on mount
     useEffect(() => {
-        fetchUserProfile();
-    }, [fetchUserProfile]);
+        loadUserFromStorage();
+    }, [loadUserFromStorage]);
 
     // Helper functions for permission checking
     const isAuthenticated = () => !!authState.user;
@@ -142,6 +199,7 @@ export const useAuth = () => {
         hasStatus,
         hasRole,
         logout,
-        refetchUser: fetchUserProfile,
+        refreshUser: fetchUserProfile, // Renamed for clarity
+        loadFromStorage: loadUserFromStorage,
     };
 };

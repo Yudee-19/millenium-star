@@ -15,6 +15,7 @@ import { InventoryGuard } from "@/components/auth/routeGuard"; // Updated import
 import { UserStatusHandler } from "@/components/auth/statusGuard";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
+import Navbar from "@/components/landing/header";
 
 export default function ClientPage() {
     const { user } = useAuth(); // Get user for conditional rendering
@@ -136,79 +137,6 @@ export default function ClientPage() {
         <InventoryGuard>
             <UserStatusHandler>
                 <div className="min-h-screen bg-gray-50">
-                    {/* Header */}
-                    <header className="bg-white border-b border-gray-200 px-6 py-4">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-8">
-                                <h1 className="text-2xl font-bold font-playfair text-gray-900">
-                                    MILLENNIUM&nbsp;STAR
-                                </h1>
-                                <nav className="flex space-x-6">
-                                    <a href="/inventory">
-                                        <Button
-                                            variant="ghost"
-                                            className="text-gray-600 hover:text-gray-900"
-                                        >
-                                            Inventory
-                                        </Button>
-                                    </a>
-
-                                    {/* Show Admin link only for ADMIN users */}
-                                    {user?.role === "ADMIN" && (
-                                        <a href="/admin">
-                                            <Button
-                                                variant="ghost"
-                                                className="text-gray-600 hover:text-gray-900"
-                                            >
-                                                Admin Dashboard
-                                            </Button>
-                                        </a>
-                                    )}
-
-                                    {/* {user?.role === "ADMIN" && (
-                                        <Button
-                                            variant="ghost"
-                                            className="text-gray-600 hover:text-gray-900"
-                                        >
-                                            Offer Enquiry
-                                        </Button>
-                                    )} */}
-
-                                    {user?.role === "ADMIN" && (
-                                        <Button
-                                            variant="ghost"
-                                            className="text-gray-600 hover:text-gray-900"
-                                            onClick={() =>
-                                                router.push(
-                                                    "/admin/members-enquiry"
-                                                )
-                                            }
-                                        >
-                                            Member Enquiry
-                                        </Button>
-                                    )}
-                                    {/* USER buttons */}
-                                    {user?.role === "USER" && (
-                                        <Button
-                                            variant="ghost"
-                                            className="text-gray-600 hover:text-gray-900"
-                                        >
-                                            Make an Offer
-                                        </Button>
-                                    )}
-                                </nav>
-                            </div>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="bg-gray-900 hover:bg-gray-900 text-white hover:text-white rounded-full space-x-2 flex justify-center"
-                            >
-                                <div className="h-5 w-5 bg-white/50 hover:bg-white/50 rounded-full"></div>
-                                {user?.username || "User"}
-                            </Button>
-                        </div>
-                    </header>
-
                     <div className="flex">
                         {/* Filter Sidebar */}
                         <ClientFilterSidebar

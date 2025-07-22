@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
 
 interface LoginModalProps {
     isOpen: boolean;
@@ -31,6 +32,7 @@ export function LoginModal({
         password: "",
         rememberMe: false,
     });
+    const { loadFromStorage } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
     const router = useRouter();
@@ -99,9 +101,13 @@ export function LoginModal({
                 };
 
                 localStorage.setItem("user", JSON.stringify(userData));
+                loadFromStorage();
 
                 // Close modal and redirect based on user role
                 onClose();
+
+                // Force a page reload to ensure all components re-render with the new auth state
+                window.location.reload();
 
                 // Redirect based on role
                 if (result.data.user.role === "ADMIN") {

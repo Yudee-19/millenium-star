@@ -82,9 +82,6 @@ export default function ContactPage() {
 
     return (
         <div className="min-h-screen bg-white">
-            {/* Header */}
-            <Navbar />
-
             {/* Main Content */}
             <div className="max-w-7xl mx-auto px-6 py-16">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">

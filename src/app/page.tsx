@@ -1,3 +1,4 @@
+import DiamondCards from "@/components/landing/certificates";
 import Footer from "@/components/landing/footer";
 import GridSection from "@/components/landing/gridSection";
 import Navbar from "@/components/landing/header";
@@ -17,33 +18,21 @@ const gridCardsData1 = [
     {
         id: 2,
         title: "Fancy Cut Diamonds",
-        imageUrl: "/assets/diamond-img-2.png", // Replace with your actual image path
-        buttonText: "Order Now",
-    },
-    {
-        id: 3,
-        title: "Jewellery-Ready Stones",
-        imageUrl: "/assets/diamond-img-3.png", // Replace with your actual image path
+        imageUrl: "/assets/fancyCut-img.png", // Replace with your actual image path
         buttonText: "Order Now",
     },
 ];
 const gridCardsData2 = [
     {
         id: 1,
-        title: "Fancy Cut Diamonds",
-        imageUrl: "/assets/diamond-img-1.png", // Replace with your actual image path
-        buttonText: "Order Now",
-    },
-    {
-        id: 2,
         title: "Matched Diamond Pairs ",
         imageUrl: "/assets/diamond-img-2.png", // Replace with your actual image path
         buttonText: "Order Now",
     },
     {
-        id: 3,
+        id: 2,
         title: "Matched Diamond Parcels",
-        imageUrl: "/assets/diamond-img-3.png", // Replace with your actual image path
+        imageUrl: "/assets/diamond-parcel.jpeg", // Replace with your actual image path
         buttonText: "Order Now",
     },
 ];
@@ -51,28 +40,44 @@ const gridCardsData2 = [
 const HomePage = () => {
     return (
         <div>
-            <Navbar />
+            {/* <Navbar /> */}
             {/* Hero Section */}
-            <div className="relative min-h-screen flex items-center justify-center">
-                <Image
-                    src={"/assets/hero-bg.png"}
-                    alt="Hero Background"
-                    fill
-                    className="object-cover z-10"
-                    priority
-                />
+            <div className="relative max-lg:py-30 lg:min-h-screen flex items-center justify-center overflow-hidden">
+                {/* Background Images Container */}
+                <div className="absolute inset-0 flex">
+                    {/* Left Image */}
+                    <div className="relative w-1/2 h-full">
+                        <Image
+                            src={"/assets/hero1.png"}
+                            alt="Hero Background1"
+                            fill
+                            className="object-cover"
+                            priority
+                        />
+                    </div>
+                    {/* Right Image */}
+                    <div className="relative w-1/2 h-full">
+                        <Image
+                            src={"/assets/hero2.png"}
+                            alt="Hero Background2"
+                            fill
+                            className="object-cover"
+                            priority
+                        />
+                    </div>
+                </div>
                 {/* Overlay for better text readability */}
-                <div className="absolute inset-0 bg-black/10 z-15"></div>
+                <div className="absolute inset-0 bg-black/20 z-15"></div>
 
                 {/* Centered Content */}
                 <div className="relative z-20 text-center px-6 max-w-6xl mx-auto">
                     <Title className="mb-6">
-                        Certified Diamonds, Designed for Business
+                        Certified Diamonds & Non Certified Diamond Designed for
+                        Business
                     </Title>
                     <Description className="mb-8">
-                        From ethically sourced stones to retail-ready jewellery
-                        — built for traders, retailers, and private labels
-                        worldwide.
+                        From ethically sourced stones to — built for traders,
+                        retailers, and private labels worldwide.
                     </Description>
 
                     {/* Action Buttons */}
@@ -129,6 +134,7 @@ const HomePage = () => {
                     Your Trusted B2B Diamond Supplier
                 </Title>
             </GridSection>
+            <DiamondCards />
 
             <Testimonial />
             <Footer />

@@ -46,7 +46,7 @@ const testimonials = [
 
 const Testimonial = () => {
     return (
-        <div className="w-full mt-20 lg:mt-30 px-5">
+        <div className="w-full my-20 lg:my-30 px-5">
             <h1
                 className={`${playFair.className} text-5xl text-center`}
                 style={{

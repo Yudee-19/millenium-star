@@ -3,27 +3,6 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import React from "react";
 
-// const gridCardsData = [
-//     {
-//         id: 1,
-//         title: "Loose Certified Diamonds",
-//         imageUrl: "/assets/diamond-img-1.png",
-//         buttonText: "Order Now",
-//     },
-//     {
-//         id: 2,
-//         title: "Custom Cut Diamonds",
-//         imageUrl: "/assets/diamond-img-2.png",
-//         buttonText: "Order Now",
-//     },
-//     {
-//         id: 3,
-//         title: "Jewellery-Ready Stones",
-//         imageUrl: "/assets/diamond-img-3.png",
-//         buttonText: "Order Now",
-//     },
-// ];
-
 interface GridSectionProps {
     children?: React.ReactNode;
     className?: string;
@@ -36,6 +15,20 @@ interface GridSectionProps {
 }
 
 const GridSection = ({ children, className, gridData }: GridSectionProps) => {
+    // Calculate grid columns based on data length
+    const getGridCols = () => {
+        const dataLength = gridData.length;
+
+        if (dataLength === 1) {
+            return "grid-cols-1";
+        } else if (dataLength === 2) {
+            return "grid-cols-1 md:grid-cols-2 lg:grid-cols-2";
+        } else {
+            // For 3 or more items, max 3 columns
+            return "grid-cols-1 md:grid-cols-2 lg:grid-cols-3";
+        }
+    };
+
     return (
         <section className={cn("py-20 px-6 bg-[#F4F4F5]", className)}>
             <div className="max-w-7xl mx-auto">
@@ -44,8 +37,8 @@ const GridSection = ({ children, className, gridData }: GridSectionProps) => {
                     <div className="text-center mb-12">{children}</div>
                 )}
 
-                {/* Cards Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {/* Cards Grid - Dynamic columns based on data length */}
+                <div className={cn("grid gap-8", getGridCols())}>
                     {gridData.map((card) => (
                         <GridCard
                             key={card.id}
