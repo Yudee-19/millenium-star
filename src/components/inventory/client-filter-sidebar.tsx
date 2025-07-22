@@ -112,7 +112,7 @@ export function ClientFilterSidebar({
         items: any[],
         sectionKey: string,
         renderItem: (item: any) => React.ReactNode,
-        itemsPerRow: number = 5
+        itemsPerRow: number = 4
     ) => {
         const isExpanded = expandedSections[sectionKey];
         const visibleItems = isExpanded ? items : items.slice(0, 10);
@@ -123,7 +123,7 @@ export function ClientFilterSidebar({
                 <div
                     className={`grid gap-2`}
                     style={{
-                        gridTemplateColumns: `repeat(${itemsPerRow}, 1fr)`,
+                        gridTemplateColumns: `repeat(4, 1fr)`,
                     }}
                 >
                     {visibleItems.map((item) => renderItem(item))}

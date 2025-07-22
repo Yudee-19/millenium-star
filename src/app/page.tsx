@@ -99,7 +99,7 @@ const HomePage = () => {
                 </Title>
             </GridSection>
 
-            <section className="min-h-screen flex flex-col lg:flex-row">
+            <section className="md:min-h-screen flex flex-col lg:flex-row">
                 {/* Left Content Column */}
                 <div className="lg:w-1/2 bg-[#A6A6A6] text-white flex items-center justify-center p-8 sm:p-16 lg:p-20 order-2 lg:order-1">
                     <div className="">

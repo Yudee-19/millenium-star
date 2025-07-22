@@ -38,7 +38,7 @@ const GridSection = ({ children, className, gridData }: GridSectionProps) => {
                 {/* Cards Grid - Dynamic columns based on data length */}
                 <div
                     className={cn(
-                        "grid  max-w-5xl max-h-fit gap-12 p-10 md:p-30",
+                        "grid  max-w-5xl mx-auto max-h-fit gap-12 p-10 md:p-30",
                         getGridCols()
                     )}
                 >
