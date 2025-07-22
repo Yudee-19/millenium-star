@@ -96,7 +96,11 @@ export function ClientFilterSidebar({
             HRT: "heart.svg",
             MQS: "marquise.svg",
             BAG: "baguette.svg",
-            TBG: "baguette.svg", // Tapered Baguette
+            TBG: "tapered.svg", // Updated to tapered.svg
+            RAD: "radiant.svg",
+            PR: "pear.svg",
+            SQR: "square.svg",
+            TRL: "trilliant.svg",
         };
 
         const fileName = shapeMap[shapeValue];
@@ -185,7 +189,7 @@ export function ClientFilterSidebar({
                                             (filters.shape || []).includes(
                                                 shape.value
                                             )
-                                                ? "border-blue-500 bg-blue-50"
+                                                ? "border-black "
                                                 : "border-gray-300 hover:border-gray-400"
                                         }`}
                                     >
