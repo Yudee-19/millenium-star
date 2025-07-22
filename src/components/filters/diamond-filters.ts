@@ -1,16 +1,53 @@
-import { Diamond, Gem, Circle, Square, Heart, Octagon } from "lucide-react";
+import {
+    Diamond,
+    Gem,
+    Circle,
+    Square,
+    Heart,
+    Octagon,
+    Star as StarIcon,
+    Triangle,
+} from "lucide-react";
 
 export const shape_options = [
-    { value: "RBC", label: "Round Brilliant", icon: Circle },
+    { value: "RBC", label: "Round", icon: Circle },
+    { value: "PER", label: "Pear", icon: Diamond },
+    { value: "OVL", label: "Oval", icon: Circle },
+    { value: "MQS", label: "Marquise", icon: Diamond },
+    { value: "HRT", label: "Heart", icon: Heart },
+    { value: "RAD", label: "Radiant", icon: Square },
     { value: "PRS", label: "Princess", icon: Square },
     { value: "EMD", label: "Emerald", icon: Octagon },
     { value: "ASS", label: "Asscher", icon: Square },
-    { value: "CUS", label: "Cushion", icon: Square },
-    { value: "OVL", label: "Oval", icon: Circle },
-    { value: "RAD", label: "Radiant", icon: Square },
-    { value: "PER", label: "Pear", icon: Diamond },
-    { value: "MQS", label: "Marquise", icon: Diamond },
-    { value: "HRT", label: "Heart", icon: Heart },
+    { value: "SQE", label: "Sq. Emerald", icon: Square },
+    { value: "SQR", label: "Square Radiant", icon: Square },
+    { value: "CUB", label: "Cushion Brilliant", icon: Square },
+    { value: "CUM", label: "Cushion Modified", icon: Square },
+    { value: "BAG", label: "Baguette", icon: Square },
+    { value: "EUC", label: "European Cut", icon: Circle },
+    { value: "OMC", label: "Old Miner", icon: Circle },
+    { value: "BRI", label: "Briolette", icon: Diamond },
+    { value: "BLT", label: "Bullets", icon: Diamond },
+    { value: "CLF", label: "Calf", icon: Diamond },
+    { value: "CRB", label: "Circular Brilliant", icon: Circle },
+    { value: "EPT", label: "Epaulette", icon: Diamond },
+    { value: "FLN", label: "Flanders", icon: Square },
+    { value: "HMF", label: "Half Moon", icon: Circle },
+    { value: "HEX", label: "Hexagonal", icon: Octagon },
+    { value: "KTE", label: "Kite", icon: Diamond },
+    { value: "LOZ", label: "Lozenge", icon: Diamond },
+    { value: "OCT", label: "Octagonal", icon: Octagon },
+    { value: "PEN", label: "Pentagonal", icon: Octagon },
+    { value: "ROS", label: "Rose", icon: Circle },
+    { value: "SHD", label: "Shield", icon: Diamond },
+    { value: "SQU", label: "Square", icon: Square },
+    { value: "STR", label: "Star", icon: StarIcon },
+    { value: "TBG", label: "Tapered Baguette", icon: Square },
+    { value: "TBL", label: "Tapered Bullet", icon: Diamond },
+    { value: "TRP", label: "Trapezoid", icon: Square },
+    { value: "TRI", label: "Triangular", icon: Triangle },
+    { value: "TRL", label: "Trilliant", icon: Triangle },
+    { value: "OTH", label: "Other", icon: Gem },
 ];
 
 export const color_options = [
@@ -59,6 +96,7 @@ export const cut_options = [
     { value: "G", label: "Good", icon: Gem },
     { value: "F", label: "Fair", icon: Gem },
     { value: "P", label: "Poor", icon: Gem },
+    { value: "I", label: "Ideal", icon: Gem },
 ];
 
 export const polish_options = [
@@ -67,6 +105,7 @@ export const polish_options = [
     { value: "G", label: "Good", icon: Gem },
     { value: "F", label: "Fair", icon: Gem },
     { value: "P", label: "Poor", icon: Gem },
+    { value: "I", label: "Ideal", icon: Gem },
 ];
 
 export const symmetry_options = [
@@ -75,21 +114,39 @@ export const symmetry_options = [
     { value: "G", label: "Good", icon: Gem },
     { value: "F", label: "Fair", icon: Gem },
     { value: "P", label: "Poor", icon: Gem },
+    { value: "I", label: "Ideal", icon: Gem },
 ];
 
 export const flou_options = [
-    { value: "NON", label: "None", icon: Gem },
-    { value: "FAINT", label: "Faint", icon: Gem },
-    { value: "MEDIUM", label: "Medium", icon: Gem },
-    { value: "STRONG", label: "Strong", icon: Gem },
-    { value: "VERY STRONG", label: "Very Strong", icon: Gem },
+    { value: "FL", label: "FL", icon: Gem },
+    { value: "IF", label: "IF", icon: Gem },
+    { value: "VVS1", label: "VVS1", icon: Gem },
+    { value: "VVS2", label: "VVS2", icon: Gem },
+    { value: "VS1", label: "VS1", icon: Gem },
+    { value: "VS2", label: "VS2", icon: Gem },
+    { value: "SI1", label: "SI1", icon: Gem },
+    { value: "SI2", label: "SI2", icon: Gem },
+    { value: "SI3", label: "SI3", icon: Gem },
 ];
 
 export const lab_options = [
     { value: "GIA", label: "GIA", icon: Gem },
+    { value: "GIA DOR", label: "GIA DOR", icon: Gem },
     { value: "HRD", label: "HRD", icon: Gem },
     { value: "IGI", label: "IGI", icon: Gem },
+    { value: "AGS", label: "AGS", icon: Gem },
+    { value: "CGL", label: "CGL", icon: Gem },
+    { value: "DBIOD", label: "DBIOD", icon: Gem },
     { value: "GCAL", label: "GCAL", icon: Gem },
+    { value: "GII", label: "GII", icon: Gem },
+    { value: "GHI", label: "GHI", icon: Gem },
+    { value: "GSI", label: "GSI", icon: Gem },
+    { value: "NGTC", label: "NGTC", icon: Gem },
+    { value: "PGS", label: "PGS", icon: Gem },
+    { value: "RAP", label: "RAP", icon: Gem },
+    { value: "RDC", label: "RDC", icon: Gem },
+    { value: "SGL", label: "SGL", icon: Gem },
+    { value: "NONE", label: "NONE", icon: Gem },
 ];
 
 export const availability_options = [

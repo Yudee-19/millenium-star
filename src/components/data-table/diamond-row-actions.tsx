@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useState } from "react";
 import { Row } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,14 +14,21 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Copy, Eye, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { diamondSchema, DiamondType } from "@/lib/validations/diamond-schema";
+import { EditDiamondModal } from "@/components/modals/edit-diamond";
+import { DeleteDiamondDialog } from "@/components/modals/delete-diamond-dialog";
 
 interface DiamondRowActionsProps<TData> {
     row: Row<TData>;
+    onRefresh?: () => void; // Add optional refresh callback
 }
 
 export function DataTableRowActions<TData>({
     row,
+    onRefresh,
 }: DiamondRowActionsProps<TData>) {
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
     // Safe parsing with error handling
     const parseResult = diamondSchema.safeParse(row.original);
 
@@ -62,55 +70,87 @@ export function DataTableRowActions<TData>({
     }
 
     const diamond = parseResult.data;
-    // console.log("Parsed diamond data:", diamond);
+
+    const handleEditSuccess = () => {
+        console.log("✅ Diamond edit successful, refreshing data...");
+        if (onRefresh) {
+            onRefresh();
+        }
+    };
+
+    const handleDeleteSuccess = () => {
+        console.log("✅ Diamond delete successful, refreshing data...");
+        if (onRefresh) {
+            onRefresh();
+        }
+    };
 
     return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button
-                    variant="ghost"
-                    className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-                >
-                    <MoreHorizontal className="h-4 w-4" />
-                    <span className="sr-only">Open menu</span>
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[200px]">
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuItem
-                    onClick={() => navigator.clipboard.writeText(diamond._id)}
-                >
-                    <Copy className="mr-2 h-4 w-4" />
-                    Copy Diamond ID
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                    onClick={() => {
-                        const diamond = row.original as DiamondType;
-                        const certNo =
-                            diamond.certificateNumber ||
-                            (diamond as any)["CERT-NO"] ||
-                            "No certificate number";
-                        navigator.clipboard.writeText(certNo);
-                    }}
-                >
-                    <Copy className="mr-2 h-4 w-4" />
-                    Copy Certificate Number
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                {/* <DropdownMenuItem>
-                    <Eye className="mr-2 h-4 w-4" />
-                    View Details
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                    <Pencil className="mr-2 h-4 w-4" />
-                    Edit Diamond
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-600">
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Delete Diamond
-                </DropdownMenuItem> */}
-            </DropdownMenuContent>
-        </DropdownMenu>
+        <>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button
+                        variant="ghost"
+                        className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+                    >
+                        <MoreHorizontal className="h-4 w-4" />
+                        <span className="sr-only">Open menu</span>
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-[200px]">
+                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                    <DropdownMenuItem
+                        onClick={() =>
+                            navigator.clipboard.writeText(diamond._id)
+                        }
+                    >
+                        <Copy className="mr-2 h-4 w-4" />
+                        Copy Diamond ID
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                        onClick={() => {
+                            const diamond = row.original as DiamondType;
+                            const certNo =
+                                diamond.certificateNumber ||
+                                (diamond as any)["CERT-NO"] ||
+                                "No certificate number";
+                            navigator.clipboard.writeText(certNo);
+                        }}
+                    >
+                        <Copy className="mr-2 h-4 w-4" />
+                        Copy Certificate Number
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => setIsEditModalOpen(true)}>
+                        <Pencil className="mr-2 h-4 w-4" />
+                        Edit Diamond
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                        className="text-red-600"
+                        onClick={() => setIsDeleteDialogOpen(true)}
+                    >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Delete Diamond
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Edit Modal */}
+            <EditDiamondModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                onSuccess={handleEditSuccess}
+                diamond={diamond}
+            />
+
+            {/* Delete Dialog */}
+            <DeleteDiamondDialog
+                isOpen={isDeleteDialogOpen}
+                onClose={() => setIsDeleteDialogOpen(false)}
+                onSuccess={handleDeleteSuccess}
+                diamond={diamond}
+            />
+        </>
     );
 }

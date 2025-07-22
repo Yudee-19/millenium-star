@@ -1,4 +1,3 @@
-// src/components/client/client-filter-sidebar.tsx
 "use client";
 
 import React, { useState } from "react";
@@ -14,13 +13,22 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { ClientFilters, FilterOptions } from "@/types/client/diamond";
-import { Search, RotateCcw } from "lucide-react";
+import { Search, RotateCcw, ChevronDown, ChevronUp } from "lucide-react";
+import {
+    shape_options,
+    color_options,
+    clarity_options,
+    cut_options,
+    polish_options,
+    symmetry_options,
+    lab_options,
+} from "@/components/filters/diamond-filters";
 
 interface ClientFilterSidebarProps {
     filters: ClientFilters;
     onFiltersChange: (filters: ClientFilters) => void;
     filterOptions: FilterOptions;
-    onSearch: (filters: ClientFilters) => void; // Updated to pass filters
+    onSearch: (filters: ClientFilters) => void;
     onReset: () => void;
     loading?: boolean;
 }
@@ -28,11 +36,19 @@ interface ClientFilterSidebarProps {
 export function ClientFilterSidebar({
     filters,
     onFiltersChange,
-    filterOptions,
     onSearch,
     onReset,
     loading = false,
 }: ClientFilterSidebarProps) {
+    const [expandedSections, setExpandedSections] = useState<{
+        [key: string]: boolean;
+    }>({
+        shape: false,
+        color: false,
+        clarity: false,
+        lab: false,
+    });
+
     const updateFilter = (key: keyof ClientFilters, value: any) => {
         const newFilters = {
             ...filters,
@@ -55,21 +71,82 @@ export function ClientFilterSidebar({
     };
 
     const handleSearch = () => {
-        onSearch(filters); // Pass current filters to search
+        onSearch(filters);
     };
 
-    const shapes = [
-        { value: "RBC", label: "Round", icon: "●" },
-        { value: "PRN", label: "Princess", icon: "◆" },
-        { value: "EMD", label: "Emerald", icon: "▬" },
-        { value: "ASS", label: "Asscher", icon: "⬜" },
-        { value: "CUS", label: "Cushion", icon: "◈" },
-        { value: "OVL", label: "Oval", icon: "⬭" },
-        { value: "RAD", label: "Radiant", icon: "⬜" },
-        { value: "PER", label: "Pear", icon: "💧" },
-        { value: "MQS", label: "Marquise", icon: "◊" },
-        { value: "HRT", label: "Heart", icon: "♥" },
-    ];
+    const toggleSection = (section: string) => {
+        setExpandedSections((prev) => ({
+            ...prev,
+            [section]: !prev[section],
+        }));
+    };
+
+    // Helper function to get SVG image path for shapes
+    const getShapeImage = (shapeValue: string) => {
+        const shapeMap: { [key: string]: string } = {
+            RBC: "round.svg",
+            EMD: "emerald.svg",
+            PRS: "princess.svg",
+            PRN: "princess.svg", // Alternative code for princess
+            ASS: "asscher.svg",
+            CUS: "cushion.svg",
+            CUB: "cushion.svg", // Cushion Brilliant
+            CUM: "cushion.svg", // Cushion Modified
+            OVL: "oval.svg",
+            HRT: "heart.svg",
+            MQS: "marquise.svg",
+            BAG: "baguette.svg",
+            TBG: "baguette.svg", // Tapered Baguette
+        };
+
+        const fileName = shapeMap[shapeValue];
+        return fileName ? `/assets/diamondShapes/${fileName}` : null;
+    };
+
+    // Helper function to render items with view more/less functionality
+    const renderItemsWithViewMore = (
+        items: any[],
+        sectionKey: string,
+        renderItem: (item: any) => React.ReactNode,
+        itemsPerRow: number = 5
+    ) => {
+        const isExpanded = expandedSections[sectionKey];
+        const visibleItems = isExpanded ? items : items.slice(0, 10);
+        const hasMore = items.length > 10;
+
+        return (
+            <>
+                <div
+                    className={`grid gap-2`}
+                    style={{
+                        gridTemplateColumns: `repeat(${itemsPerRow}, 1fr)`,
+                    }}
+                >
+                    {visibleItems.map((item) => renderItem(item))}
+                </div>
+                {hasMore && (
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => toggleSection(sectionKey)}
+                        className="w-full mt-2 text-xs text-gray-600 hover:text-gray-800"
+                    >
+                        {isExpanded ? (
+                            <>
+                                <ChevronUp className="w-3 h-3 mr-1" />
+                                View Less
+                            </>
+                        ) : (
+                            <>
+                                <ChevronDown className="w-3 h-3 mr-1" />
+                                View More ({items.length - 10} more)
+                            </>
+                        )}
+                    </Button>
+                )}
+            </>
+        );
+    };
 
     return (
         <div className="w-72 bg-gray-50 p-6 border-r border-gray-200 overflow-y-auto h-screen">
@@ -79,8 +156,10 @@ export function ClientFilterSidebar({
                     <Label className="text-sm font-medium mb-3 block text-gray-700">
                         SHAPE
                     </Label>
-                    <div className="grid grid-cols-5 gap-2">
-                        {shapes.map((shape) => (
+                    {renderItemsWithViewMore(
+                        shape_options,
+                        "shape",
+                        (shape) => (
                             <div
                                 key={shape.value}
                                 className="flex flex-col items-center"
@@ -102,15 +181,54 @@ export function ClientFilterSidebar({
                                     />
                                     <label
                                         htmlFor={`shape-${shape.value}`}
-                                        className={`w-8 h-8 border-2 rounded cursor-pointer flex items-center justify-center text-lg transition-colors ${
+                                        className={`w-8 h-8 border-2 rounded cursor-pointer flex items-center justify-center transition-colors ${
                                             (filters.shape || []).includes(
                                                 shape.value
                                             )
-                                                ? "border-blue-500 bg-blue-50 text-blue-600"
+                                                ? "border-blue-500 bg-blue-50"
                                                 : "border-gray-300 hover:border-gray-400"
                                         }`}
                                     >
-                                        {shape.icon}
+                                        {getShapeImage(shape.value) ? (
+                                            <img
+                                                src={
+                                                    getShapeImage(shape.value)!
+                                                }
+                                                alt={shape.label}
+                                                className="w-10 h-10 pt-1 object-contain"
+                                                onError={(e) => {
+                                                    // Fallback to text if image not found
+                                                    const target =
+                                                        e.currentTarget as HTMLImageElement;
+                                                    target.style.display =
+                                                        "none";
+                                                    const parent =
+                                                        target.parentElement;
+                                                    if (parent) {
+                                                        const fallback =
+                                                            parent.querySelector(
+                                                                ".fallback-text"
+                                                            ) as HTMLElement;
+                                                        if (fallback) {
+                                                            fallback.style.display =
+                                                                "block";
+                                                        }
+                                                    }
+                                                }}
+                                            />
+                                        ) : null}
+                                        <span
+                                            className="text-xs fallback-text"
+                                            style={{
+                                                display: getShapeImage(
+                                                    shape.value
+                                                )
+                                                    ? "none"
+                                                    : "block",
+                                            }}
+                                        >
+                                            {shape.value}
+                                        </span>
                                     </label>
                                 </div>
                                 <Label
@@ -120,8 +238,9 @@ export function ClientFilterSidebar({
                                     {shape.label}
                                 </Label>
                             </div>
-                        ))}
-                    </div>
+                        ),
+                        5
+                    )}
                 </div>
 
                 {/* Size Range */}
@@ -201,98 +320,73 @@ export function ClientFilterSidebar({
                 </div>
 
                 {/* Color */}
-                {/* <div>
+                <div>
                     <Label className="text-sm font-medium mb-3 block text-gray-700">
                         COLOR
                     </Label>
-                    <div className="space-y-2">
-                        <div className="flex items-center space-x-2">
-                            <Checkbox id="white-diamonds" />
-                            <Label htmlFor="white-diamonds" className="text-sm">
-                                White Diamonds
-                            </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <Checkbox id="fancy-diamonds" />
-                            <Label htmlFor="fancy-diamonds" className="text-sm">
-                                Fancy Diamonds
-                            </Label>
-                        </div>
-                    </div>
-
-                    <div className="mt-3">
-                        <Label className="text-xs text-gray-500 mb-2 block">
-                            COLOR GRADE
-                        </Label>
-                        <div className="grid grid-cols-7 gap-1">
-                            {["D", "E", "F", "G", "H", "I", "J"].map(
-                                (color) => (
-                                    <div key={color} className="text-center">
-                                        <Checkbox
-                                            id={`color-${color}`}
-                                            checked={(
-                                                filters.color || []
-                                            ).includes(color)}
-                                            onCheckedChange={(checked) =>
-                                                updateArrayFilter(
-                                                    "color",
-                                                    color,
-                                                    checked as boolean
-                                                )
-                                            }
-                                        />
-                                        <Label
-                                            htmlFor={`color-${color}`}
-                                            className="text-xs block mt-1 cursor-pointer"
-                                        >
-                                            {color}
-                                        </Label>
-                                    </div>
-                                )
-                            )}
-                        </div>
-                    </div>
-                </div> */}
+                    {renderItemsWithViewMore(
+                        color_options,
+                        "color",
+                        (color) => (
+                            <div key={color.value} className="text-center">
+                                <Checkbox
+                                    id={`color-${color.value}`}
+                                    checked={(filters.color || []).includes(
+                                        color.value
+                                    )}
+                                    onCheckedChange={(checked) =>
+                                        updateArrayFilter(
+                                            "color",
+                                            color.value,
+                                            checked as boolean
+                                        )
+                                    }
+                                />
+                                <Label
+                                    htmlFor={`color-${color.value}`}
+                                    className="text-xs block mt-1 cursor-pointer"
+                                >
+                                    {color.value}
+                                </Label>
+                            </div>
+                        ),
+                        7
+                    )}
+                </div>
 
                 {/* Clarity */}
                 <div>
                     <Label className="text-sm font-medium mb-3 block text-gray-700">
                         CLARITY
                     </Label>
-                    <div className="grid grid-cols-4 gap-2">
-                        {[
-                            "FL",
-                            "IF",
-                            "VVS1",
-                            "VVS2",
-                            "VS1",
-                            "VS2",
-                            "SI1",
-                            "SI2",
-                        ].map((clarity) => (
-                            <div key={clarity} className="text-center">
+                    {renderItemsWithViewMore(
+                        clarity_options,
+                        "clarity",
+                        (clarity) => (
+                            <div key={clarity.value} className="text-center">
                                 <Checkbox
-                                    id={`clarity-${clarity}`}
+                                    id={`clarity-${clarity.value}`}
                                     checked={(filters.clarity || []).includes(
-                                        clarity
+                                        clarity.value
                                     )}
                                     onCheckedChange={(checked) =>
                                         updateArrayFilter(
                                             "clarity",
-                                            clarity,
+                                            clarity.value,
                                             checked as boolean
                                         )
                                     }
                                 />
                                 <Label
-                                    htmlFor={`clarity-${clarity}`}
+                                    htmlFor={`clarity-${clarity.value}`}
                                     className="text-xs block mt-1 cursor-pointer"
                                 >
-                                    {clarity}
+                                    {clarity.value}
                                 </Label>
                             </div>
-                        ))}
-                    </div>
+                        ),
+                        4
+                    )}
                 </div>
 
                 {/* Fluorescence */}
@@ -343,9 +437,9 @@ export function ClientFilterSidebar({
                     </Label>
                     <div className="space-y-2">
                         <div className="flex items-center space-x-2">
-                            <Checkbox id="stone-id" />
-                            <Label htmlFor="stone-id" className="text-sm">
-                                STONE ID
+                            <Checkbox id="stock-id" />
+                            <Label htmlFor="stock-id" className="text-sm">
+                                STOCK ID
                             </Label>
                         </div>
                         <div className="flex items-center space-x-2">
@@ -383,11 +477,11 @@ export function ClientFilterSidebar({
                             <SelectValue placeholder="Select grade" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="EX">Excellent</SelectItem>
-                            <SelectItem value="VG">Very Good</SelectItem>
-                            <SelectItem value="G">Good</SelectItem>
-                            <SelectItem value="F">Fair</SelectItem>
-                            <SelectItem value="P">Poor</SelectItem>
+                            {cut_options.map((cut) => (
+                                <SelectItem key={cut.value} value={cut.value}>
+                                    {cut.label}
+                                </SelectItem>
+                            ))}
                         </SelectContent>
                     </Select>
                 </div>
@@ -407,11 +501,14 @@ export function ClientFilterSidebar({
                             <SelectValue placeholder="Select grade" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="EX">Excellent</SelectItem>
-                            <SelectItem value="VG">Very Good</SelectItem>
-                            <SelectItem value="G">Good</SelectItem>
-                            <SelectItem value="F">Fair</SelectItem>
-                            <SelectItem value="P">Poor</SelectItem>
+                            {polish_options.map((polish) => (
+                                <SelectItem
+                                    key={polish.value}
+                                    value={polish.value}
+                                >
+                                    {polish.label}
+                                </SelectItem>
+                            ))}
                         </SelectContent>
                     </Select>
                 </div>
@@ -434,11 +531,14 @@ export function ClientFilterSidebar({
                             <SelectValue placeholder="Select grade" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="EX">Excellent</SelectItem>
-                            <SelectItem value="VG">Very Good</SelectItem>
-                            <SelectItem value="G">Good</SelectItem>
-                            <SelectItem value="F">Fair</SelectItem>
-                            <SelectItem value="P">Poor</SelectItem>
+                            {symmetry_options.map((symmetry) => (
+                                <SelectItem
+                                    key={symmetry.value}
+                                    value={symmetry.value}
+                                >
+                                    {symmetry.label}
+                                </SelectItem>
+                            ))}
                         </SelectContent>
                     </Select>
                 </div>
@@ -446,34 +546,39 @@ export function ClientFilterSidebar({
                 {/* Lab */}
                 <div>
                     <Label className="text-sm font-medium mb-3 block text-gray-700">
-                        LOCATION
+                        LABORATORY
                     </Label>
-                    <div className="grid grid-cols-2 gap-2">
-                        {["GIA", "HRD", "IGI", "GCAL"].map((lab) => (
+                    {renderItemsWithViewMore(
+                        lab_options,
+                        "lab",
+                        (lab) => (
                             <div
-                                key={lab}
+                                key={lab.value}
                                 className="flex items-center space-x-2"
                             >
                                 <Checkbox
-                                    id={`lab-${lab}`}
-                                    checked={(filters.lab || []).includes(lab)}
+                                    id={`lab-${lab.value}`}
+                                    checked={(filters.lab || []).includes(
+                                        lab.value
+                                    )}
                                     onCheckedChange={(checked) =>
                                         updateArrayFilter(
                                             "lab",
-                                            lab,
+                                            lab.value,
                                             checked as boolean
                                         )
                                     }
                                 />
                                 <Label
-                                    htmlFor={`lab-${lab}`}
+                                    htmlFor={`lab-${lab.value}`}
                                     className="text-xs cursor-pointer"
                                 >
-                                    {lab}
+                                    {lab.label}
                                 </Label>
                             </div>
-                        ))}
-                    </div>
+                        ),
+                        2
+                    )}
                 </div>
 
                 {/* Buttons */}

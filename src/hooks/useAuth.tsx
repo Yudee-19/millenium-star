@@ -164,7 +164,6 @@ export const useAuth = () => {
             localStorage.removeItem("user");
             localStorage.removeItem("accessToken");
             localStorage.removeItem("authToken");
-            localStorage.removeItem("token");
             sessionStorage.clear();
             window.location.href = "/"; // Redirect to login
         }

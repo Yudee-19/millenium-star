@@ -30,15 +30,18 @@ const GridSection = ({ children, className, gridData }: GridSectionProps) => {
     };
 
     return (
-        <section className={cn("py-20 px-6 bg-[#F4F4F5]", className)}>
+        <section className={cn("my-0 py-20 px-6 bg-[#F4F4F5]", className)}>
             <div className="max-w-7xl mx-auto">
                 {/* Section Header */}
-                {children && (
-                    <div className="text-center mb-12">{children}</div>
-                )}
+                {children && <div className="text-center mb-1">{children}</div>}
 
                 {/* Cards Grid - Dynamic columns based on data length */}
-                <div className={cn("grid gap-8", getGridCols())}>
+                <div
+                    className={cn(
+                        "grid  max-w-5xl max-h-fit gap-12 p-10 md:p-30",
+                        getGridCols()
+                    )}
+                >
                     {gridData.map((card) => (
                         <GridCard
                             key={card.id}

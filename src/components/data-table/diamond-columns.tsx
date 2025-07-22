@@ -15,6 +15,7 @@ import {
     flou_options,
     availability_options,
 } from "../filters/diamond-filters";
+import { clientDiamondAPI } from "@/services/client-api";
 
 export const diamondColumns: ColumnDef<DiamondType>[] = [
     {
@@ -369,6 +370,13 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
     },
     {
         id: "actions",
-        cell: ({ row }) => <DataTableRowActions row={row} />,
+        cell: ({ row }) => (
+            <DataTableRowActions
+                row={row}
+                onRefresh={() => {
+                    window.location.reload();
+                }}
+            />
+        ),
     },
 ];
