@@ -118,15 +118,11 @@ export const symmetry_options = [
 ];
 
 export const flou_options = [
-    { value: "FL", label: "FL", icon: Gem },
-    { value: "IF", label: "IF", icon: Gem },
-    { value: "VVS1", label: "VVS1", icon: Gem },
-    { value: "VVS2", label: "VVS2", icon: Gem },
-    { value: "VS1", label: "VS1", icon: Gem },
-    { value: "VS2", label: "VS2", icon: Gem },
-    { value: "SI1", label: "SI1", icon: Gem },
-    { value: "SI2", label: "SI2", icon: Gem },
-    { value: "SI3", label: "SI3", icon: Gem },
+    { value: "NON", label: "None", icon: Gem },
+    { value: "FAINT", label: "Faint", icon: Gem },
+    { value: "MEDIUM", label: "Medium", icon: Gem },
+    { value: "STRONG", label: "Strong", icon: Gem },
+    { value: "VERY STRONG", label: "Very Strong", icon: Gem },
 ];
 
 export const lab_options = [
