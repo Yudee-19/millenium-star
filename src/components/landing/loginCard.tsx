@@ -107,7 +107,7 @@ export function LoginModal({
                 onClose();
 
                 // Force a page reload to ensure all components re-render with the new auth state
-                window.location.reload();
+                // window.location.reload();
 
                 // Redirect based on role
                 if (result.data.user.role === "ADMIN") {
