@@ -64,9 +64,11 @@ const HomePage = () => {
                             consistently graded stones and private-label
                             jewellery manufacturing.
                         </p>
-                        <button className="inline-flex text-md cursor-pointer items-center gap-2 bg-transparent text-white px-6 py-3 rounded-md font-medium border-2 border-white ">
-                            Book a consultation
-                        </button>
+                        <a href="/contact">
+                            <button className="inline-flex text-md cursor-pointer items-center gap-2 bg-transparent text-white px-6 py-3 rounded-md font-medium border-2 border-white ">
+                                Book a consultation
+                            </button>
+                        </a>
                     </div>
                 </div>
 

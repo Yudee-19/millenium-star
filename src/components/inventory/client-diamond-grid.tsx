@@ -252,17 +252,16 @@ export function ClientDiamondGrid({
                                         </span>
                                     </div>
                                     <div className="text-sm font-medium text-gray-700">
-                                        Cut:{" "}
+                                        {" "}
                                         <span className="font-bold">
-                                            {diamond.clarity ||
-                                                diamond["Clarity"] ||
+                                            {diamond.shape ||
+                                                diamond["Shape"] ||
                                                 "-"}
                                         </span>
                                     </div>
                                 </div>
-
                                 {/* Cut Grade */}
-                                <div className="flex justify-center">
+                                {/* <div className="flex justify-center">
                                     <Badge
                                         className={`text-xs ${getCutColor(
                                             diamond.cut || diamond["Cut"] || ""
@@ -272,7 +271,7 @@ export function ClientDiamondGrid({
                                             diamond.cut || diamond["Cut"] || "-"
                                         )}
                                     </Badge>
-                                </div>
+                                </div> */}
 
                                 {/* Price */}
                                 <div className="text-center">
@@ -301,7 +300,7 @@ export function ClientDiamondGrid({
 
                                 {/* Certificate Info */}
                                 <div className="text-xs text-gray-500 text-center pt-1">
-                                    ID: {diamond._id.slice(-8)}
+                                    ID: {diamond.certificateNumber}
                                 </div>
                             </div>
                         </CardContent>

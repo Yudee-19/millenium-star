@@ -110,12 +110,14 @@ export const GridCard = ({
                 <h3 className="text-xl font-light text-gray-900 mb-4">
                     {title}
                 </h3>
-                <button
-                    onClick={onButtonClick}
-                    className="bg-gray-800 text-white px-6 py-2 rounded-md font-medium hover:bg-gray-700 transition-colors duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-                >
-                    {buttonText}
-                </button>
+                <a href="/inventory">
+                    <button
+                        onClick={onButtonClick}
+                        className="bg-gray-800 text-white px-6 py-2 rounded-md font-medium hover:bg-gray-700 transition-colors duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                    >
+                        {buttonText}
+                    </button>
+                </a>
             </div>
         </div>
     );
