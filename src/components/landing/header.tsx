@@ -8,6 +8,7 @@ import { RegistrationModal } from "./registrationCard";
 import { Menu, X, User, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { on } from "events";
 
 const Navbar = () => {
     const pathname = usePathname();
@@ -19,11 +20,25 @@ const Navbar = () => {
     // Add authentication state
     const { user, isAuthenticated, logout, loading } = useAuth();
 
+    const accessInventoryClickHandler = () => {
+        if (isAuthenticated()) {
+            // User is authenticated, navigate to inventory
+            window.location.href = "/inventory";
+        } else {
+            // User is not authenticated, open login modal
+            setIsLoginModalOpen(true);
+        }
+    };
+
     const navItems = [
         { href: "/", label: "Home" },
         { href: "/about", label: "About us" },
         { href: "/contact", label: "Contact us" },
-        { href: "/inventory", label: "Access Inventory" },
+        {
+            href: "/inventory",
+            label: "Access Inventory",
+            onClick: () => accessInventoryClickHandler(),
+        },
     ];
 
     const handleLoginClick = () => {
@@ -106,6 +121,7 @@ const Navbar = () => {
                     {navItems.map((item) => (
                         <li key={item.href}>
                             <Link
+                                onClick={item.onClick}
                                 href={item.href}
                                 className={`transition-colors duration-200 ${
                                     pathname === item.href

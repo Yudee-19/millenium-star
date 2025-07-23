@@ -13,27 +13,27 @@ const gridCardsData1 = [
         id: 1,
         title: "Certified Diamonds",
         imageUrl: "/assets/diamond-img-1.png", // Replace with your actual image path
-        buttonText: "Order Now",
+        buttonText: "Explore Inventory",
     },
     {
         id: 2,
         title: "Fancy Cut Diamonds",
         imageUrl: "/assets/fancyCut-img.png", // Replace with your actual image path
-        buttonText: "Order Now",
+        buttonText: "Explore Inventory",
     },
 ];
 const gridCardsData2 = [
     {
         id: 1,
         title: "Matched Diamond Pairs ",
-        imageUrl: "/assets/diamond-img-2.png", // Replace with your actual image path
-        buttonText: "Order Now",
+        imageUrl: "/assets/diamond2-img.png", // Replace with your actual image path
+        buttonText: "Explore Inventory",
     },
     {
         id: 2,
         title: "Matched Diamond Parcels",
         imageUrl: "/assets/diamond-parcel.jpeg", // Replace with your actual image path
-        buttonText: "Order Now",
+        buttonText: "Explore Inventory",
     },
 ];
 
@@ -48,7 +48,7 @@ const HomePage = () => {
                     {/* Left Image */}
                     <div className="relative w-1/2 h-full">
                         <Image
-                            src={"/assets/hero1.png"}
+                            src={"/assets/hero-1.png"}
                             alt="Hero Background1"
                             fill
                             className="object-cover"
@@ -58,7 +58,7 @@ const HomePage = () => {
                     {/* Right Image */}
                     <div className="relative w-1/2 h-full">
                         <Image
-                            src={"/assets/hero2.png"}
+                            src={"/assets/hero-3.png"}
                             alt="Hero Background2"
                             fill
                             className="object-cover"
@@ -67,7 +67,7 @@ const HomePage = () => {
                     </div>
                 </div>
                 {/* Overlay for better text readability */}
-                <div className="absolute inset-0 bg-black/20 z-15"></div>
+                <div className="absolute inset-0 bg-black/50 z-15"></div>
 
                 {/* Centered Content */}
                 <div className="relative z-20 text-center px-6 max-w-6xl mx-auto">
@@ -120,7 +120,7 @@ const HomePage = () => {
                 {/* Right Image Column */}
                 <div className="lg:w-1/2 h-80 lg:h-auto min-h-[300px] relative order-1 lg:order-2">
                     <Image
-                        src={"/assets/diamond-4.jpg"}
+                        src={"/assets/diamond-4copy.png"}
                         alt="Close-up of a large, sparkling diamond held by tweezers"
                         fill
                         className="object-cover"
