@@ -441,9 +441,9 @@ export function ClientFilterSidebar({
                     </Label>
                     <div className="space-y-2">
                         <div className="flex items-center space-x-2">
-                            <Checkbox id="stock-id" />
-                            <Label htmlFor="stock-id" className="text-sm">
-                                STOCK ID
+                            <Checkbox id="diamond-id" />
+                            <Label htmlFor="diamond-id" className="text-sm">
+                                DIAMOND ID
                             </Label>
                         </div>
                         <div className="flex items-center space-x-2">

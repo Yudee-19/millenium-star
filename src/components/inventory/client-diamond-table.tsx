@@ -153,7 +153,7 @@ export function ClientDiamondTable({
                     <TableHeader>
                         <TableRow className="bg-gray-50">
                             <TableHead className="text-xs font-medium text-gray-700 text-center">
-                                Certificate No.
+                                Diamond Id.
                             </TableHead>
                             <TableHead className="text-xs font-medium text-gray-700 text-center">
                                 Shape
@@ -179,9 +179,9 @@ export function ClientDiamondTable({
                             <TableHead className="text-xs font-medium text-gray-700 text-center">
                                 Lab
                             </TableHead>
-                            <TableHead className="text-xs font-medium text-gray-700 text-center">
+                            {/* <TableHead className="text-xs font-medium text-gray-700 text-center">
                                 Stone Id
-                            </TableHead>
+                            </TableHead> */}
                             <TableHead className="text-xs font-medium text-gray-700 text-center">
                                 Price
                             </TableHead>
@@ -226,9 +226,9 @@ export function ClientDiamondTable({
                                 <TableCell className="text-sm">
                                     {diamond.lab || diamond["LAB"] || "-"}
                                 </TableCell>
-                                <TableCell className="text-sm">
+                                {/* <TableCell className="text-sm">
                                     {diamond._id.slice(-8)}
-                                </TableCell>
+                                </TableCell> */}
                                 <TableCell className="text-sm font-semibold">
                                     {"$ " + formatPrice(diamond.price) || "-"}
                                 </TableCell>
