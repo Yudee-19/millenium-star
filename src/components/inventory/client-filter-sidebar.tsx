@@ -246,7 +246,6 @@ export function ClientFilterSidebar({
                         5
                     )}
                 </div>
-
                 {/* Size Range */}
                 <div>
                     <Label className="text-sm font-medium mb-3 block text-gray-700">
@@ -285,7 +284,6 @@ export function ClientFilterSidebar({
                         />
                     </div>
                 </div>
-
                 {/* Price Range */}
                 <div>
                     <Label className="text-sm font-medium mb-3 block text-gray-700">
@@ -322,7 +320,6 @@ export function ClientFilterSidebar({
                         />
                     </div>
                 </div>
-
                 {/* Color */}
                 <div>
                     <Label className="text-sm font-medium mb-3 block text-gray-700">
@@ -357,7 +354,6 @@ export function ClientFilterSidebar({
                         7
                     )}
                 </div>
-
                 {/* Clarity */}
                 <div>
                     <Label className="text-sm font-medium mb-3 block text-gray-700">
@@ -392,7 +388,6 @@ export function ClientFilterSidebar({
                         4
                     )}
                 </div>
-
                 {/* Fluorescence */}
                 <div>
                     <Label className="text-sm font-medium mb-3 block text-gray-700">
@@ -433,7 +428,6 @@ export function ClientFilterSidebar({
                         ))}
                     </div>
                 </div>
-
                 {/* Search By */}
                 <div>
                     <Label className="text-sm font-medium mb-3 block text-gray-700">
@@ -465,88 +459,117 @@ export function ClientFilterSidebar({
                         className="mt-2 text-sm"
                     />
                 </div>
-
                 {/* Cut */}
                 <div>
                     <Label className="text-sm font-medium mb-3 block text-gray-700">
                         CUT
                     </Label>
-                    <Select
-                        value={filters.cut?.[0] || ""}
-                        onValueChange={(value) =>
-                            updateFilter("cut", value ? [value] : undefined)
-                        }
-                    >
-                        <SelectTrigger className="text-sm">
-                            <SelectValue placeholder="Select grade" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {cut_options.map((cut) => (
-                                <SelectItem key={cut.value} value={cut.value}>
+                    {renderItemsWithViewMore(
+                        cut_options,
+                        "cut",
+                        (cut) => (
+                            <div
+                                key={cut.value}
+                                className="flex items-center space-x-2"
+                            >
+                                <Checkbox
+                                    id={`cut-${cut.value}`}
+                                    checked={(filters.cut || []).includes(
+                                        cut.value
+                                    )}
+                                    onCheckedChange={(checked) =>
+                                        updateArrayFilter(
+                                            "cut",
+                                            cut.value,
+                                            checked as boolean
+                                        )
+                                    }
+                                />
+                                <Label
+                                    htmlFor={`cut-${cut.value}`}
+                                    className="text-xs cursor-pointer"
+                                >
                                     {cut.label}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                                </Label>
+                            </div>
+                        ),
+                        2
+                    )}
                 </div>
-
                 {/* Polish */}
                 <div>
                     <Label className="text-sm font-medium mb-3 block text-gray-700">
                         POLISH
                     </Label>
-                    <Select
-                        value={filters.polish?.[0] || ""}
-                        onValueChange={(value) =>
-                            updateFilter("polish", value ? [value] : undefined)
-                        }
-                    >
-                        <SelectTrigger className="text-sm">
-                            <SelectValue placeholder="Select grade" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {polish_options.map((polish) => (
-                                <SelectItem
-                                    key={polish.value}
-                                    value={polish.value}
+                    {renderItemsWithViewMore(
+                        polish_options,
+                        "polish",
+                        (polish) => (
+                            <div
+                                key={polish.value}
+                                className="flex items-center space-x-2"
+                            >
+                                <Checkbox
+                                    id={`polish-${polish.value}`}
+                                    checked={(filters.polish || []).includes(
+                                        polish.value
+                                    )}
+                                    onCheckedChange={(checked) =>
+                                        updateArrayFilter(
+                                            "polish",
+                                            polish.value,
+                                            checked as boolean
+                                        )
+                                    }
+                                />
+                                <Label
+                                    htmlFor={`polish-${polish.value}`}
+                                    className="text-xs cursor-pointer"
                                 >
                                     {polish.label}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                                </Label>
+                            </div>
+                        ),
+                        2
+                    )}
                 </div>
-
                 {/* Symmetry */}
                 <div>
                     <Label className="text-sm font-medium mb-3 block text-gray-700">
                         SYMMETRY
                     </Label>
-                    <Select
-                        value={filters.symmetry?.[0] || ""}
-                        onValueChange={(value) =>
-                            updateFilter(
-                                "symmetry",
-                                value ? [value] : undefined
-                            )
-                        }
-                    >
-                        <SelectTrigger className="text-sm">
-                            <SelectValue placeholder="Select grade" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {symmetry_options.map((symmetry) => (
-                                <SelectItem
-                                    key={symmetry.value}
-                                    value={symmetry.value}
+                    {renderItemsWithViewMore(
+                        symmetry_options,
+                        "symmetry",
+                        (symmetry) => (
+                            <div
+                                key={symmetry.value}
+                                className="flex items-center space-x-2"
+                            >
+                                <Checkbox
+                                    id={`symmetry-${symmetry.value}`}
+                                    checked={(filters.symmetry || []).includes(
+                                        symmetry.value
+                                    )}
+                                    onCheckedChange={(checked) =>
+                                        updateArrayFilter(
+                                            "symmetry",
+                                            symmetry.value,
+                                            checked as boolean
+                                        )
+                                    }
+                                />
+                                <Label
+                                    htmlFor={`symmetry-${symmetry.value}`}
+                                    className="text-xs cursor-pointer"
                                 >
                                     {symmetry.label}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                                </Label>
+                            </div>
+                        ),
+                        2
+                    )}
                 </div>
-
                 {/* Lab */}
                 <div>
                     <Label className="text-sm font-medium mb-3 block text-gray-700">
@@ -584,7 +607,6 @@ export function ClientFilterSidebar({
                         2
                     )}
                 </div>
-
                 {/* Buttons */}
                 <div className="flex gap-2 pt-4">
                     <Button
