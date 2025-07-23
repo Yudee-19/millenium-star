@@ -8,6 +8,7 @@ import { RegistrationModal } from "./registrationCard";
 import { Menu, X, User, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 const Navbar = () => {
     const pathname = usePathname();
@@ -92,9 +93,12 @@ const Navbar = () => {
             <div className="sticky top-0 z-50 bg-white shadow-md">
                 <Container className="flex items-center justify-between py-4">
                     <Link href="/" className="flex items-center space-x-2">
-                        <h1 className="font-playfair text-xl md:text-2xl font-semibold">
-                            MILLENNIUM&nbsp;STAR
-                        </h1>
+                        <Image
+                            src="/assests/logo.png"
+                            alt="Logo"
+                            width={40}
+                            height={40}
+                        />
                     </Link>
                     <div className="flex items-center space-x-3">
                         <div className="w-20 h-8 bg-gray-200 animate-pulse rounded"></div>
@@ -107,10 +111,17 @@ const Navbar = () => {
 
     return (
         <div className="sticky top-0 z-50 bg-white shadow-md">
-            <Container className="flex items-center justify-between py-4">
+            <Container className="flex  items-center justify-between py-4">
                 {/* Logo */}
-                <Link href="/" className="flex items-center space-x-2">
-                    <h1 className="font-playfair text-xl md:text-2xl font-semibold">
+                <Link href="/" className="flex  items-center space-x-2">
+                    <Image
+                        src="/assets/logo.png"
+                        alt="Logo"
+                        width={100}
+                        height={100}
+                        className="h-10 w-auto"
+                    />
+                    <h1 className="font-playfair text-xl md:text-3xl font-semibold">
                         MILLENNIUM&nbsp;STAR
                     </h1>
                 </Link>

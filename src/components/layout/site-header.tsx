@@ -1,17 +1,23 @@
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
+import Image from "next/image";
 
 export function SiteHeader() {
     return (
         <header className="z-70 w-full border-b ">
             <div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
                 <div className="flex gap-6 md:gap-10">
-                    <Link href="/" className="flex items-center space-x-2">
-                        {/* <a href="/" className="flex items-center space-x-2"> */}
-                        <span className="inline-block text-xl font-playfair font-bold ">
-                            {siteConfig.name}
-                        </span>
-                        {/* </a> */}
+                    <Link href="/" className="flex  items-center space-x-2">
+                        <Image
+                            src="/assets/logo.png"
+                            alt="Logo"
+                            width={100}
+                            height={100}
+                            className="h-10 w-auto"
+                        />
+                        <h1 className="font-playfair text-xl md:text-3xl font-semibold">
+                            MILLENNIUM&nbsp;STAR
+                        </h1>
                     </Link>
                     {/* {siteConfig.mainNav?.length ? (
                         <nav className="flex gap-6">
