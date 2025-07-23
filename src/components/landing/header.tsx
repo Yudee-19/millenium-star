@@ -8,7 +8,6 @@ import { RegistrationModal } from "./registrationCard";
 import { Menu, X, User, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { on } from "events";
 
 const Navbar = () => {
     const pathname = usePathname();

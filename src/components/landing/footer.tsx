@@ -38,7 +38,7 @@ const Footer = () => {
                         <h2
                             className={`${playFair.className} text-3xl md:text-4xl font-semibold tracking-wider`}
                         >
-                            MILLENNIUM START
+                            MILLENNIUM STAR
                         </h2>
                     </div>
 

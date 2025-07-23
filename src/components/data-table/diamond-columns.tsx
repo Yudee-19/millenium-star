@@ -42,9 +42,9 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
         enableHiding: false,
     },
     {
-        accessorKey: "CERT-NO",
+        accessorKey: "diamond-Id",
         header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="CERT-NO" />
+            <DataTableColumnHeader column={column} title="Diamond-Id" />
         ),
         cell: ({ row }) => {
             const certNo =
@@ -68,9 +68,9 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             const lab = lab_options.find((lab) => lab.value === labValue);
             return (
                 <div className="flex w-[80px] items-center">
-                    {lab?.icon && (
+                    {/* {lab?.icon && (
                         <lab.icon className="mr-2 h-4 w-4 text-muted-foreground" />
-                    )}
+                    )} */}
                     <span>{labValue}</span>
                 </div>
             );
@@ -91,10 +91,10 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             );
             return (
                 <div className="flex w-[80px] items-center">
-                    {shape?.icon && (
+                    {/* {shape?.icon && (
                         <shape.icon className="mr-2 h-4 w-4 text-muted-foreground" />
-                    )}
-                    <span>{shapeValue}</span>
+                    )} */}
+                    <span className="whitespace-pre-wrap">{shapeValue}</span>
                 </div>
             );
         },
@@ -108,7 +108,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             <DataTableColumnHeader column={column} title="Size" />
         ),
         cell: ({ row }) => (
-            <div className="w-[80px]">
+            <div className="w-[80px] whitespace-pre-wrap">
                 {(row.getValue("size") as number) || (0 as number)} ct
             </div>
         ),
@@ -128,10 +128,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
 
             return (
                 <div className="flex w-[60px] items-center">
-                    {color?.icon && (
-                        <color.icon className="mr-2 h-4 w-4 text-muted-foreground" />
-                    )}
-                    <span>{colorValue}</span>
+                    <span className="whitespace-pre-wrap">{colorValue}</span>
                 </div>
             );
         },
@@ -154,10 +151,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             );
             return (
                 <div className="flex w-[80px] items-center">
-                    {clarity?.icon && (
-                        <clarity.icon className="mr-2 h-4 w-4 text-muted-foreground" />
-                    )}
-                    <span>{clarityValue}</span>
+                    <span className="whitespace-pre-wrap">{clarityValue}</span>
                 </div>
             );
         },
@@ -207,10 +201,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             const cut = cut_options.find((cut) => cut.value === cutValue);
             return (
                 <div className="flex w-[80px] items-center">
-                    {cut?.icon && (
-                        <cut.icon className="mr-2 h-4 w-4 text-muted-foreground" />
-                    )}
-                    <span>{cutValue}</span>
+                    <span className="whitespace-pre-wrap">{cutValue}</span>
                 </div>
             );
         },
@@ -224,7 +215,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             <DataTableColumnHeader column={column} title="Polish" />
         ),
         cell: ({ row }) => (
-            <div className="w-[80px]">
+            <div className="w-[80px] whitespace-pre-wrap">
                 {row.original.polish ||
                     (row.original as any)["Polish"] ||
                     "N/A"}
@@ -237,7 +228,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             <DataTableColumnHeader column={column} title="Symmetry" />
         ),
         cell: ({ row }) => (
-            <div className="w-[80px]">
+            <div className="w-[80px] whitespace-pre-wrap">
                 {(row.original as any)["sym"] || row.original.symmetry || "N/A"}
             </div>
         ),
@@ -253,10 +244,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             );
             return (
                 <div className="flex w-[100px] items-center">
-                    {flou?.icon && (
-                        <flou.icon className="mr-2 h-4 w-4 text-muted-foreground" />
-                    )}
-                    <span>
+                    <span className="whitespace-pre-wrap">
                         {(row.original as any)["FLOU"] ||
                             row.original.fluorescence ||
                             "-"}

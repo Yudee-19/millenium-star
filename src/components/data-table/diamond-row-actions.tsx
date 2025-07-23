@@ -99,14 +99,14 @@ export function DataTableRowActions<TData>({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-[200px]">
                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuItem
+                    {/* <DropdownMenuItem
                         onClick={() =>
                             navigator.clipboard.writeText(diamond._id)
                         }
                     >
                         <Copy className="mr-2 h-4 w-4" />
                         Copy Diamond ID
-                    </DropdownMenuItem>
+                    </DropdownMenuItem> */}
                     <DropdownMenuItem
                         onClick={() => {
                             const diamond = row.original as DiamondType;
@@ -118,7 +118,7 @@ export function DataTableRowActions<TData>({
                         }}
                     >
                         <Copy className="mr-2 h-4 w-4" />
-                        Copy Certificate Number
+                        Copy Diamond ID
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => setIsEditModalOpen(true)}>

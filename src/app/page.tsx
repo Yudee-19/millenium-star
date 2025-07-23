@@ -2,6 +2,7 @@ import DiamondCards from "@/components/landing/certificates";
 import Footer from "@/components/landing/footer";
 import GridSection from "@/components/landing/gridSection";
 import Navbar from "@/components/landing/header";
+import HeroSection from "@/components/landing/heroSection";
 import Testimonial from "@/components/landing/testimonial";
 import { Button } from "@/components/ui/button";
 import { Description, Title } from "@/components/ui/typography";
@@ -42,55 +43,7 @@ const HomePage = () => {
         <div>
             {/* <Navbar /> */}
             {/* Hero Section */}
-            <div className="relative max-lg:py-30 lg:min-h-screen flex items-center justify-center overflow-hidden">
-                {/* Background Images Container */}
-                <div className="absolute inset-0 flex">
-                    {/* Left Image */}
-                    <div className="relative w-1/2 h-full">
-                        <Image
-                            src={"/assets/hero-1.png"}
-                            alt="Hero Background1"
-                            fill
-                            className="object-cover"
-                            priority
-                        />
-                    </div>
-                    {/* Right Image */}
-                    <div className="relative w-1/2 h-full">
-                        <Image
-                            src={"/assets/hero-3.png"}
-                            alt="Hero Background2"
-                            fill
-                            className="object-cover"
-                            priority
-                        />
-                    </div>
-                </div>
-                {/* Overlay for better text readability */}
-                <div className="absolute inset-0 bg-black/50 z-15"></div>
-
-                {/* Centered Content */}
-                <div className="relative z-20 text-center px-6 max-w-6xl mx-auto">
-                    <Title className="mb-6">
-                        Certified Diamonds & Non Certified Diamond Designed for
-                        Business
-                    </Title>
-                    <Description className="mb-8">
-                        From ethically sourced stones to — built for traders,
-                        retailers, and private labels worldwide.
-                    </Description>
-
-                    {/* Action Buttons */}
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                        <button className="bg-white cursor-pointer text-gray-900 px-8 py-3 rounded-md font-medium hover:bg-gray-100 transition-colors">
-                            Partner With Us
-                        </button>
-                        <button className="border  border-white text-white px-8 py-3 rounded-md font-medium hover:bg-white/10 transition-colors">
-                            Request Quote
-                        </button>
-                    </div>
-                </div>
-            </div>
+            <HeroSection />
 
             {/* Grid Section */}
             <GridSection gridData={gridCardsData1}>
