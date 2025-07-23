@@ -5,13 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
 import { ClientFilters, FilterOptions } from "@/types/client/diamond";
 import { Search, RotateCcw, ChevronDown, ChevronUp } from "lucide-react";
 import {
@@ -447,7 +440,7 @@ export function ClientFilterSidebar({
                             </Label>
                         </div>
                     </div>
-                    <Input
+                    {/* <Input
                         placeholder="Enter search term"
                         value={filters.searchTerm || ""}
                         onChange={(e) =>
@@ -457,7 +450,7 @@ export function ClientFilterSidebar({
                             )
                         }
                         className="mt-2 text-sm"
-                    />
+                    /> */}
                 </div>
                 {/* Cut */}
                 <div>
