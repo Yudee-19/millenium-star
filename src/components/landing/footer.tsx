@@ -38,7 +38,7 @@ const Footer = () => {
                         <h2
                             className={`${playFair.className} text-3xl md:text-4xl font-semibold tracking-wider`}
                         >
-                            MILLENIUM START
+                            MILLENNIUM START
                         </h2>
                     </div>
 
@@ -89,8 +89,8 @@ const Footer = () => {
                     <p
                         className={`${inter.className} text-sm text-gray-400 order-2 sm:order-1 mt-4 sm:mt-0`}
                     >
-                        &copy; {new Date().getFullYear()} Motion Creative Cloud
-                        Inc.
+                        &copy; {new Date().getFullYear()} Millennium Start. All
+                        rights reserved.
                     </p>
                     <div
                         className={`${inter.className} flex items-center space-x-6 text-sm text-gray-400 order-1 sm:order-2`}
