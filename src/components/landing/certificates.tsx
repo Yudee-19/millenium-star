@@ -4,7 +4,7 @@ import Image from "next/image";
 import React, { useState } from "react";
 import cert1 from "../../../public/assets/cert-1.jpg";
 import cert2 from "../../../public/assets/cert-2.webp";
-import cert3 from "../../../public/assets/cert-3.png";
+import cert3 from "../../../public/assets/hrd-cert.png";
 import { Playfair_Display, Open_Sans } from "next/font/google";
 import { Button } from "../ui/button";
 
