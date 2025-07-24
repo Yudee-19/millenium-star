@@ -29,32 +29,35 @@ const ContentSection: React.FC<ContentSectionProps> = ({ data }) => {
     return (
         <div className="max-w-6xl mx-auto space-y-20">
             {data.map((item, index) => {
-                const isOdd = index % 2 === 0; // 0-based index, so 0,2,4... are "odd positions"
+                const isOdd = index % 2 === 0;
 
                 return (
                     <div
                         key={item.id}
-                        className="flex flex-col lg:flex-row items-center justify-center lg:items-center gap-2"
+                        className="flex flex-col lg:flex-row items-center justify-center lg:items-center gap-8 lg:gap-12"
                     >
                         {/* Image section */}
                         <div
-                            className={`bg-gray-200 rounded-lg shadow-lg flex items-center justify-center mx-auto ${
+                            className={`relative w-full lg:w-1/2 ${
                                 isOdd ? "lg:order-1" : "lg:order-2"
                             }`}
                         >
-                            <Image
-                                src={item.image}
-                                alt={item.title}
-                                width={300}
-                                height={300}
-                                className="w-fit md:w-130 lg:w-154 h-100 md:h-78 lg:h-111 object-cover rounded-lg"
-                                sizes="(max-width: 768px) 128px, (max-width: 1024px) 160px, 192px"
-                            />
+                            <div className="relative aspect-[4/3] w-full max-w-lg mx-auto">
+                                <Image
+                                    src={item.image}
+                                    alt={item.title}
+                                    fill
+                                    className="object-cover rounded-lg shadow-lg"
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 500px"
+                                    quality={95}
+                                    priority={index < 2}
+                                />
+                            </div>
                         </div>
 
                         {/* Content section */}
                         <div
-                            className={`flex-1 text-left lg:text-left px-10 ${
+                            className={`w-full lg:w-1/2 text-left px-4 lg:px-8 ${
                                 isOdd ? "lg:order-2" : "lg:order-1"
                             }`}
                         >
@@ -64,7 +67,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({ data }) => {
                                 {item.title}
                             </h2>
                             <p
-                                className={`text-base lg:text-lg text-gray-700 leading-relaxed max-w-none lg:max-w-none ${inter.className}`}
+                                className={`text-base lg:text-lg text-gray-700 leading-relaxed ${inter.className}`}
                             >
                                 {item.content}
                             </p>
