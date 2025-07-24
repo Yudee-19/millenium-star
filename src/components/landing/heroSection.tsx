@@ -1,82 +1,125 @@
 "use client";
-
-import React from "react";
-import { Playfair_Display, Inter } from "next/font/google";
+import React, { useState } from "react";
 import Image from "next/image";
+import { Description, Title } from "@/components/ui/typography";
+import { useAuth } from "@/hooks/useAuth";
+import { LoginModal } from "./loginCard";
+import { RegistrationModal } from "./registrationCard";
 
-const playFair = Playfair_Display({
-    subsets: ["latin"],
-    weight: ["400", "500", "600", "700"],
-});
+const HeroSection = () => {
+    const { isAuthenticated } = useAuth();
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+    const [isRegistrationModalOpen, setIsRegistrationModalOpen] =
+        useState(false);
 
-const inter = Inter({
-    subsets: ["latin"],
-    weight: ["300", "400", "500", "600", "700"],
-});
+    const handleLoginClick = () => {
+        setIsLoginModalOpen(true);
+    };
 
-interface ContentItem {
-    id: number;
-    title: string;
-    content: string;
-    image: string;
-}
+    const handleCloseLoginModal = () => {
+        setIsLoginModalOpen(false);
+    };
 
-interface ContentSectionProps {
-    data: ContentItem[];
-}
+    const handleRegistrationClick = () => {
+        setIsRegistrationModalOpen(true);
+    };
 
-const ContentSection: React.FC<ContentSectionProps> = ({ data }) => {
+    const handleCloseRegistrationModal = () => {
+        setIsRegistrationModalOpen(false);
+    };
+
+    const handleOpenRegistrationFromLogin = () => {
+        setIsLoginModalOpen(false);
+        setIsRegistrationModalOpen(true);
+    };
+
+    const handleOpenLoginFromRegistration = () => {
+        setIsRegistrationModalOpen(false);
+        setIsLoginModalOpen(true);
+    };
+
+    const accessInventoryClickHandler = () => {
+        if (isAuthenticated()) {
+            // User is authenticated, navigate to inventory
+            window.location.href = "/inventory";
+        } else {
+            // User is not authenticated, open login modal
+            setIsLoginModalOpen(true);
+        }
+    };
+
     return (
-        <div className="max-w-6xl mx-auto space-y-20">
-            {data.map((item, index) => {
-                const isOdd = index % 2 === 0;
+        <div className="relative max-lg:py-30 lg:min-h-screen flex items-center justify-center overflow-hidden">
+            {/* Background Images Container */}
+            <div className="absolute inset-0 flex">
+                {/* Left Image */}
+                <div className="relative w-1/2 h-full">
+                    <Image
+                        src={"/assets/hero-1.png"}
+                        alt="Hero Background1"
+                        fill
+                        className="object-cover"
+                        priority
+                    />
+                </div>
+                {/* Right Image */}
+                <div className="relative w-1/2 h-full">
+                    <Image
+                        src={"/assets/hero-3.png"}
+                        alt="Hero Background2"
+                        fill
+                        className="object-cover"
+                        priority
+                    />
+                </div>
+            </div>
+            {/* Overlay for better text readability */}
+            <div className="absolute inset-0 bg-black/50 z-15"></div>
 
-                return (
-                    <div
-                        key={item.id}
-                        className="flex flex-col lg:flex-row items-center justify-center lg:items-center gap-8 lg:gap-12"
+            {/* Centered Content */}
+            <div className="relative z-20 text-center px-6 max-w-6xl mx-auto">
+                <Title className="mb-6">
+                    Certified Diamonds & Non Certified Diamond Designed for
+                    Business
+                </Title>
+                <Description className="mb-8">
+                    Ethically sourced diamonds crafted specifically for traders,
+                    retailers, and private labels across the globe.
+                </Description>
+
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <button
+                        onClick={() => {
+                            accessInventoryClickHandler();
+                        }}
+                        className="bg-white cursor-pointer text-gray-900 px-8 py-3 rounded-md font-medium hover:bg-gray-100 transition-colors"
                     >
-                        {/* Image section */}
-                        <div
-                            className={`relative w-full lg:w-1/2 ${
-                                isOdd ? "lg:order-1" : "lg:order-2"
-                            }`}
-                        >
-                            <div className="relative aspect-[4/3] w-full max-w-lg mx-auto">
-                                <Image
-                                    src={item.image}
-                                    alt={item.title}
-                                    fill
-                                    className="object-cover rounded-lg shadow-lg"
-                                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 500px"
-                                    quality={95}
-                                    priority={index < 2}
-                                />
-                            </div>
-                        </div>
+                        Partner With Us
+                    </button>
 
-                        {/* Content section */}
-                        <div
-                            className={`w-full lg:w-1/2 text-left px-4 lg:px-8 ${
-                                isOdd ? "lg:order-2" : "lg:order-1"
-                            }`}
-                        >
-                            <h2
-                                className={`text-3xl lg:text-4xl font-semibold mb-4 lg:mb-6 ${playFair.className}`}
-                            >
-                                {item.title}
-                            </h2>
-                            <p
-                                className={`text-base lg:text-lg text-gray-700 leading-relaxed ${inter.className}`}
-                            >
-                                {item.content}
-                            </p>
-                        </div>
-                    </div>
-                );
-            })}
+                    {/* Additional action buttons for unauthenticated users */}
+                </div>
+
+                {/* Optional: Login/Register links for unauthenticated users */}
+            </div>
+
+            {/* Modals - Only show when not authenticated */}
+            {!isAuthenticated() && (
+                <>
+                    <LoginModal
+                        isOpen={isLoginModalOpen}
+                        onClose={handleCloseLoginModal}
+                        onOpenRegistration={handleOpenRegistrationFromLogin}
+                    />
+                    <RegistrationModal
+                        isOpen={isRegistrationModalOpen}
+                        onClose={handleCloseRegistrationModal}
+                    />
+                </>
+            )}
         </div>
     );
 };
 
-export default ContentSection;
+export default HeroSection;

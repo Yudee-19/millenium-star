@@ -63,6 +63,7 @@ export default function DiamondPage() {
 
     // Modal state
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [activeTab, setActiveTab] = useState("all");
 
     // Handle table state changes for main table
     const handleTableStateChange = useCallback(
@@ -99,6 +100,91 @@ export default function DiamondPage() {
         lowEndRefetch(); // Refresh low-end diamonds
     };
 
+    const exportToCsv = (diamondsToExport: any[], fileName: string) => {
+        if (!diamondsToExport || diamondsToExport.length === 0) {
+            alert("No data available to export for the selected tab.");
+            return;
+        }
+
+        const headers = [
+            "Certificate Number",
+            "Shape",
+            "Carat",
+            "Color",
+            "Clarity",
+            "Cut",
+            "Polish",
+            "Symmetry",
+            "Fluorescence",
+            "Lab",
+            "Price",
+            "Discount",
+        ];
+
+        const csvRows = diamondsToExport.map((d) => {
+            const row = [
+                d.certificateNumber || d["CERT-NO"] || "",
+                d.shape || d["Shape"] || "",
+                d.size || d["Carat"] || 0,
+                d.color || d["Color"] || "",
+                d.clarity || d["Clarity"] || "",
+                d.cut || d["Cut"] || "",
+                d.polish || d["Polish"] || "",
+                d.symmetry || d["sym"] || "",
+                d.fluorescence || d["FLOU"] || "",
+                d.lab || d["LAB"] || "",
+                d.price || 0,
+                d.discount ? `${d.discount}%` : "0%",
+            ];
+            return row
+                .map((value) => {
+                    const str = String(value);
+                    if (str.includes(",")) {
+                        return `"${str}"`;
+                    }
+                    return str;
+                })
+                .join(",");
+        });
+
+        const csvContent = [headers.join(","), ...csvRows].join("\n");
+        const blob = new Blob([csvContent], {
+            type: "text/csv;charset=utf-8;",
+        });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.setAttribute("download", `${fileName}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    const handleExport = () => {
+        let dataToExport: any[] = [];
+        let fileName = "diamonds";
+
+        switch (activeTab) {
+            case "fancy":
+                dataToExport = fancyDiamonds;
+                fileName = "fancy-diamonds";
+                break;
+            case "highEnd":
+                dataToExport = highEndDiamonds;
+                fileName = "high-end-diamonds";
+                break;
+            case "lowEnd":
+                dataToExport = lowEndDiamonds;
+                fileName = "low-end-diamonds";
+                break;
+            case "all":
+            default:
+                dataToExport = diamonds;
+                fileName = "all-diamonds";
+                break;
+        }
+        exportToCsv(dataToExport, fileName);
+    };
+
     if (error) {
         return (
             <Container>
@@ -133,15 +219,16 @@ export default function DiamondPage() {
                         className="bg-black/5 text-sky-950 px-3 py-3 text-base rounded-full"
                         placeholder="Search by Diamond ID, Shape, Color, Clarity, etc."
                     />
-                    <CustomButton
+                    {/* <CustomButton
                         variant="secondary"
                         icon={<FunnelPlus size={15} />}
                     >
                         Filter
-                    </CustomButton>
+                    </CustomButton> */}
                     <CustomButton
                         variant="secondary"
                         icon={<DownloadIcon size={15} />}
+                        onClick={handleExport}
                     >
                         Export
                     </CustomButton>
@@ -162,7 +249,11 @@ export default function DiamondPage() {
 
                 {/* Tabs Section */}
                 <div className="w-full my-5">
-                    <Tabs defaultValue="all" className="w-full">
+                    <Tabs
+                        value={activeTab}
+                        onValueChange={setActiveTab}
+                        className="w-full"
+                    >
                         <TabsList className="w-full rounded-full">
                             <TabsTrigger
                                 value="all"

@@ -91,7 +91,7 @@ const HomePage = () => {
             </GridSection>
             <DiamondCards />
 
-            <Testimonial />
+            {/* <Testimonial /> */}
             <Footer />
         </div>
     );
