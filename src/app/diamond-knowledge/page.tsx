@@ -32,7 +32,7 @@ const aboutUsData = [
         title: "Color",
         content:
             "Most diamonds range in color from colorless to slightly yellow. A diamond is graded on a scale of D to Z representing colorless, and continues with increasing presence of color to the letter Z.\n\nA diamond price changes with the color. The more colorless the diamond, higher is the price.\n\nDiamonds come in all colors of the rainbow i.e yellow, pink, blue, purple, green, orange and red. These diamonds are called fancy color diamonds and come in different hues of light and vivid. The darker (vivid) the color, the more expensive is the stone. The fancy colored diamonds are rare and exclusive and fetch fancy prices. They are one of the most sought after diamonds for investment. The rare stones are generally auctioned.",
-        image: "/assets/aboutUs3.jpg",
+        image: "/assets/Diamond-color.webp",
     },
 ];
 

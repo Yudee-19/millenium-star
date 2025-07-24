@@ -33,13 +33,13 @@ const Navbar = () => {
     const navItems = [
         { href: "/", label: "Home" },
         { href: "/about", label: "About us" },
-        { href: "/diamond-knowledge", label: "Diamond Knowledge" },
-        { href: "/contact", label: "Contact us" },
         {
             href: "/inventory",
             label: "Access Inventory",
             onClick: () => accessInventoryClickHandler(),
         },
+        { href: "/diamond-knowledge", label: "Diamond Knowledge" },
+        { href: "/contact", label: "Contact us" },
     ];
 
     const handleLoginClick = () => {

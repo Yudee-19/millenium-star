@@ -19,7 +19,7 @@ const gridCardsData1 = [
     {
         id: 2,
         title: "Fancy Cut Diamonds",
-        imageUrl: "/assets/fancyCut-img.png", // Replace with your actual image path
+        imageUrl: "/assets/diamond2-img.png", // Replace with your actual image path
         buttonText: "Explore Inventory",
     },
 ];
@@ -27,7 +27,7 @@ const gridCardsData2 = [
     {
         id: 1,
         title: "Matched Diamond Pairs ",
-        imageUrl: "/assets/diamond2-img.png", // Replace with your actual image path
+        imageUrl: "/assets/matchedDiamond.jpg", // Replace with your actual image path
         buttonText: "Explore Inventory",
     },
     {
