@@ -17,6 +17,8 @@ export const shape_options = [
     { value: "HRT", label: "Heart", icon: Heart },
     { value: "RAD", label: "Radiant", icon: Square },
     { value: "PRS", label: "Princess", icon: Square },
+    { value: "TBG", label: "Tapered Baguette", icon: Square },
+    { value: "TRL", label: "Trilliant", icon: Triangle },
     { value: "EMD", label: "Emerald", icon: Octagon },
     { value: "ASS", label: "Asscher", icon: Square },
     { value: "SQE", label: "Sq. Emerald", icon: Square },
@@ -42,11 +44,9 @@ export const shape_options = [
     { value: "SHD", label: "Shield", icon: Diamond },
     { value: "SQU", label: "Square", icon: Square },
     { value: "STR", label: "Star", icon: StarIcon },
-    { value: "TBG", label: "Tapered Baguette", icon: Square },
     { value: "TBL", label: "Tapered Bullet", icon: Diamond },
     { value: "TRP", label: "Trapezoid", icon: Square },
     { value: "TRI", label: "Triangular", icon: Triangle },
-    { value: "TRL", label: "Trilliant", icon: Triangle },
     { value: "OTH", label: "Other", icon: Gem },
 ];
 

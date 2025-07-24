@@ -91,9 +91,10 @@ export function ClientFilterSidebar({
             BAG: "baguette.svg",
             TBG: "tapered.svg", // Updated to tapered.svg
             RAD: "radiant.svg",
-            PR: "pear.svg",
+            PER: "pear.svg",
             SQR: "square.svg",
             TRL: "trilliant.svg",
+            SQE: "sqEmerald.jpg",
         };
 
         const fileName = shapeMap[shapeValue];
