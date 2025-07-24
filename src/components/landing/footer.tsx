@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Playfair_Display, Inter } from "next/font/google";
 import { Facebook, Instagram, Twitter, Linkedin } from "lucide-react";
+import Image from "next/image";
 
 const playFair = Playfair_Display({
     subsets: ["latin"],
@@ -35,11 +36,18 @@ const Footer = () => {
                 <div className="py-16 grid grid-cols-1 md:grid-cols-12 gap-8">
                     {/* Logo */}
                     <div className="md:col-span-6">
-                        <h2
-                            className={`${playFair.className} text-3xl md:text-4xl font-semibold tracking-wider`}
-                        >
-                            MILLENNIUM STAR
-                        </h2>
+                        <Link href="/" className="flex  items-center space-x-2">
+                            <Image
+                                src="/assets/logo.png"
+                                alt="Logo"
+                                width={100}
+                                height={100}
+                                className="h-10 w-auto"
+                            />
+                            <h1 className="font-playfair text-xl md:text-3xl font-semibold">
+                                MILLENNIUM&nbsp;STAR
+                            </h1>
+                        </Link>
                     </div>
 
                     {/* Quick Links */}

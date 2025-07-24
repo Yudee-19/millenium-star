@@ -113,7 +113,7 @@ export const GridCard = ({
                 <a href="/inventory">
                     <button
                         onClick={onButtonClick}
-                        className="bg-gray-800 text-white px-6 py-2 rounded-md font-medium hover:bg-gray-700 transition-colors duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                        className="bg-gray-800 cursor-pointer text-white px-6 py-2 rounded-md font-medium hover:bg-gray-700 transition-colors duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
                     >
                         {buttonText}
                     </button>

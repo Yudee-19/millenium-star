@@ -16,8 +16,61 @@ interface ContactFormData {
     lastName: string;
     email: string;
     phoneNumber: string;
+    countryCode: string; // Add this field
     message: string;
 }
+
+// European country codes data
+const europeanCountryCodes = [
+    { code: "+355", country: "Albania" },
+    { code: "+376", country: "Andorra" },
+    { code: "+43", country: "Austria" },
+    { code: "+375", country: "Belarus" },
+    { code: "+32", country: "Belgium" },
+    { code: "+387", country: "Bosnia and Herzegovina" },
+    { code: "+359", country: "Bulgaria" },
+    { code: "+385", country: "Croatia" },
+    { code: "+357", country: "Cyprus" },
+    { code: "+420", country: "Czech Republic" },
+    { code: "+45", country: "Denmark" },
+    { code: "+372", country: "Estonia" },
+    { code: "+358", country: "Finland" },
+    { code: "+33", country: "France" },
+    { code: "+995", country: "Georgia" },
+    { code: "+49", country: "Germany" },
+    { code: "+30", country: "Greece" },
+    { code: "+36", country: "Hungary" },
+    { code: "+354", country: "Iceland" },
+    { code: "+353", country: "Ireland" },
+    { code: "+39", country: "Italy" },
+    { code: "+383", country: "Kosovo" },
+    { code: "+371", country: "Latvia" },
+    { code: "+423", country: "Liechtenstein" },
+    { code: "+370", country: "Lithuania" },
+    { code: "+352", country: "Luxembourg" },
+    { code: "+389", country: "North Macedonia" },
+    { code: "+356", country: "Malta" },
+    { code: "+373", country: "Moldova" },
+    { code: "+377", country: "Monaco" },
+    { code: "+382", country: "Montenegro" },
+    { code: "+31", country: "Netherlands" },
+    { code: "+47", country: "Norway" },
+    { code: "+48", country: "Poland" },
+    { code: "+351", country: "Portugal" },
+    { code: "+40", country: "Romania" },
+    { code: "+7", country: "Russia" },
+    { code: "+378", country: "San Marino" },
+    { code: "+381", country: "Serbia" },
+    { code: "+421", country: "Slovakia" },
+    { code: "+386", country: "Slovenia" },
+    { code: "+34", country: "Spain" },
+    { code: "+46", country: "Sweden" },
+    { code: "+41", country: "Switzerland" },
+    { code: "+90", country: "Turkey" },
+    { code: "+380", country: "Ukraine" },
+    { code: "+44", country: "United Kingdom" },
+    { code: "+379", country: "Vatican City" },
+];
 
 export default function ContactPage() {
     const [formData, setFormData] = useState<ContactFormData>({
@@ -25,13 +78,16 @@ export default function ContactPage() {
         lastName: "",
         email: "",
         phoneNumber: "",
+        countryCode: "+33", // Default to France
         message: "",
     });
     const [isLoading, setIsLoading] = useState(false);
     const [isMessageSent, setIsMessageSent] = useState(false);
 
     const handleInputChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+        e: React.ChangeEvent<
+            HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+        >
     ) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
@@ -63,6 +119,7 @@ export default function ContactPage() {
                     lastName: "",
                     email: "",
                     phoneNumber: "",
+                    countryCode: "+33", // Reset to default
                     message: "",
                 });
             } else {
@@ -170,23 +227,59 @@ export default function ContactPage() {
                                         </div>
 
                                         {/* Phone Field */}
-                                        <div className="space-y-2">
-                                            <Label
-                                                htmlFor="phoneNumber"
-                                                className="text-sm font-medium text-gray-700"
-                                            >
-                                                Phone Number
-                                            </Label>
-                                            <Input
-                                                id="phoneNumber"
-                                                name="phoneNumber"
-                                                type="tel"
-                                                placeholder="+91 486 7000"
-                                                value={formData.phoneNumber}
-                                                onChange={handleInputChange}
-                                                className="border-gray-300 focus:border-gray-500 focus:ring-gray-500"
-                                                required
-                                            />
+                                        <div className="flex gap-3">
+                                            <div className="space-y-2 w-32">
+                                                <Label
+                                                    htmlFor="countryCode"
+                                                    className="text-sm font-medium text-gray-700"
+                                                >
+                                                    Country Code
+                                                </Label>
+                                                <select
+                                                    id="countryCode"
+                                                    name="countryCode"
+                                                    value={formData.countryCode}
+                                                    onChange={handleInputChange}
+                                                    className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-500 focus:border-gray-500 text-sm"
+                                                    required
+                                                >
+                                                    {europeanCountryCodes.map(
+                                                        (country) => (
+                                                            <option
+                                                                key={
+                                                                    country.code
+                                                                }
+                                                                value={
+                                                                    country.code
+                                                                }
+                                                            >
+                                                                {country.code}{" "}
+                                                                {
+                                                                    country.country
+                                                                }
+                                                            </option>
+                                                        )
+                                                    )}
+                                                </select>
+                                            </div>
+                                            <div className="space-y-2 flex-1">
+                                                <Label
+                                                    htmlFor="phoneNumber"
+                                                    className="text-sm font-medium text-gray-700"
+                                                >
+                                                    Phone Number
+                                                </Label>
+                                                <Input
+                                                    id="phoneNumber"
+                                                    name="phoneNumber"
+                                                    type="tel"
+                                                    placeholder="123 456 789"
+                                                    value={formData.phoneNumber}
+                                                    onChange={handleInputChange}
+                                                    className="border-gray-300 focus:border-gray-500 focus:ring-gray-500"
+                                                    required
+                                                />
+                                            </div>
                                         </div>
 
                                         {/* Message Field */}

@@ -6,16 +6,31 @@ interface ContactFormData {
     lastName: string;
     email: string;
     phoneNumber: string;
+    countryCode: string; // Add this field
     message: string;
 }
 
 export async function POST(request: NextRequest) {
     try {
         const body: ContactFormData = await request.json();
-        const { firstName, lastName, email, phoneNumber, message } = body;
+        const {
+            firstName,
+            lastName,
+            email,
+            phoneNumber,
+            countryCode,
+            message,
+        } = body;
 
         // Validate required fields
-        if (!firstName || !lastName || !email || !phoneNumber || !message) {
+        if (
+            !firstName ||
+            !lastName ||
+            !email ||
+            !phoneNumber ||
+            !countryCode ||
+            !message
+        ) {
             return NextResponse.json(
                 { message: "All fields are required" },
                 { status: 400 }
@@ -55,7 +70,7 @@ export async function POST(request: NextRequest) {
                         <h3 style="color: #2D3748; margin-top: 0;">Contact Details:</h3>
                         <p><strong>Name:</strong> ${firstName} ${lastName}</p>
                         <p><strong>Email:</strong> ${email}</p>
-                        <p><strong>Phone:</strong> ${phoneNumber}</p>
+                        <p><strong>Phone:</strong> ${countryCode} ${phoneNumber}</p>
                     </div>
                     
                     <div style="background-color: #fff; padding: 20px; border-left: 4px solid #4A5568; margin: 20px 0;">
@@ -94,7 +109,7 @@ export async function POST(request: NextRequest) {
                             <h3 style="color: #2D3748; margin-top: 0;">Your Message Summary:</h3>
                             <p><strong>Name:</strong> ${firstName} ${lastName}</p>
                             <p><strong>Email:</strong> ${email}</p>
-                            <p><strong>Phone:</strong> ${phoneNumber}</p>
+                            <p><strong>Phone:</strong> ${countryCode} ${phoneNumber}</p>
                             <p><strong>Message:</strong> ${message}</p>
                         </div>
                         

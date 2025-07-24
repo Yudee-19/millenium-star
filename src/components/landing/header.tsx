@@ -33,6 +33,7 @@ const Navbar = () => {
     const navItems = [
         { href: "/", label: "Home" },
         { href: "/about", label: "About us" },
+        { href: "/diamond-knowledge", label: "Diamond Knowledge" },
         { href: "/contact", label: "Contact us" },
         {
             href: "/inventory",
@@ -92,13 +93,17 @@ const Navbar = () => {
         return (
             <div className="sticky top-0 z-50 bg-white shadow-md">
                 <Container className="flex items-center justify-between py-4">
-                    <Link href="/" className="flex items-center space-x-2">
+                    <Link href="/" className="flex  items-center space-x-2">
                         <Image
-                            src="/assests/logo.png"
+                            src="/assets/logo.png"
                             alt="Logo"
-                            width={40}
-                            height={40}
+                            width={100}
+                            height={100}
+                            className="h-10 w-auto"
                         />
+                        <h1 className="font-playfair text-xl md:text-3xl font-semibold">
+                            MILLENNIUM&nbsp;STAR
+                        </h1>
                     </Link>
                     <div className="flex items-center space-x-3">
                         <div className="w-20 h-8 bg-gray-200 animate-pulse rounded"></div>
@@ -111,7 +116,7 @@ const Navbar = () => {
 
     return (
         <div className="sticky top-0 z-50 bg-white shadow-md">
-            <Container className="flex  items-center justify-between py-4">
+            <Container className="flex max-w-[1500px] items-center justify-between py-4">
                 {/* Logo */}
                 <Link href="/" className="flex  items-center space-x-2">
                     <Image
