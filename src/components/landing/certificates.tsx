@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 import React, { useState } from "react";
-import cert1 from "../../../public/assets/cert1.jpg";
-import cert2 from "../../../public/assets/cert2.jpg";
-import cert3 from "../../../public/assets/cert3.jpg";
+import cert1 from "../../../public/assets/cert-1.jpg";
+import cert2 from "../../../public/assets/cert-2.webp";
+import cert3 from "../../../public/assets/cert-3.png";
 import { Playfair_Display, Open_Sans } from "next/font/google";
 import { Button } from "../ui/button";
 
@@ -99,6 +99,8 @@ const DiamondCards = () => {
                                         src={certificate.image}
                                         alt={certificate.alt}
                                         fill
+                                        priority
+                                        quality={100}
                                         className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                     />
