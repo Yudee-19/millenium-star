@@ -118,7 +118,7 @@ const Navbar = () => {
         <div className="sticky top-0 z-50 bg-white shadow-md">
             <Container className="flex max-w-[1500px] items-center justify-between py-4">
                 {/* Logo */}
-                <Link href="/" className="flex  items-center space-x-2">
+                <Link href="/" className="flex shrink items-center space-x-2">
                     <Image
                         src="/assets/logo.png"
                         alt="Logo"
@@ -132,7 +132,7 @@ const Navbar = () => {
                 </Link>
 
                 {/* Desktop Navigation */}
-                <ul className="hidden md:flex list-none space-x-7 font-sans font-light text-base">
+                <ul className="hidden lg:flex list-none space-x-7 font-sans font-light text-base">
                     {navItems.map((item) => (
                         <li key={item.href}>
                             <Link
@@ -151,7 +151,7 @@ const Navbar = () => {
                 </ul>
 
                 {/* Desktop Auth/Profile Buttons */}
-                <div className="hidden md:flex space-x-3">
+                <div className="hidden lg:flex space-x-3">
                     {isAuthenticated() ? (
                         // Authenticated user buttons
                         <>
@@ -193,7 +193,7 @@ const Navbar = () => {
 
                 {/* Mobile Hamburger Button */}
                 <button
-                    className="md:hidden p-2 rounded-md hover:bg-gray-100 transition-colors"
+                    className="lg:hidden p-2 rounded-md hover:bg-gray-100 transition-colors"
                     onClick={toggleMobileMenu}
                     aria-label="Toggle menu"
                 >
@@ -207,7 +207,7 @@ const Navbar = () => {
 
             {/* Mobile Menu */}
             {isMobileMenuOpen && (
-                <div className="md:hidden bg-white border-t border-gray-200 shadow-lg">
+                <div className="lg:hidden bg-white border-t border-gray-200 shadow-lg">
                     <Container className="py-4">
                         {/* Mobile Navigation Links */}
                         <ul className="space-y-4 mb-6">
