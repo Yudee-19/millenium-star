@@ -1,7 +1,7 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-    name: "MILLENNIUM STAR",
+    name: "COMPANY NAME",
     description: "Admin Dashboard for managing the inventory",
 
     links: {

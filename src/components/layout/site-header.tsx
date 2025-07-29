@@ -8,15 +8,16 @@ export function SiteHeader() {
             <div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
                 <div className="flex gap-6 md:gap-10">
                     <Link href="/" className="flex  items-center space-x-2">
-                        <Image
+                        {/* <Image
                             src="/assets/logo.png"
                             alt="Logo"
                             width={100}
                             height={100}
                             className="h-10 w-auto"
-                        />
+                        /> */}
                         <h1 className="font-playfair text-xl md:text-3xl font-semibold">
-                            MILLENNIUM&nbsp;STAR
+                            {/* MILLENNIUM&nbsp;STAR */}
+                            COMPANY&nbsp;NAME
                         </h1>
                     </Link>
                     {/* {siteConfig.mainNav?.length ? (

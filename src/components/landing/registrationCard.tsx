@@ -973,7 +973,8 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
                         className="text-blue-600 hover:text-blue-700 font-medium"
                         onClick={handleClose}
                     >
-                        support@diamondelite.com
+                        {/* support@diamondelite.com */}
+                        support@companyname.com
                     </Link>
                 </p>
             </div>
@@ -1002,7 +1003,8 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
                     {/* Header */}
                     <div className="text-center space-y-2">
                         <DialogTitle className="text-3xl font-bold font-playfair tracking-wide text-gray-800">
-                            MILLENNIUM&nbsp;STAR
+                            {/* MILLENNIUM&nbsp;STAR */}
+                            COMPANY&nbsp;NAME
                         </DialogTitle>
                         <h2 className="text-2xl font-light font-playfair text-gray-700">
                             {getStepTitle()}

@@ -15,7 +15,8 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-    title: "Millennium Star",
+    // title: "Millennium Star",
+    title: "Company Name",
     description: "Diamond Inventory Management",
 };
 

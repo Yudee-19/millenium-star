@@ -25,8 +25,8 @@ import {
     TableRow,
 } from "@/components/ui/table";
 
-import { DataTableToolbar } from "./data-table-toolbar";
 import { DataTablePagination } from "./data-table-pagination";
+import { DiamondTableToolbar } from "./diamond-toolbar";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -53,7 +53,7 @@ interface DataTableProps<TData, TValue> {
 export function DataTable<TData, TValue>({
     columns,
     data,
-    toolbar: Toolbar = DataTableToolbar,
+    toolbar: Toolbar = DiamondTableToolbar,
     pageCount = -1,
     loading = false,
     onStateChange,

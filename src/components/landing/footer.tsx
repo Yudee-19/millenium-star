@@ -37,15 +37,16 @@ const Footer = () => {
                     {/* Logo */}
                     <div className="md:col-span-6">
                         <Link href="/" className="flex  items-center space-x-2">
-                            <Image
+                            {/* <Image
                                 src="/assets/logo.png"
                                 alt="Logo"
                                 width={100}
                                 height={100}
                                 className="h-10 w-auto"
-                            />
+                            /> */}
                             <h1 className="font-playfair text-xl md:text-3xl font-semibold">
-                                MILLENNIUM&nbsp;STAR
+                                {/* MILLENNIUM&nbsp;STAR */}
+                                COMPANY&nbsp;NAME
                             </h1>
                         </Link>
                     </div>
@@ -97,7 +98,8 @@ const Footer = () => {
                     <p
                         className={`${inter.className} text-sm text-gray-400 order-2 sm:order-1 mt-4 sm:mt-0`}
                     >
-                        &copy; {new Date().getFullYear()} Millennium Star. All
+                        {/* &copy; {new Date().getFullYear()} Millennium Star. All */}
+                        &copy; {new Date().getFullYear()} Company Name. All
                         rights reserved.
                     </p>
                     <div

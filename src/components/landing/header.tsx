@@ -94,15 +94,16 @@ const Navbar = () => {
             <div className="sticky top-0 z-50 bg-white shadow-md">
                 <Container className="flex items-center justify-between py-4">
                     <Link href="/" className="flex  items-center space-x-2">
-                        <Image
+                        {/* <Image
                             src="/assets/logo.png"
                             alt="Logo"
                             width={100}
                             height={100}
                             className="h-10 w-auto"
-                        />
+                        /> */}
                         <h1 className="font-playfair text-xl md:text-3xl font-semibold">
-                            MILLENNIUM&nbsp;STAR
+                            {/* MILLENNIUM&nbsp;STAR */}
+                            COMPANY&nbsp;NAME
                         </h1>
                     </Link>
                     <div className="flex items-center space-x-3">
@@ -119,15 +120,16 @@ const Navbar = () => {
             <Container className="flex max-w-[1500px] items-center justify-between py-4">
                 {/* Logo */}
                 <Link href="/" className="flex shrink items-center space-x-2">
-                    <Image
+                    {/* <Image
                         src="/assets/logo.png"
                         alt="Logo"
                         width={100}
                         height={100}
                         className="h-10 w-auto"
-                    />
+                    /> */}
                     <h1 className="font-playfair text-xl md:text-3xl font-semibold">
-                        MILLENNIUM&nbsp;STAR
+                        {/* MILLENNIUM&nbsp;STAR */}
+                        COMPANY&nbsp;NAME
                     </h1>
                 </Link>
 
