@@ -22,32 +22,6 @@ import { DiamondImage } from "../diamond-image";
 
 export const diamondColumns: ColumnDef<DiamondType>[] = [
     {
-        accessorKey: "View",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="View" />
-        ),
-        cell: ({ row }) => (
-            <div className="w-10 flex justify-center font-mono text-xs">
-                <Link href={`/${row.original.certificateNumber}`}>
-                    {" "}
-                    <EyeIcon className="h-5 w-5 text-black" />
-                </Link>
-            </div>
-        ),
-    },
-    {
-        accessorKey: "image",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Image" />
-        ),
-        cell: ({ row }) => (
-            <DiamondImage
-                certificateNumber={row.original.certificateNumber}
-                size={48}
-            />
-        ),
-    },
-    {
         id: "actions",
         cell: ({ row }) => (
             <DataTableRowActions
@@ -58,6 +32,21 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             />
         ),
     },
+    {
+        accessorKey: "image",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Image" />
+        ),
+        cell: ({ row }) => (
+            <Link href={`/${row.original.certificateNumber}`}>
+                <DiamondImage
+                    certificateNumber={row.original.certificateNumber}
+                    size={48}
+                />
+            </Link>
+        ),
+    },
+
     {
         accessorKey: "diamond-Id",
         header: ({ column }) => (

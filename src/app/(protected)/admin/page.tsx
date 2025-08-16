@@ -216,7 +216,7 @@ export default function DiamondPage() {
                 {/* Search and Action Buttons */}
                 <div className="flex items-center justify-center gap-2 my-5">
                     <Input
-                        className="bg-black/5 text-sky-950 px-3 py-3 text-base rounded-full"
+                        className="bg-black/5 text-black px-3 py-3 text-base rounded-md"
                         placeholder="Search by Diamond ID, Shape, Color, Clarity, etc."
                     />
                     {/* <CustomButton
@@ -254,28 +254,28 @@ export default function DiamondPage() {
                         onValueChange={setActiveTab}
                         className="w-full"
                     >
-                        <TabsList className="w-full rounded-full">
+                        <TabsList className="w-full font-medium rounded-md">
                             <TabsTrigger
                                 value="all"
-                                className="rounded-full text-sky-950 p-3"
+                                className="rounded-md  text-black p-3"
                             >
                                 All
                             </TabsTrigger>
                             <TabsTrigger
                                 value="fancy"
-                                className="rounded-full text-sky-950 p-3"
+                                className="rounded-md text-black p-3"
                             >
                                 Fancy
                             </TabsTrigger>
                             <TabsTrigger
                                 value="highEnd"
-                                className="rounded-full text-sky-950 p-3"
+                                className="rounded-md text-black p-3"
                             >
                                 High End
                             </TabsTrigger>
                             <TabsTrigger
                                 value="lowEnd"
-                                className="rounded-full text-sky-950 p-3"
+                                className="rounded-md text-black p-3"
                             >
                                 Low End
                             </TabsTrigger>
@@ -284,8 +284,8 @@ export default function DiamondPage() {
                         <TabsContent value="all">
                             {/* Stats Cards */}
                             <div className="flex items-center justify-center gap-5 my-10">
-                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-sky-950 text-base">
+                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-black text-base">
                                         Total Diamonds (All Inventory)
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -294,8 +294,8 @@ export default function DiamondPage() {
                                             : totalCount.toLocaleString()}
                                     </h1>
                                 </div>
-                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-sky-950 text-base">
+                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-black text-base">
                                         Available
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -306,8 +306,8 @@ export default function DiamondPage() {
                                               ).length}
                                     </h1>
                                 </div>
-                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-sky-950 text-base">
+                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-black text-base">
                                         Total Value
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -323,8 +323,8 @@ export default function DiamondPage() {
                                                   .toFixed(2)}{" "}
                                     </h1>
                                 </div>
-                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-sky-950 text-base">
+                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-black text-base">
                                         Total Size
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -343,22 +343,22 @@ export default function DiamondPage() {
                             </div>
 
                             <Tabs defaultValue="tableview" className="">
-                                <TabsList className="rounded-full space-x-3">
+                                <TabsList className="rounded-md space-x-3">
                                     <TabsTrigger
                                         value="tableview"
-                                        className="rounded-full text-sky-950 p-3"
+                                        className="rounded-md text-black p-3"
                                     >
                                         Table View
                                     </TabsTrigger>
                                     <TabsTrigger
                                         value="rapport"
-                                        className="rounded-full text-sky-950 p-3"
+                                        className="rounded-md text-black p-3"
                                     >
                                         Rapport
                                     </TabsTrigger>
                                     <TabsTrigger
                                         value="chart"
-                                        className="rounded-full text-sky-950 p-3"
+                                        className="rounded-md text-black p-3"
                                     >
                                         Chart
                                     </TabsTrigger>
@@ -401,8 +401,8 @@ export default function DiamondPage() {
                         <TabsContent value="fancy">
                             {/* Fancy Diamonds Stats */}
                             <div className="flex items-center justify-center gap-5 my-10">
-                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-sky-950 text-base">
+                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-black text-base">
                                         Fancy Diamonds (Non-RBC)
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -411,8 +411,8 @@ export default function DiamondPage() {
                                             : fancyTotalCount.toLocaleString()}
                                     </h1>
                                 </div>
-                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-sky-950 text-base">
+                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-black text-base">
                                         Available
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -423,8 +423,8 @@ export default function DiamondPage() {
                                               ).length}
                                     </h1>
                                 </div>
-                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-sky-950 text-base">
+                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-black text-base">
                                         Total Value
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -440,8 +440,8 @@ export default function DiamondPage() {
                                                   .toFixed(2)}
                                     </h1>
                                 </div>
-                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-sky-950 text-base">
+                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-black text-base">
                                         Total Size
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -481,8 +481,8 @@ export default function DiamondPage() {
                         <TabsContent value="highEnd">
                             {/* High End Diamonds Stats */}
                             <div className="flex items-center justify-center gap-5 my-10">
-                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-sky-950 text-base">
+                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-black text-base">
                                         High End Diamonds (RBC ≤ 1ct)
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -491,8 +491,8 @@ export default function DiamondPage() {
                                             : highEndTotalCount.toLocaleString()}
                                     </h1>
                                 </div>
-                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-sky-950 text-base">
+                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-black text-base">
                                         Available
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -503,8 +503,8 @@ export default function DiamondPage() {
                                               ).length}
                                     </h1>
                                 </div>
-                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-sky-950 text-base">
+                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-black text-base">
                                         Total Value
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -520,8 +520,8 @@ export default function DiamondPage() {
                                                   .toFixed(2)}
                                     </h1>
                                 </div>
-                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-sky-950 text-base">
+                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-black text-base">
                                         Total Size
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -563,8 +563,8 @@ export default function DiamondPage() {
                         <TabsContent value="lowEnd">
                             {/* Low End Diamonds Stats */}
                             <div className="flex items-center justify-center gap-5 my-10">
-                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-sky-950 text-base">
+                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-black text-base">
                                         Low End Diamonds (RBC ≥ 1ct)
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -573,8 +573,8 @@ export default function DiamondPage() {
                                             : lowEndTotalCount.toLocaleString()}
                                     </h1>
                                 </div>
-                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-sky-950 text-base">
+                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-black text-base">
                                         Available
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -585,8 +585,8 @@ export default function DiamondPage() {
                                               ).length}
                                     </h1>
                                 </div>
-                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-sky-950 text-base">
+                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-black text-base">
                                         Total Value
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -602,8 +602,8 @@ export default function DiamondPage() {
                                                   .toFixed(2)}
                                     </h1>
                                 </div>
-                                <div className="w-80 h-28 bg-neutral-300/20 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-sky-950 text-base">
+                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
+                                    <h1 className="text-black text-base">
                                         Total Size
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
