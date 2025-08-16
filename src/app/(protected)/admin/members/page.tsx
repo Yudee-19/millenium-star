@@ -11,7 +11,15 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, Eye } from "lucide-react";
+import {
+    Check,
+    X,
+    Eye,
+    RefreshCw,
+    Clock,
+    CheckCircle,
+    XCircle,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { AdminGuard } from "@/components/auth/routeGuard";
@@ -19,6 +27,15 @@ import { SiteHeader } from "@/components/layout/site-header";
 import Container from "@/components/ui/container";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
+
+import { StatsCard } from "@/components/cards/stats-card";
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 interface Quotation {
     quotationId: string;
@@ -146,6 +163,13 @@ export default function MembersEnquiry() {
         }
     };
 
+    // Combined refresh helper
+    const refreshAll = async () => {
+        setLoading(true);
+        await Promise.all([fetchPendingUsers(), fetchAllUsers()]);
+        setLoading(false);
+    };
+
     // Approve user
     const handleApprove = async (userId: string) => {
         setActionLoading(userId);
@@ -162,7 +186,7 @@ export default function MembersEnquiry() {
             if (data.success) {
                 toast.success("User approved successfully");
                 // Refresh all user lists
-                await Promise.all([fetchPendingUsers(), fetchAllUsers()]);
+                await refreshAll();
             } else {
                 toast.error(data.message || "Failed to approve user");
             }
@@ -190,7 +214,7 @@ export default function MembersEnquiry() {
             if (data.success) {
                 toast.success("User rejected successfully");
                 // Refresh all user lists
-                await Promise.all([fetchPendingUsers(), fetchAllUsers()]);
+                await refreshAll();
             } else {
                 toast.error(data.message || "Failed to reject user");
             }
@@ -218,6 +242,11 @@ export default function MembersEnquiry() {
         loadData();
     }, []);
 
+    // Top-level stats
+    const pendingCount = pendingUsers.length;
+    const approvedCount = approvedUsers.length;
+    const rejectedCount = rejectedUsers.length;
+
     // Helper function to render user table rows
     const renderUserRows = (users: User[], showActions: boolean = false) => {
         if (users.length === 0) {
@@ -227,6 +256,7 @@ export default function MembersEnquiry() {
                         colSpan={showActions ? 11 : 10}
                         className="text-center py-8 text-gray-500"
                     >
+                        <Eye className="mx-auto h-8 w-8 text-gray-300" />
                         No users found
                     </TableCell>
                 </TableRow>
@@ -239,16 +269,15 @@ export default function MembersEnquiry() {
                 <TableCell className="text-center font-mono">
                     {user._id.slice(-8)}
                 </TableCell>
-                <TableCell className="text-center">
-                    {user.customerData
-                        ? `${user.customerData.firstName} ${
-                              user.customerData.lastName
-                          }${
-                              user.customerData.businessInfo?.companyName
-                                  ? ` (${user.customerData.businessInfo.companyName})`
-                                  : ""
-                          }`
-                        : "N/A"}
+                <TableCell>
+                    <div className="text-sm font-medium">
+                        {user.customerData
+                            ? `${user.customerData.firstName} ${user.customerData.lastName}`
+                            : "N/A"}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                        {user.customerData?.businessInfo?.companyName || ""}
+                    </div>
                 </TableCell>
                 <TableCell className="text-center">
                     {user.customerData?.businessInfo?.vatNumber || "N/A"}
@@ -265,10 +294,10 @@ export default function MembersEnquiry() {
                     {user.customerData?.businessInfo?.companyName || "N/A"}
                 </TableCell>
                 <TableCell className="text-center">
-                    {user.customerData?.businessInfo?.vatNumber || "N/A"}
+                    {user.customerData?.businessInfo?.businessType || "N/A"}
                 </TableCell>
                 <TableCell className="text-center">
-                    {user.customerData?.businessInfo?.vatNumber || "N/A"}
+                    {formatDate(user.createdAt)}
                 </TableCell>
                 {showActions && (
                     <TableCell className="text-center">
@@ -312,89 +341,144 @@ export default function MembersEnquiry() {
         <AdminGuard>
             <Container>
                 <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h1 className="text-3xl font-medium">
+                                Members Enquiry
+                            </h1>
+                            <Breadcrumb className="my-2">
+                                <BreadcrumbList>
+                                    <BreadcrumbItem>
+                                        <BreadcrumbLink href="/">
+                                            HOME
+                                        </BreadcrumbLink>
+                                    </BreadcrumbItem>
+                                    <BreadcrumbSeparator>
+                                        {"/"}
+                                    </BreadcrumbSeparator>
+                                    <BreadcrumbItem>
+                                        <BreadcrumbLink href="/admin/members">
+                                            Members
+                                        </BreadcrumbLink>
+                                    </BreadcrumbItem>
+                                </BreadcrumbList>
+                            </Breadcrumb>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                            <Button
+                                onClick={refreshAll}
+                                variant="outline"
+                                disabled={loading}
+                            >
+                                <RefreshCw
+                                    className={`mr-2 h-4 w-4 ${
+                                        loading ? "animate-spin" : ""
+                                    }`}
+                                />
+                                Refresh
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* Top stat cards */}
+                    <div className="flex items-center justify-start gap-5 my-6">
+                        <StatsCard
+                            icon={Clock}
+                            iconColor="text-orange-500"
+                            iconBgColor="bg-orange-400/20"
+                            label="Waiting Authorization"
+                            value={loading ? "..." : pendingCount}
+                            subtext="Pending KYC"
+                        />
+
+                        <StatsCard
+                            icon={CheckCircle}
+                            iconColor="text-green-500"
+                            iconBgColor="bg-green-400/20"
+                            label="Authorized Members"
+                            value={loading ? "..." : approvedCount}
+                            subtext="KYC approved"
+                        />
+
+                        <StatsCard
+                            icon={XCircle}
+                            iconColor="text-red-500"
+                            iconBgColor="bg-red-400/20"
+                            label="Rejected Members"
+                            value={loading ? "..." : rejectedCount}
+                            subtext="KYC rejected"
+                        />
+                    </div>
+
                     {/* Tabs */}
-                    <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg w-fit">
+                    <div className="flex space-x-1 bg-gray-200 text-gray-600 p-1 rounded-lg w-fit">
                         <Button
                             variant={
-                                activeTab === "pending" ? "default" : "ghost"
+                                activeTab === "pending" ? "outline" : "ghost"
                             }
                             size="sm"
                             onClick={() => setActiveTab("pending")}
-                            className={`${
-                                activeTab === "pending"
-                                    ? "bg-gray-900 text-white"
-                                    : "text-gray-600 hover:text-gray-900"
-                            }`}
                         >
                             Waiting Authorization ({pendingUsers.length})
                         </Button>
                         <Button
                             variant={
-                                activeTab === "approved" ? "default" : "ghost"
+                                activeTab === "approved" ? "outline" : "ghost"
                             }
                             size="sm"
                             onClick={() => setActiveTab("approved")}
-                            className={`${
-                                activeTab === "approved"
-                                    ? "bg-green-600 text-white"
-                                    : "text-gray-600 hover:text-gray-900"
-                            }`}
                         >
-                            Authorized Members ({approvedUsers.length})
+                            Authorized ({approvedUsers.length})
                         </Button>
                         <Button
                             variant={
-                                activeTab === "rejected" ? "default" : "ghost"
+                                activeTab === "rejected" ? "outline" : "ghost"
                             }
                             size="sm"
                             onClick={() => setActiveTab("rejected")}
-                            className={`${
-                                activeTab === "rejected"
-                                    ? "bg-red-600 text-white"
-                                    : "text-gray-600 hover:text-gray-900"
-                            }`}
                         >
-                            Rejected Members ({rejectedUsers.length})
+                            Rejected ({rejectedUsers.length})
                         </Button>
                     </div>
 
                     {/* Table */}
-                    <div className="rounded-lg border bg-white">
+                    <div className="rounded-lg border bg-white shadow-sm">
                         <Table>
                             <TableHeader>
                                 <TableRow className="bg-gray-50">
-                                    <TableHead className="text-center">
+                                    <TableHead className="text-center text-xs font-medium text-gray-700">
                                         Sr.
                                     </TableHead>
-                                    <TableHead className="text-center">
+                                    <TableHead className="text-center text-xs font-medium text-gray-700">
                                         ID
                                     </TableHead>
-                                    <TableHead className="text-center">
+                                    <TableHead className="text-xs font-medium text-gray-700">
                                         Name (Company)
                                     </TableHead>
-                                    <TableHead className="text-center">
+                                    <TableHead className="text-center text-xs font-medium text-gray-700">
                                         VAT Number
                                     </TableHead>
-                                    <TableHead className="text-center">
+                                    <TableHead className="text-center text-xs font-medium text-gray-700">
                                         Username
                                     </TableHead>
-                                    <TableHead className="text-center">
-                                        Email Address
+                                    <TableHead className="text-center text-xs font-medium text-gray-700">
+                                        Email
                                     </TableHead>
-                                    <TableHead className="text-center">
-                                        Phone Number
+                                    <TableHead className="text-center text-xs font-medium text-gray-700">
+                                        Phone
                                     </TableHead>
-                                    <TableHead className="text-center">
-                                        Company Name
+                                    <TableHead className="text-center text-xs font-medium text-gray-700">
+                                        Company
                                     </TableHead>
-                                    <TableHead className="text-center">
+                                    <TableHead className="text-center text-xs font-medium text-gray-700">
                                         Business Type
                                     </TableHead>
-                                    <TableHead className="text-center">
-                                        TAX Number
+                                    <TableHead className="text-center text-xs font-medium text-gray-700">
+                                        Joined
                                     </TableHead>
                                     {activeTab === "pending" && (
-                                        <TableHead className="text-center">
+                                        <TableHead className="text-center text-xs font-medium text-gray-700">
                                             Actions
                                         </TableHead>
                                     )}
@@ -411,7 +495,7 @@ export default function MembersEnquiry() {
                         </Table>
                     </div>
 
-                    {/* Status Badge */}
+                    {/* Status summary */}
                     <div className="flex justify-between items-center text-sm text-gray-600">
                         <div>
                             {activeTab === "pending" &&
