@@ -35,6 +35,7 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { StatsCard } from "@/components/cards/stats-card";
 
 export default function DiamondPage() {
     const { user, logout } = useAuth();
@@ -313,98 +314,71 @@ export default function DiamondPage() {
                         <TabsContent value="all">
                             {/* Stats Cards */}
                             <div className="flex items-center justify-center gap-5 my-10">
-                                <div className="w-80  bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
-                                    <div className="w-full flex justify-between items-center">
-                                        <div className="bg-blue-400/20 rounded-md p-2">
-                                            <GridIcon className="text-blue-500" />
-                                        </div>
-                                        <TrendingUp className="text-green-400" />
-                                    </div>
-                                    <h1 className="text-gray-600 text-base">
-                                        Total Diamonds
-                                    </h1>
-                                    <h1 className="text-2xl font-semibold">
-                                        {loading
+                                <StatsCard
+                                    icon={GridIcon}
+                                    iconColor="text-blue-500"
+                                    iconBgColor="bg-blue-400/20"
+                                    label="Total Diamonds"
+                                    value={
+                                        loading
                                             ? "..."
-                                            : totalCount.toLocaleString()}
-                                    </h1>
-                                    <h1 className="text-gray-500 text-sm">
-                                        all Inventory
-                                    </h1>
-                                </div>
-                                <div className="w-80  bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
-                                    <div className="w-full flex justify-between items-center">
-                                        <div className="bg-green-400/20 rounded-md p-2">
-                                            <CircleCheckBig className="text-green-500" />
-                                        </div>
-                                        <TrendingUp className="text-green-400" />
-                                    </div>
-                                    <h1 className="text-gray-600 text-base">
-                                        Available
-                                    </h1>
-                                    <h1 className="text-2xl font-semibold">
-                                        {loading
+                                            : totalCount.toLocaleString()
+                                    }
+                                    subtext="All Inventory"
+                                />
+
+                                <StatsCard
+                                    icon={CircleCheckBig}
+                                    iconColor="text-green-500"
+                                    iconBgColor="bg-green-400/20"
+                                    label="Available"
+                                    value={
+                                        loading
                                             ? "..."
                                             : diamonds.filter(
                                                   (d) => d.isAvailable
-                                              ).length}
-                                    </h1>
-                                    <h1 className="text-gray-500 text-sm">
-                                        Ready for Sale
-                                    </h1>
-                                </div>
-                                <div className="w-80  bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
-                                    <div className="w-full flex justify-between items-center">
-                                        <div className="bg-purple-400/20 rounded-md p-2">
-                                            <ChartColumn className="text-purple-500" />
-                                        </div>
-                                        <TrendingUp className="text-green-400" />
-                                    </div>
-                                    <h1 className="text-gray-600 text-base">
-                                        Total Value
-                                    </h1>
-                                    <h1 className="text-2xl font-semibold">
-                                        $
-                                        {loading
+                                              ).length
+                                    }
+                                    subtext="Ready for Sale"
+                                />
+
+                                <StatsCard
+                                    icon={ChartColumn}
+                                    iconColor="text-purple-500"
+                                    iconBgColor="bg-purple-400/20"
+                                    label="Total Value"
+                                    value={
+                                        loading
                                             ? "..."
-                                            : diamonds
+                                            : `$${diamonds
                                                   .reduce(
                                                       (sum, d) =>
                                                           sum + (d.price || 0),
                                                       0
                                                   )
-                                                  .toFixed(2)}{" "}
-                                    </h1>
-                                    <h1 className="text-gray-500 text-sm">
-                                        Current Market Value
-                                    </h1>
-                                </div>
-                                <div className="w-80  bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
-                                    <div className="w-full flex justify-between items-center">
-                                        <div className="bg-orange-400/20 rounded-md p-2">
-                                            <Ruler className="text-orange-500" />
-                                        </div>
-                                        <TrendingUp className="text-green-400" />
-                                    </div>
-                                    <h1 className="text-gray-600 text-base">
-                                        Total Size
-                                    </h1>
-                                    <h1 className="text-2xl font-semibold">
-                                        {loading
+                                                  .toFixed(2)}`
+                                    }
+                                    subtext="Current Market Value"
+                                />
+
+                                <StatsCard
+                                    icon={Ruler}
+                                    iconColor="text-orange-500"
+                                    iconBgColor="bg-orange-400/20"
+                                    label="Total Size"
+                                    value={
+                                        loading
                                             ? "..."
-                                            : diamonds
+                                            : `${diamonds
                                                   .reduce(
                                                       (sum, d) =>
                                                           sum + (d.size || 0),
                                                       0
                                                   )
-                                                  .toFixed(2)}{" "}
-                                        ct
-                                    </h1>
-                                    <h1 className="text-sm text-gray-500">
-                                        Carat Weight
-                                    </h1>
-                                </div>
+                                                  .toFixed(2)} ct`
+                                    }
+                                    subtext="Carat Weight"
+                                />
                             </div>
 
                             <Tabs defaultValue="tableview" className="">
@@ -466,98 +440,71 @@ export default function DiamondPage() {
                         <TabsContent value="fancy">
                             {/* Fancy Diamonds Stats */}
                             <div className="flex items-center justify-center gap-5 my-10">
-                                <div className="w-80 bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
-                                    <div className="w-full flex justify-between items-center">
-                                        <div className="bg-blue-400/20 rounded-md p-2">
-                                            <GridIcon className="text-blue-500" />
-                                        </div>
-                                        <TrendingUp className="text-green-400" />
-                                    </div>
-                                    <h1 className="text-gray-600 text-base">
-                                        Fancy Diamonds (Non-RBC)
-                                    </h1>
-                                    <h1 className="text-2xl font-semibold">
-                                        {fancyLoading
+                                <StatsCard
+                                    icon={GridIcon}
+                                    iconColor="text-blue-500"
+                                    iconBgColor="bg-blue-400/20"
+                                    label="Fancy Diamonds (Non-RBC)"
+                                    value={
+                                        fancyLoading
                                             ? "..."
-                                            : fancyTotalCount.toLocaleString()}
-                                    </h1>
-                                    <h1 className="text-gray-500 text-sm">
-                                        Total Inventory
-                                    </h1>
-                                </div>
-                                <div className="w-80 bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
-                                    <div className="w-full flex justify-between items-center">
-                                        <div className="bg-green-400/20 rounded-md p-2">
-                                            <CircleCheckBig className="text-green-500" />
-                                        </div>
-                                        <TrendingUp className="text-green-400" />
-                                    </div>
-                                    <h1 className="text-gray-600 text-base">
-                                        Available
-                                    </h1>
-                                    <h1 className="text-2xl font-semibold">
-                                        {fancyLoading
+                                            : fancyTotalCount.toLocaleString()
+                                    }
+                                    subtext="Total Inventory"
+                                />
+
+                                <StatsCard
+                                    icon={CircleCheckBig}
+                                    iconColor="text-green-500"
+                                    iconBgColor="bg-green-400/20"
+                                    label="Available"
+                                    value={
+                                        fancyLoading
                                             ? "..."
                                             : fancyDiamonds.filter(
                                                   (d) => d.isAvailable
-                                              ).length}
-                                    </h1>
-                                    <h1 className="text-gray-500 text-sm">
-                                        Ready for Sale
-                                    </h1>
-                                </div>
-                                <div className="w-80 bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
-                                    <div className="w-full flex justify-between items-center">
-                                        <div className="bg-purple-400/20 rounded-md p-2">
-                                            <ChartColumn className="text-purple-500" />
-                                        </div>
-                                        <TrendingUp className="text-green-400" />
-                                    </div>
-                                    <h1 className="text-gray-600 text-base">
-                                        Total Value
-                                    </h1>
-                                    <h1 className="text-2xl font-semibold">
-                                        $
-                                        {fancyLoading
+                                              ).length
+                                    }
+                                    subtext="Ready for Sale"
+                                />
+
+                                <StatsCard
+                                    icon={ChartColumn}
+                                    iconColor="text-purple-500"
+                                    iconBgColor="bg-purple-400/20"
+                                    label="Total Value"
+                                    value={
+                                        fancyLoading
                                             ? "..."
-                                            : fancyDiamonds
+                                            : `$${fancyDiamonds
                                                   .reduce(
                                                       (sum, d) =>
                                                           sum + (d.price || 0),
                                                       0
                                                   )
-                                                  .toFixed(2)}
-                                    </h1>
-                                    <h1 className="text-gray-500 text-sm">
-                                        Current Market Value
-                                    </h1>
-                                </div>
-                                <div className="w-80 bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
-                                    <div className="w-full flex justify-between items-center">
-                                        <div className="bg-orange-400/20 rounded-md p-2">
-                                            <Ruler className="text-orange-500" />
-                                        </div>
-                                        <TrendingUp className="text-green-400" />
-                                    </div>
-                                    <h1 className="text-gray-600 text-base">
-                                        Total Size
-                                    </h1>
-                                    <h1 className="text-2xl font-semibold">
-                                        {fancyLoading
+                                                  .toFixed(2)}`
+                                    }
+                                    subtext="Current Market Value"
+                                />
+
+                                <StatsCard
+                                    icon={Ruler}
+                                    iconColor="text-orange-500"
+                                    iconBgColor="bg-orange-400/20"
+                                    label="Total Size"
+                                    value={
+                                        fancyLoading
                                             ? "..."
-                                            : fancyDiamonds
+                                            : `${fancyDiamonds
                                                   .reduce(
                                                       (sum, d) =>
                                                           sum + (d.size || 0),
                                                       0
                                                   )
-                                                  .toFixed(2)}{" "}
-                                        ct
-                                    </h1>
-                                    <h1 className="text-gray-500 text-sm">
-                                        Carat Weight
-                                    </h1>
-                                </div>
+                                                  .toFixed(2)} ct`
+                                    }
+                                    subtext="Carat Weight"
+                                />
                             </div>
 
                             <Shell>

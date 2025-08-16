@@ -11,11 +11,29 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Check, X, RefreshCw, Eye } from "lucide-react";
+import {
+    Check,
+    X,
+    RefreshCw,
+    Eye,
+    Clock,
+    CheckCircle,
+    XCircle,
+    Info,
+} from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Container from "@/components/ui/container";
 import { toast } from "sonner";
 import { AdminGuard } from "@/components/auth/routeGuard";
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { StatsCard } from "@/components/cards/stats-card";
 
 type TabType = "pending" | "approved" | "rejected";
 
@@ -177,10 +195,33 @@ const QuotationsPageContent = () => {
 
     const filtered = getFilteredQuotations();
 
+    // Flatten all quotations once and compute top-level stats for the cards
+    const allQuotes = adminQuotations.flatMap((user) =>
+        user.quotations.map((q) => ({
+            ...q,
+            username: user.username,
+            email: user.email,
+        }))
+    );
+
+    const pendingCount = allQuotes.filter((q) => q.status === "PENDING").length;
+    const approvedCount = allQuotes.filter(
+        (q) => q.status === "APPROVED"
+    ).length;
+    const rejectedCount = allQuotes.filter(
+        (q) => q.status === "REJECTED"
+    ).length;
+    const expiredCount = allQuotes.filter((q) =>
+        // counts as expired only when expiresAt exists and is in the past
+        (q as any).expiresAt
+            ? new Date((q as any).expiresAt) < new Date()
+            : false
+    ).length;
+
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold">Quotations Management</h1>
+                <h1 className="text-3xl  font-medium">Offer Inquiry </h1>
                 <Button
                     onClick={fetchQuotations}
                     variant="outline"
@@ -194,23 +235,68 @@ const QuotationsPageContent = () => {
                     Refresh
                 </Button>
             </div>
-            <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg w-fit">
+
+            <Breadcrumb className="my-3">
+                <BreadcrumbList>
+                    <BreadcrumbItem>
+                        <BreadcrumbLink href="/">HOME</BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator>{"/"}</BreadcrumbSeparator>
+                    <BreadcrumbItem>
+                        <BreadcrumbLink href="/admin/quotations">
+                            Offer Enquiry
+                        </BreadcrumbLink>
+                    </BreadcrumbItem>
+                </BreadcrumbList>
+            </Breadcrumb>
+
+            {/* Top stat cards (matches screenshot layout) */}
+            <div className="flex items-center justify-start gap-5 my-10">
+                <StatsCard
+                    icon={Clock}
+                    iconColor="text-orange-500"
+                    iconBgColor="bg-orange-400/20"
+                    label="Pending Offers"
+                    value={loading ? "..." : pendingCount}
+                    subtext="Awaiting response"
+                />
+
+                <StatsCard
+                    icon={CheckCircle}
+                    iconColor="text-green-500"
+                    iconBgColor="bg-green-400/20"
+                    label="Approved Offers"
+                    value={loading ? "..." : approvedCount}
+                    subtext="Successfully approved"
+                />
+
+                <StatsCard
+                    icon={XCircle}
+                    iconColor="text-red-500"
+                    iconBgColor="bg-red-400/20"
+                    label="Rejected Offers"
+                    value={loading ? "..." : rejectedCount}
+                    subtext="Declined offers"
+                />
+            </div>
+
+            <div className="flex space-x-1 bg-gray-200 text-gray-600 p-1 rounded-lg w-fit">
                 <Button
-                    variant={activeTab === "pending" ? "default" : "ghost"}
+                    variant={activeTab === "pending" ? "outline" : "ghost"}
                     size="sm"
                     onClick={() => setActiveTab("pending")}
                 >
                     Pending
                 </Button>
                 <Button
-                    variant={activeTab === "approved" ? "default" : "ghost"}
+                    variant={activeTab === "approved" ? "outline" : "ghost"}
                     size="sm"
                     onClick={() => setActiveTab("approved")}
                 >
                     Approved
                 </Button>
                 <Button
-                    variant={activeTab === "rejected" ? "default" : "ghost"}
+                    variant={activeTab === "rejected" ? "outline" : "ghost"}
                     size="sm"
                     onClick={() => setActiveTab("rejected")}
                 >
@@ -220,32 +306,52 @@ const QuotationsPageContent = () => {
             <div className="rounded-lg border bg-white shadow-sm">
                 <Table>
                     <TableHeader>
-                        <TableRow>
-                            <TableHead>User</TableHead>
-                            <TableHead>Carat</TableHead>
-                            <TableHead>Pieces</TableHead>
-                            <TableHead>Price</TableHead>
-                            <TableHead>Submitted</TableHead>
+                        <TableRow className="bg-gray-50">
+                            <TableHead className="text-xs font-medium text-gray-700">
+                                Offer ID
+                            </TableHead>
+                            <TableHead className="text-xs font-medium text-gray-700">
+                                Customer
+                            </TableHead>
+                            <TableHead className="text-xs font-medium text-gray-700">
+                                Diamond
+                            </TableHead>
+                            <TableHead className="text-xs font-medium text-gray-700">
+                                Type
+                            </TableHead>
+                            <TableHead className="text-xs font-medium text-gray-700 text-right">
+                                Requested Price
+                            </TableHead>
+
+                            <TableHead className="text-xs font-medium text-gray-700 text-center">
+                                Status
+                            </TableHead>
+                            <TableHead className="text-xs font-medium text-gray-700">
+                                Submitted
+                            </TableHead>
                             {activeTab === "pending" && (
-                                <TableHead className="text-center">
+                                <TableHead className="text-center text-xs font-medium text-gray-700">
                                     Actions
                                 </TableHead>
                             )}
                             {activeTab === "rejected" && (
-                                <TableHead>Reason</TableHead>
+                                <TableHead className="text-xs font-medium text-gray-700">
+                                    Reason
+                                </TableHead>
                             )}
                         </TableRow>
                     </TableHeader>
+
                     <TableBody>
                         {filtered.length === 0 ? (
                             <TableRow>
                                 <TableCell
                                     colSpan={
                                         activeTab === "pending"
-                                            ? 6
+                                            ? 9
                                             : activeTab === "rejected"
-                                            ? 6
-                                            : 5
+                                            ? 9
+                                            : 8
                                     }
                                     className="text-center py-12 text-gray-500"
                                 >
@@ -255,18 +361,67 @@ const QuotationsPageContent = () => {
                             </TableRow>
                         ) : (
                             filtered.map((q) => (
-                                <TableRow key={q.quotationId}>
-                                    <TableCell>
-                                        {q.username} ({q.email})
+                                <TableRow
+                                    key={q.quotationId}
+                                    className="odd:bg-white even:bg-gray-50"
+                                >
+                                    <TableCell className="font-mono text-sm">
+                                        {q.quotationId.slice(0, 8)}
                                     </TableCell>
-                                    <TableCell>{q.carat}</TableCell>
-                                    <TableCell>{q.noOfPieces}</TableCell>
+
                                     <TableCell>
+                                        <div className="text-sm font-medium">
+                                            {q.username}
+                                        </div>
+                                        <div className="text-xs text-gray-500">
+                                            {q.email}
+                                        </div>
+                                    </TableCell>
+
+                                    <TableCell>
+                                        <div className="text-sm font-medium">
+                                            {q.carat} ct
+                                        </div>
+                                        <div className="text-xs text-gray-500">
+                                            {q.noOfPieces} pcs
+                                        </div>
+                                    </TableCell>
+
+                                    <TableCell>
+                                        <span className="inline-block px-2 py-0.5 text-xs font-medium bg-blue-50 text-blue-600 rounded">
+                                            quotation
+                                        </span>
+                                    </TableCell>
+
+                                    <TableCell className="text-right font-semibold">
                                         ${q.quotePrice.toLocaleString()}
                                     </TableCell>
+
+                                    <TableCell className="text-center">
+                                        {q.status === "PENDING" && (
+                                            <span className="inline-flex items-center gap-2 px-2 py-0.5 text-xs rounded text-orange-600 bg-orange-50">
+                                                <Clock className="h-3 w-3" />{" "}
+                                                Pending
+                                            </span>
+                                        )}
+                                        {q.status === "APPROVED" && (
+                                            <span className="inline-flex items-center gap-2 px-2 py-0.5 text-xs rounded text-green-700 bg-green-50">
+                                                <Check className="h-3 w-3" />{" "}
+                                                Approved
+                                            </span>
+                                        )}
+                                        {q.status === "REJECTED" && (
+                                            <span className="inline-flex items-center gap-2 px-2 py-0.5 text-xs rounded text-red-700 bg-red-50">
+                                                <X className="h-3 w-3" />{" "}
+                                                Rejected
+                                            </span>
+                                        )}
+                                    </TableCell>
+
                                     <TableCell>
                                         {formatDate(q.submittedAt)}
                                     </TableCell>
+
                                     {activeTab === "pending" && (
                                         <TableCell className="text-center">
                                             <div className="flex items-center justify-center space-x-2">
@@ -283,9 +438,15 @@ const QuotationsPageContent = () => {
                                                         actionLoading ===
                                                         q.quotationId
                                                     }
+                                                    className={`text-green-600 hover:text-green-700 hover:bg-green-50 border-green-200`}
                                                 >
-                                                    <Check className="h-4 w-4" />
+                                                    <Check className="h-4 w-4 mr-1" />
+                                                    {actionLoading ===
+                                                    q.quotationId
+                                                        ? "..."
+                                                        : "Approve"}
                                                 </Button>
+
                                                 <Button
                                                     size="sm"
                                                     variant="outline"
@@ -299,12 +460,18 @@ const QuotationsPageContent = () => {
                                                         actionLoading ===
                                                         q.quotationId
                                                     }
+                                                    className={`text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200`}
                                                 >
-                                                    <X className="h-4 w-4" />
+                                                    <X className="h-4 w-4 mr-1" />
+                                                    {actionLoading ===
+                                                    q.quotationId
+                                                        ? "..."
+                                                        : "Reject"}
                                                 </Button>
                                             </div>
                                         </TableCell>
                                     )}
+
                                     {activeTab === "rejected" && (
                                         <TableCell>
                                             {q.rejectionReason || "-"}
