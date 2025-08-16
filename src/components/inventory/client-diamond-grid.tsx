@@ -5,6 +5,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ClientDiamond } from "@/types/client/diamond";
+import { useRouter } from "next/navigation";
+import { DiamondImage } from "../diamond-image";
 
 interface PaginationData {
     currentPage: number;
@@ -28,6 +30,7 @@ export function ClientDiamondGrid({
     pagination,
     onPageChange,
 }: ClientDiamondGridProps) {
+    const router = useRouter();
     if (loading) {
         return (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -231,12 +234,20 @@ export function ClientDiamondGrid({
                 {diamonds.map((diamond: any) => (
                     <Card
                         key={diamond._id}
-                        className="hover:shadow-lg transition-shadow duration-200 border border-gray-200"
+                        className="hover:shadow-lg cursor-pointer transition-shadow duration-200 border border-gray-200"
+                        onClick={() =>
+                            router.push(`/${diamond.certificateNumber}`)
+                        }
                     >
                         <CardContent className="p-4">
                             {/* Image Placeholder */}
                             <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-3 flex items-center justify-center">
-                                <div className="text-4xl text-gray-400">💎</div>
+                                <DiamondImage
+                                    certificateNumber={
+                                        diamond.certificateNumber
+                                    }
+                                    className="w-full"
+                                />
                             </div>
 
                             {/* Diamond Details */}

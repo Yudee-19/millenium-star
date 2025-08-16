@@ -27,6 +27,7 @@ import {
 
 import { DataTablePagination } from "./data-table-pagination";
 import { DiamondTableToolbar } from "./diamond-toolbar";
+import { useRouter } from "next/navigation";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -69,7 +70,7 @@ export function DataTable<TData, TValue>({
         pageIndex: 0,
         pageSize: 10,
     });
-
+    const router = useRouter();
     // Notify parent component of state changes
     React.useEffect(() => {
         if (onStateChange) {
@@ -115,7 +116,10 @@ export function DataTable<TData, TValue>({
                 <Table className="overflow-x-auto">
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
+                            <TableRow
+                                key={headerGroup.id}
+                                className="bg-gray-200"
+                            >
                                 {headerGroup.headers.map((header) => {
                                     return (
                                         <TableHead key={header.id}>
@@ -137,10 +141,13 @@ export function DataTable<TData, TValue>({
                             // Loading skeleton
                             Array.from({ length: pagination.pageSize }).map(
                                 (_, index) => (
-                                    <TableRow key={index}>
+                                    <TableRow
+                                        key={index}
+                                        className="odd:bg-white even:bg-gray-100"
+                                    >
                                         {columns.map((_, cellIndex) => (
                                             <TableCell key={cellIndex}>
-                                                <div className="h-4 bg-gray-200 rounded animate-pulse" />
+                                                <div className="h-4  rounded animate-pulse" />
                                             </TableCell>
                                         ))}
                                     </TableRow>
@@ -149,6 +156,7 @@ export function DataTable<TData, TValue>({
                         ) : table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
                                 <TableRow
+                                    className="odd:bg-white even:bg-gray-100"
                                     key={row.id}
                                     data-state={
                                         row.getIsSelected() && "selected"

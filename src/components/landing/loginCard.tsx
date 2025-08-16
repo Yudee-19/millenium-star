@@ -111,7 +111,7 @@ export function LoginModal({
 
                 // Redirect based on role
                 if (result.data.user.role === "ADMIN") {
-                    router.push("/admin");
+                    window.location.href = "/admin";
                 } else {
                     window.location.href = "/inventory";
                 }

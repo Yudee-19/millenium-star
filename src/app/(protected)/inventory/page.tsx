@@ -35,23 +35,25 @@ export default function ClientPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [view, setView] = useState<"table" | "grid">("table");
 
-    const handleSearch = async () => {
-        const searchFilters = {
+    const handleFiltersChange = (newFilters: ClientFilters) => {
+        console.log("Filter change received:", newFilters); // Add this for debugging
+        setFilters(newFilters);
+    };
+
+    const handleSearch = async (searchFilters?: ClientFilters) => {
+        const filtersToUse = searchFilters || {
             ...filters,
             searchTerm: searchTerm || filters.searchTerm,
         };
 
-        await searchDiamonds(searchFilters, 1);
+        console.log("Searching with filters:", filtersToUse); // Add this for debugging
+        await searchDiamonds(filtersToUse, 1);
     };
 
     const handleReset = async () => {
         setFilters({});
         setSearchTerm("");
         await resetFilters();
-    };
-
-    const handleFiltersChange = (newFilters: ClientFilters) => {
-        setFilters(newFilters);
     };
 
     const handlePageChange = async (page: number) => {
@@ -143,7 +145,7 @@ export default function ClientPage() {
                             filters={filters}
                             onFiltersChange={handleFiltersChange}
                             filterOptions={filterOptions}
-                            onSearch={handleSearch}
+                            onSearch={handleSearch} // Make sure this accepts the filters parameter
                             onReset={handleReset}
                             loading={loading}
                         />
@@ -191,7 +193,9 @@ export default function ClientPage() {
                                             className="w-96"
                                         />
                                         <Button
-                                            onClick={handleSearch}
+                                            onClick={() => {
+                                                handleSearch();
+                                            }}
                                             disabled={loading}
                                         >
                                             Search

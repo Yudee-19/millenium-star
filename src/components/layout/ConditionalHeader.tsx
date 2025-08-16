@@ -8,7 +8,7 @@ export default function ConditionalHeader() {
 
     // Do not render the main header on any admin routes
     if (pathname.startsWith("/admin")) {
-        return null;
+        return <Navbar />;
     }
 
     return <Navbar />;

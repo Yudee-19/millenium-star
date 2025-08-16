@@ -1,12 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ClientFilters, FilterOptions } from "@/types/client/diamond";
-import { Search, RotateCcw, ChevronDown, ChevronUp } from "lucide-react";
+import {
+    Search,
+    RotateCcw,
+    ChevronDown,
+    ChevronUp,
+    ChevronLeft,
+    ChevronRight,
+    Filter,
+} from "lucide-react";
 import {
     shape_options,
     color_options,
@@ -40,14 +48,36 @@ export function ClientFilterSidebar({
         color: false,
         clarity: false,
         lab: false,
+        cut: false,
+        polish: false,
+        symmetry: false,
+        fluorescence: false,
+        price: false,
+        carat: false,
+        searchBy: false,
     });
+    const [collapsed, setCollapsed] = useState(false);
+
+    // Debounce timer ref
+    const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Updated debounced search function - pass filters directly
+    const debouncedSearch = useCallback(
+        (filtersToSearch: ClientFilters) => {
+            if (searchTimeoutRef.current) {
+                clearTimeout(searchTimeoutRef.current);
+            }
+            searchTimeoutRef.current = setTimeout(() => {
+                onSearch(filtersToSearch);
+            }, 500);
+        },
+        [onSearch]
+    );
 
     const updateFilter = (key: keyof ClientFilters, value: any) => {
-        const newFilters = {
-            ...filters,
-            [key]: value,
-        };
+        const newFilters = { ...filters, [key]: value };
         onFiltersChange(newFilters);
+        debouncedSearch(newFilters);
     };
 
     const updateArrayFilter = (
@@ -60,7 +90,12 @@ export function ClientFilterSidebar({
             ? [...currentValues, value]
             : currentValues.filter((v) => v !== value);
 
-        updateFilter(key, newValues.length > 0 ? newValues : undefined);
+        const newFilters = {
+            ...filters,
+            [key]: newValues.length > 0 ? newValues : undefined,
+        };
+        onFiltersChange(newFilters);
+        debouncedSearch(newFilters);
     };
 
     const handleSearch = () => {
@@ -77,26 +112,25 @@ export function ClientFilterSidebar({
     // Helper function to get SVG image path for shapes
     const getShapeImage = (shapeValue: string) => {
         const shapeMap: { [key: string]: string } = {
-            RBC: "round.svg",
-            EMD: "emerald.svg",
-            PRS: "princess.svg",
-            PRN: "princess.svg", // Alternative code for princess
-            ASS: "asscher.svg",
-            CUS: "cushion.svg",
-            CUB: "cushion.svg", // Cushion Brilliant
-            CUM: "cushion.svg", // Cushion Modified
-            OVL: "oval.svg",
-            HRT: "heart.svg",
-            MQS: "marquise.svg",
-            BAG: "baguette.svg",
-            TBG: "tapered.svg", // Updated to tapered.svg
-            RAD: "radiant.svg",
-            PER: "pear.svg",
-            SQR: "square.svg",
-            TRL: "trilliant.svg",
-            SQE: "sqEmerald.jpg",
+            Round: "round.svg",
+            Emerald: "emerald.svg",
+            Princess: "princess.svg",
+            PrincessAlt: "princess.svg",
+            Asscher: "asscher.svg",
+            Cushion: "cushion.svg",
+            CUB: "cushion.svg",
+            CUM: "cushion.svg",
+            Oval: "oval.svg",
+            Heart: "heart.svg",
+            Marquise: "marquise.svg",
+            Baguette: "baguette.svg",
+            Tapered: "tapered.svg",
+            Radiant: "radiant.svg",
+            Pear: "pear.svg",
+            Square: "square.svg",
+            Trilliant: "trilliant.svg",
+            SqEmerald: "sqEmerald.jpg",
         };
-
         const fileName = shapeMap[shapeValue];
         return fileName ? `/assets/diamondShapes/${fileName}` : null;
     };
@@ -117,7 +151,7 @@ export function ClientFilterSidebar({
                 <div
                     className={`grid gap-2`}
                     style={{
-                        gridTemplateColumns: `repeat(4, 1fr)`,
+                        gridTemplateColumns: `repeat(${itemsPerRow}, 1fr)`,
                     }}
                 >
                     {visibleItems.map((item) => renderItem(item))}
@@ -146,14 +180,82 @@ export function ClientFilterSidebar({
         );
     };
 
+    // Section wrapper for collapsible cards
+    const Section = ({
+        title,
+        sectionKey,
+        children,
+        defaultOpen = false,
+        icon,
+    }: {
+        title: string;
+        sectionKey: string;
+        children: React.ReactNode;
+        defaultOpen?: boolean;
+        icon?: React.ReactNode;
+    }) => (
+        <div className="mb-4 rounded-lg shadow-sm bg-white border border-gray-200">
+            <button
+                type="button"
+                className="w-full flex items-center justify-between px-3 py-2 rounded-t-lg bg-gray-50 hover:bg-gray-100 focus:outline-none"
+                onClick={() => toggleSection(sectionKey)}
+                aria-expanded={expandedSections[sectionKey]}
+            >
+                <span className="flex items-center gap-2 font-medium text-gray-700 text-sm">
+                    {icon}
+                    {title}
+                </span>
+                {expandedSections[sectionKey] ? (
+                    <ChevronUp className="w-4 h-4" />
+                ) : (
+                    <ChevronDown className="w-4 h-4" />
+                )}
+            </button>
+            {expandedSections[sectionKey] && (
+                <div className="px-3 py-2">{children}</div>
+            )}
+        </div>
+    );
+
     return (
-        <div className="w-72 bg-gray-50 p-6 border-r border-gray-200 overflow-y-auto h-screen">
-            <div className="space-y-6">
-                {/* Shape */}
-                <div>
-                    <Label className="text-sm font-medium mb-3 block text-gray-700">
-                        SHAPE
-                    </Label>
+        <div
+            className={`relative transition-all duration-300 ${
+                collapsed ? "w-16" : "w-100"
+            } bg-gray-50 border-r border-gray-200 h-screen shadow-lg flex flex-col`}
+        >
+            {/* Collapse/Expand Button */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-white sticky top-0 z-10">
+                <span className="flex items-center gap-2 font-bold text-lg text-gray-700">
+                    <Filter className="w-5 h-5" />
+                    {!collapsed && "Filters"}
+                </span>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setCollapsed((c) => !c)}
+                    className="rounded-full"
+                    aria-label={
+                        collapsed ? "Expand sidebar" : "Collapse sidebar"
+                    }
+                >
+                    {collapsed ? (
+                        <ChevronRight className="w-5 h-5" />
+                    ) : (
+                        <ChevronLeft className="w-5 h-5" />
+                    )}
+                </Button>
+            </div>
+            {/* Sidebar Content */}
+            <div
+                className={`flex-1 overflow-y-auto px-2 pt-2 ${
+                    collapsed ? "hidden" : ""
+                }`}
+            >
+                <Section
+                    title="Shape"
+                    sectionKey="shape"
+                    icon={<Filter className="w-4 h-4" />}
+                >
                     {renderItemsWithViewMore(
                         shape_options,
                         "shape",
@@ -195,7 +297,6 @@ export function ClientFilterSidebar({
                                                 alt={shape.label}
                                                 className="w-10 h-10 pt-1 object-contain"
                                                 onError={(e) => {
-                                                    // Fallback to text if image not found
                                                     const target =
                                                         e.currentTarget as HTMLImageElement;
                                                     target.style.display =
@@ -239,12 +340,12 @@ export function ClientFilterSidebar({
                         ),
                         5
                     )}
-                </div>
-                {/* Size Range */}
-                <div>
-                    <Label className="text-sm font-medium mb-3 block text-gray-700">
-                        SIZE RANGE
-                    </Label>
+                </Section>
+                <Section
+                    title="Size Range"
+                    sectionKey="carat"
+                    icon={<Filter className="w-4 h-4" />}
+                >
                     <div className="flex gap-2">
                         <Input
                             type="number"
@@ -277,12 +378,12 @@ export function ClientFilterSidebar({
                             className="text-sm"
                         />
                     </div>
-                </div>
-                {/* Price Range */}
-                <div>
-                    <Label className="text-sm font-medium mb-3 block text-gray-700">
-                        PRICE RANGE
-                    </Label>
+                </Section>
+                <Section
+                    title="Price Range"
+                    sectionKey="price"
+                    icon={<Filter className="w-4 h-4" />}
+                >
                     <div className="flex gap-2">
                         <Input
                             type="number"
@@ -313,12 +414,12 @@ export function ClientFilterSidebar({
                             className="text-sm"
                         />
                     </div>
-                </div>
-                {/* Color */}
-                <div>
-                    <Label className="text-sm font-medium mb-3 block text-gray-700">
-                        COLOR
-                    </Label>
+                </Section>
+                <Section
+                    title="Color"
+                    sectionKey="color"
+                    icon={<Filter className="w-4 h-4" />}
+                >
                     {renderItemsWithViewMore(
                         color_options,
                         "color",
@@ -347,12 +448,12 @@ export function ClientFilterSidebar({
                         ),
                         7
                     )}
-                </div>
-                {/* Clarity */}
-                <div>
-                    <Label className="text-sm font-medium mb-3 block text-gray-700">
-                        CLARITY
-                    </Label>
+                </Section>
+                <Section
+                    title="Clarity"
+                    sectionKey="clarity"
+                    icon={<Filter className="w-4 h-4" />}
+                >
                     {renderItemsWithViewMore(
                         clarity_options,
                         "clarity",
@@ -381,12 +482,12 @@ export function ClientFilterSidebar({
                         ),
                         4
                     )}
-                </div>
-                {/* Fluorescence */}
-                <div>
-                    <Label className="text-sm font-medium mb-3 block text-gray-700">
-                        FLUORESCENCE
-                    </Label>
+                </Section>
+                <Section
+                    title="Fluorescence"
+                    sectionKey="fluorescence"
+                    icon={<Filter className="w-4 h-4" />}
+                >
                     <div className="space-y-1">
                         {[
                             "NON",
@@ -421,12 +522,12 @@ export function ClientFilterSidebar({
                             </div>
                         ))}
                     </div>
-                </div>
-                {/* Search By */}
-                <div>
-                    <Label className="text-sm font-medium mb-3 block text-gray-700">
-                        SEARCH BY:
-                    </Label>
+                </Section>
+                <Section
+                    title="Search By"
+                    sectionKey="searchBy"
+                    icon={<Filter className="w-4 h-4" />}
+                >
                     <div className="space-y-2">
                         <div className="flex items-center space-x-2">
                             <Checkbox id="diamond-id" />
@@ -441,23 +542,12 @@ export function ClientFilterSidebar({
                             </Label>
                         </div>
                     </div>
-                    {/* <Input
-                        placeholder="Enter search term"
-                        value={filters.searchTerm || ""}
-                        onChange={(e) =>
-                            updateFilter(
-                                "searchTerm",
-                                e.target.value || undefined
-                            )
-                        }
-                        className="mt-2 text-sm"
-                    /> */}
-                </div>
-                {/* Cut */}
-                <div>
-                    <Label className="text-sm font-medium mb-3 block text-gray-700">
-                        CUT
-                    </Label>
+                </Section>
+                <Section
+                    title="Cut"
+                    sectionKey="cut"
+                    icon={<Filter className="w-4 h-4" />}
+                >
                     {renderItemsWithViewMore(
                         cut_options,
                         "cut",
@@ -489,12 +579,12 @@ export function ClientFilterSidebar({
                         ),
                         2
                     )}
-                </div>
-                {/* Polish */}
-                <div>
-                    <Label className="text-sm font-medium mb-3 block text-gray-700">
-                        POLISH
-                    </Label>
+                </Section>
+                <Section
+                    title="Polish"
+                    sectionKey="polish"
+                    icon={<Filter className="w-4 h-4" />}
+                >
                     {renderItemsWithViewMore(
                         polish_options,
                         "polish",
@@ -526,12 +616,12 @@ export function ClientFilterSidebar({
                         ),
                         2
                     )}
-                </div>
-                {/* Symmetry */}
-                <div>
-                    <Label className="text-sm font-medium mb-3 block text-gray-700">
-                        SYMMETRY
-                    </Label>
+                </Section>
+                <Section
+                    title="Symmetry"
+                    sectionKey="symmetry"
+                    icon={<Filter className="w-4 h-4" />}
+                >
                     {renderItemsWithViewMore(
                         symmetry_options,
                         "symmetry",
@@ -563,12 +653,12 @@ export function ClientFilterSidebar({
                         ),
                         2
                     )}
-                </div>
-                {/* Lab */}
-                <div>
-                    <Label className="text-sm font-medium mb-3 block text-gray-700">
-                        LABORATORY
-                    </Label>
+                </Section>
+                <Section
+                    title="Laboratory"
+                    sectionKey="lab"
+                    icon={<Filter className="w-4 h-4" />}
+                >
                     {renderItemsWithViewMore(
                         lab_options,
                         "lab",
@@ -600,7 +690,7 @@ export function ClientFilterSidebar({
                         ),
                         2
                     )}
-                </div>
+                </Section>
                 {/* Buttons */}
                 <div className="flex gap-2 pt-4">
                     <Button

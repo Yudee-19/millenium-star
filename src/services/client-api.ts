@@ -50,9 +50,11 @@ class ClientDiamondAPI {
         Object.entries(filters).forEach(([key, value]) => {
             if (value !== undefined && value !== null && value !== "") {
                 if (Array.isArray(value)) {
-                    // For array filters, add as comma-separated values
+                    // For array filters, add each value as a separate parameter
                     if (value.length > 0) {
-                        params.append(key, value.join(","));
+                        value.forEach((item) => {
+                            params.append(key, item);
+                        });
                     }
                 } else {
                     params.append(key, value.toString());

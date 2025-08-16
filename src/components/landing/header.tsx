@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Container from "../ui/container";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { LoginModal } from "./loginCard";
 import { RegistrationModal } from "./registrationCard";
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
 const Navbar = () => {
+    const router = useRouter();
     const pathname = usePathname();
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [isRegistrationModalOpen, setIsRegistrationModalOpen] =
@@ -22,25 +23,38 @@ const Navbar = () => {
 
     const accessInventoryClickHandler = () => {
         if (isAuthenticated()) {
-            // User is authenticated, navigate to inventory
             window.location.href = "/inventory";
         } else {
-            // User is not authenticated, open login modal
             setIsLoginModalOpen(true);
         }
     };
 
-    const navItems = [
+    // Base nav items
+    const baseNavItems = [
         { href: "/", label: "Home" },
         { href: "/about", label: "About us" },
         {
             href: "/inventory",
-            label: "Access Inventory",
+            label: "Inventory",
             onClick: () => accessInventoryClickHandler(),
         },
         { href: "/diamond-knowledge", label: "Diamond Knowledge" },
         { href: "/contact", label: "Contact us" },
     ];
+
+    // Admin-only nav items
+    const adminNavItems = [
+        { href: "/admin", label: "Admin Panel" },
+        { href: "/admin/members", label: "Members" },
+        { href: "/admin/quotations", label: "Inquirie" },
+    ];
+
+    // Combined nav items based on authentication and role
+    const navItems = isAuthenticated()
+        ? user?.role === "ADMIN"
+            ? [...baseNavItems, ...adminNavItems]
+            : baseNavItems
+        : baseNavItems;
 
     const handleLoginClick = () => {
         setIsLoginModalOpen(true);
@@ -72,11 +86,7 @@ const Navbar = () => {
 
     const handleProfileClick = () => {
         // Navigate to appropriate dashboard based on user role
-        if (user?.role === "ADMIN") {
-            window.location.href = "/admin";
-        } else {
-            window.location.href = "/inventory";
-        }
+        router.push("/profile");
         setIsMobileMenuOpen(false);
     };
 
@@ -138,7 +148,7 @@ const Navbar = () => {
                     {navItems.map((item) => (
                         <li key={item.href}>
                             <Link
-                                onClick={item.onClick}
+                                // onClick={item.onClick}
                                 href={item.href}
                                 className={`transition-colors duration-200 ${
                                     pathname === item.href
@@ -160,7 +170,7 @@ const Navbar = () => {
                             <Button
                                 variant="outline"
                                 onClick={handleProfileClick}
-                                className="border-2 border-black text-black hover:bg-gray-50 px-4 py-2 rounded-[3px] flex items-center space-x-2"
+                                className="border-2 border-black text-black cursor-pointer hover:bg-gray-50 px-4 py-2 rounded-[3px] flex items-center space-x-2"
                             >
                                 <User className="h-4 w-4" />
                                 <span>{user?.username || "Profile"}</span>
@@ -168,7 +178,7 @@ const Navbar = () => {
                             <Button
                                 variant="outline"
                                 onClick={handleLogout}
-                                className="bg-[#4D4D4D] border-2 border-black text-white hover:bg-gray-700 px-4 py-2 rounded-[3px] flex items-center space-x-2"
+                                className="bg-[#4D4D4D] border-2 border-black cursor-pointer text-white hover:bg-gray-700 px-4 py-2 rounded-[3px] flex items-center space-x-2"
                             >
                                 <LogOut className="h-4 w-4" />
                                 <span>Logout</span>

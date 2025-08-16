@@ -347,7 +347,7 @@ export function AddDiamondModal({
                             Basic Information
                         </Label>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <div className="space-y-2">
+                            <div className="space-y-2 w-full">
                                 <Label htmlFor="certificateNumber">
                                     Certificate Number *
                                 </Label>
@@ -374,7 +374,7 @@ export function AddDiamondModal({
                                 )}
                             </div>
 
-                            <div className="space-y-2">
+                            <div className="space-y-2 w-full">
                                 <Label htmlFor="lab">Lab *</Label>
                                 <Select
                                     value={formData.lab}
@@ -383,9 +383,9 @@ export function AddDiamondModal({
                                     }
                                 >
                                     <SelectTrigger
-                                        className={
+                                        className={`w-full${
                                             errors.lab ? "border-red-500" : ""
-                                        }
+                                        }`}
                                     >
                                         <SelectValue placeholder="Select lab" />
                                     </SelectTrigger>
@@ -407,7 +407,7 @@ export function AddDiamondModal({
                                 )}
                             </div>
 
-                            <div className="space-y-2">
+                            <div className="space-y-2 w-full">
                                 <Label htmlFor="shape">Shape *</Label>
                                 <Select
                                     value={formData.shape}
@@ -416,9 +416,9 @@ export function AddDiamondModal({
                                     }
                                 >
                                     <SelectTrigger
-                                        className={
+                                        className={`w-full${
                                             errors.shape ? "border-red-500" : ""
-                                        }
+                                        }`}
                                     >
                                         <SelectValue placeholder="Select shape" />
                                     </SelectTrigger>
@@ -449,9 +449,9 @@ export function AddDiamondModal({
                                     }
                                 >
                                     <SelectTrigger
-                                        className={
+                                        className={`w-full ${
                                             errors.color ? "border-red-500" : ""
-                                        }
+                                        }`}
                                     >
                                         <SelectValue placeholder="Select color" />
                                     </SelectTrigger>
@@ -482,11 +482,11 @@ export function AddDiamondModal({
                                     }
                                 >
                                     <SelectTrigger
-                                        className={
+                                        className={`w-full ${
                                             errors.clarity
                                                 ? "border-red-500"
                                                 : ""
-                                        }
+                                        }`}
                                     >
                                         <SelectValue placeholder="Select clarity" />
                                     </SelectTrigger>
@@ -525,9 +525,9 @@ export function AddDiamondModal({
                                         )
                                     }
                                     placeholder="0.00"
-                                    className={
+                                    className={`w-full ${
                                         errors.size ? "border-red-500" : ""
-                                    }
+                                    }`}
                                 />
                                 {errors.size && (
                                     <p className="text-sm text-red-500">
@@ -553,9 +553,9 @@ export function AddDiamondModal({
                                     }
                                 >
                                     <SelectTrigger
-                                        className={
+                                        className={`w-full ${
                                             errors.cut ? "border-red-500" : ""
-                                        }
+                                        }`}
                                     >
                                         <SelectValue placeholder="Select cut" />
                                     </SelectTrigger>
@@ -586,11 +586,11 @@ export function AddDiamondModal({
                                     }
                                 >
                                     <SelectTrigger
-                                        className={
+                                        className={`w-full ${
                                             errors.polish
                                                 ? "border-red-500"
                                                 : ""
-                                        }
+                                        }`}
                                     >
                                         <SelectValue placeholder="Select polish" />
                                     </SelectTrigger>
@@ -621,11 +621,11 @@ export function AddDiamondModal({
                                     }
                                 >
                                     <SelectTrigger
-                                        className={
+                                        className={`w-full ${
                                             errors.symmetry
                                                 ? "border-red-500"
                                                 : ""
-                                        }
+                                        }`}
                                     >
                                         <SelectValue placeholder="Select symmetry" />
                                     </SelectTrigger>
@@ -658,11 +658,11 @@ export function AddDiamondModal({
                                     }
                                 >
                                     <SelectTrigger
-                                        className={
+                                        className={`w-full ${
                                             errors.fluorescence
                                                 ? "border-red-500"
                                                 : ""
-                                        }
+                                        }`}
                                     >
                                         <SelectValue placeholder="Select fluorescence" />
                                     </SelectTrigger>
@@ -950,23 +950,6 @@ export function AddDiamondModal({
                                     }
                                     placeholder="Add any additional notes about this diamond..."
                                     rows={3}
-                                />
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="fromTab">
-                                    Source Tab (Optional)
-                                </Label>
-                                <Input
-                                    id="fromTab"
-                                    value={formData.fromTab}
-                                    onChange={(e) =>
-                                        handleInputChange(
-                                            "fromTab",
-                                            e.target.value
-                                        )
-                                    }
-                                    placeholder="e.g., Inventory, Import, etc."
                                 />
                             </div>
                         </div>

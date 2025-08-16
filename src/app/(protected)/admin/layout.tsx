@@ -12,7 +12,7 @@ export default function AdminLayout({
     return (
         <AdminGuard>
             <div className="min-h-screen bg-gray-50">
-                <Navbar />
+                {/* <Navbar /> */}
                 <main className="p-4">{children}</main>
             </div>
         </AdminGuard>

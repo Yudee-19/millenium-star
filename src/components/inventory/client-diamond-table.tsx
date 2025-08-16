@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface PaginationData {
     currentPage: number;
@@ -36,6 +37,7 @@ export function ClientDiamondTable({
     pagination,
     onPageChange,
 }: ClientDiamondTableProps) {
+    const router = useRouter();
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
@@ -151,7 +153,7 @@ export function ClientDiamondTable({
             <div className="rounded-lg border border-gray-200 bg-white">
                 <Table>
                     <TableHeader>
-                        <TableRow className="bg-gray-50">
+                        <TableRow className="bg-gray-200">
                             <TableHead className="text-xs font-medium text-gray-700 text-center">
                                 Diamond Id.
                             </TableHead>
@@ -191,7 +193,10 @@ export function ClientDiamondTable({
                         {diamonds.map((diamond: any) => (
                             <TableRow
                                 key={diamond._id}
-                                className="hover:bg-gray-50  text-center"
+                                className="hover:bg-gray-50 hover:cursor-pointer text-center odd:bg-white even:bg-gray-100"
+                                onClick={() =>
+                                    router.push(`/${diamond.certificateNumber}`)
+                                }
                             >
                                 <TableCell className="text-sm font-mono">
                                     {diamond.certificateNumber ||

@@ -16,30 +16,47 @@ import {
     availability_options,
 } from "../filters/diamond-filters";
 import { clientDiamondAPI } from "@/services/client-api";
+import Link from "next/link";
+import { EyeIcon } from "lucide-react";
+import { DiamondImage } from "../diamond-image";
 
 export const diamondColumns: ColumnDef<DiamondType>[] = [
     {
-        id: "select",
-        header: ({ table }) => (
-            <Checkbox
-                checked={table.getIsAllPageRowsSelected()}
-                onCheckedChange={(value: any) =>
-                    table.toggleAllPageRowsSelected(!!value)
-                }
-                aria-label="Select all"
-                className="translate-y-[2px]"
-            />
+        accessorKey: "View",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="View" />
         ),
         cell: ({ row }) => (
-            <Checkbox
-                checked={row.getIsSelected()}
-                onCheckedChange={(value: any) => row.toggleSelected(!!value)}
-                aria-label="Select row"
-                className="translate-y-[2px]"
+            <div className="w-10 flex justify-center font-mono text-xs">
+                <Link href={`/${row.original.certificateNumber}`}>
+                    {" "}
+                    <EyeIcon className="h-5 w-5 text-black" />
+                </Link>
+            </div>
+        ),
+    },
+    {
+        accessorKey: "image",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Image" />
+        ),
+        cell: ({ row }) => (
+            <DiamondImage
+                certificateNumber={row.original.certificateNumber}
+                size={48}
             />
         ),
-        enableSorting: false,
-        enableHiding: false,
+    },
+    {
+        id: "actions",
+        cell: ({ row }) => (
+            <DataTableRowActions
+                row={row}
+                onRefresh={() => {
+                    window.location.reload();
+                }}
+            />
+        ),
     },
     {
         accessorKey: "diamond-Id",
@@ -63,7 +80,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
         ),
         cell: ({ row }) => {
             const labValue =
-                row.original.lab || (row.original as any)["LAB"] || "-";
+                row.original.laboratory || (row.original as any)["LAB"] || "-";
 
             const lab = lab_options.find((lab) => lab.value === labValue);
             return (
@@ -356,15 +373,44 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
         },
         enableSorting: true, // Enable sorting for this column
     },
+
+    // Example columns for newly added fields
+
     {
-        id: "actions",
+        accessorKey: "fancyColor",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Fancy Color" />
+        ),
         cell: ({ row }) => (
-            <DataTableRowActions
-                row={row}
-                onRefresh={() => {
-                    window.location.reload();
-                }}
+            <div className="w-[100px]">{row.original.fancyColor || "-"}</div>
+        ),
+    },
+    {
+        accessorKey: "fancyColorOvertone",
+        header: ({ column }) => (
+            <DataTableColumnHeader
+                column={column}
+                title="Fancy Color Overtone"
             />
+        ),
+        cell: ({ row }) => (
+            <div className="w-[120px]">
+                {row.original.fancyColorOvertone || "-"}
+            </div>
+        ),
+    },
+    {
+        accessorKey: "fancyColorIntensity",
+        header: ({ column }) => (
+            <DataTableColumnHeader
+                column={column}
+                title="Fancy Color Intensity"
+            />
+        ),
+        cell: ({ row }) => (
+            <div className="w-[120px]">
+                {row.original.fancyColorIntensity || "-"}
+            </div>
         ),
     },
 ];
