@@ -10,12 +10,31 @@ import CustomButton from "@/components/ui/customButton";
 import { Input } from "@/components/ui/input";
 import { useDiamonds } from "@/hooks/use-diamonds";
 import { useFilteredDiamonds } from "@/hooks/use-filtered-diamonds";
-import { DownloadIcon, FileTextIcon, FunnelPlus, PlusIcon } from "lucide-react";
+import {
+    ChartColumn,
+    CircleCheckBig,
+    DownloadIcon,
+    FileTextIcon,
+    FunnelPlus,
+    GridIcon,
+    PlusIcon,
+    Ruler,
+    SlashIcon,
+    TrendingUp,
+} from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AddDiamondModal } from "@/components/modals/add-diamond";
 import { AdminGuard } from "@/components/auth/routeGuard";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 export default function DiamondPage() {
     const { user, logout } = useAuth();
@@ -210,41 +229,51 @@ export default function DiamondPage() {
 
     return (
         <AdminGuard>
-            <Container>
+            <Container className="bg-[#F9FAFB]">
                 {/* Header Section */}
+                <h1 className="text-3xl  font-medium">Admin Dashboard</h1>
+                <Breadcrumb className="my-3">
+                    <BreadcrumbList>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink href="/">HOME</BreadcrumbLink>{" "}
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator>{"/"}</BreadcrumbSeparator>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink href="/admin">ADMIN</BreadcrumbLink>
+                        </BreadcrumbItem>
+                    </BreadcrumbList>
+                </Breadcrumb>
 
                 {/* Search and Action Buttons */}
-                <div className="flex items-center justify-center gap-2 my-5">
+                <div className="flex  items-start justify-between gap-5 my-5">
                     <Input
-                        className="bg-black/5 text-black px-3 py-3 text-base rounded-md"
+                        className="bg-white border-2 text-black px-3 py-5 text-base rounded-md max-w-xl"
                         placeholder="Search by Diamond ID, Shape, Color, Clarity, etc."
                     />
-                    {/* <CustomButton
-                        variant="secondary"
-                        icon={<FunnelPlus size={15} />}
-                    >
-                        Filter
-                    </CustomButton> */}
-                    <CustomButton
-                        variant="secondary"
-                        icon={<DownloadIcon size={15} />}
-                        onClick={handleExport}
-                    >
-                        Export
-                    </CustomButton>
-                    <CustomButton
-                        variant="secondary"
-                        icon={<FileTextIcon size={15} />}
-                    >
-                        <span>Import&nbsp;Excel</span>
-                    </CustomButton>
-                    <CustomButton
-                        variant="dark"
-                        icon={<PlusIcon size={15} />}
-                        onClick={() => setIsAddModalOpen(true)}
-                    >
-                        <span>Add&nbsp;Diamond</span>
-                    </CustomButton>
+                    <div className=" flex items-center justify-start gap-6">
+                        <CustomButton
+                            className="bg-white hover:bg-gray-100"
+                            variant="secondary"
+                            icon={<DownloadIcon size={15} />}
+                            onClick={handleExport}
+                        >
+                            Export
+                        </CustomButton>
+                        <CustomButton
+                            className="bg-white hover:bg-gray-100"
+                            variant="secondary"
+                            icon={<FileTextIcon size={15} />}
+                        >
+                            <span>Import&nbsp;Excel</span>
+                        </CustomButton>
+                        <CustomButton
+                            variant="dark"
+                            icon={<PlusIcon size={15} />}
+                            onClick={() => setIsAddModalOpen(true)}
+                        >
+                            <span>Add&nbsp;Diamond</span>
+                        </CustomButton>
+                    </div>
                 </div>
 
                 {/* Tabs Section */}
@@ -254,28 +283,28 @@ export default function DiamondPage() {
                         onValueChange={setActiveTab}
                         className="w-full"
                     >
-                        <TabsList className="w-full font-medium rounded-md">
+                        <TabsList className="w-full font-medium rounded-md py-6">
                             <TabsTrigger
                                 value="all"
-                                className="rounded-md  text-black p-3"
+                                className="rounded-md    p-5"
                             >
                                 All
                             </TabsTrigger>
                             <TabsTrigger
                                 value="fancy"
-                                className="rounded-md text-black p-3"
+                                className="rounded-md p-5"
                             >
                                 Fancy
                             </TabsTrigger>
                             <TabsTrigger
                                 value="highEnd"
-                                className="rounded-md text-black p-3"
+                                className="rounded-md  p-5"
                             >
                                 High End
                             </TabsTrigger>
                             <TabsTrigger
                                 value="lowEnd"
-                                className="rounded-md text-black p-3"
+                                className="rounded-md  p-5"
                             >
                                 Low End
                             </TabsTrigger>
@@ -284,18 +313,33 @@ export default function DiamondPage() {
                         <TabsContent value="all">
                             {/* Stats Cards */}
                             <div className="flex items-center justify-center gap-5 my-10">
-                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-black text-base">
-                                        Total Diamonds (All Inventory)
+                                <div className="w-80  bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
+                                    <div className="w-full flex justify-between items-center">
+                                        <div className="bg-blue-400/20 rounded-md p-2">
+                                            <GridIcon className="text-blue-500" />
+                                        </div>
+                                        <TrendingUp className="text-green-400" />
+                                    </div>
+                                    <h1 className="text-gray-600 text-base">
+                                        Total Diamonds
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
                                         {loading
                                             ? "..."
                                             : totalCount.toLocaleString()}
                                     </h1>
+                                    <h1 className="text-gray-500 text-sm">
+                                        all Inventory
+                                    </h1>
                                 </div>
-                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-black text-base">
+                                <div className="w-80  bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
+                                    <div className="w-full flex justify-between items-center">
+                                        <div className="bg-green-400/20 rounded-md p-2">
+                                            <CircleCheckBig className="text-green-500" />
+                                        </div>
+                                        <TrendingUp className="text-green-400" />
+                                    </div>
+                                    <h1 className="text-gray-600 text-base">
                                         Available
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -305,9 +349,18 @@ export default function DiamondPage() {
                                                   (d) => d.isAvailable
                                               ).length}
                                     </h1>
+                                    <h1 className="text-gray-500 text-sm">
+                                        Ready for Sale
+                                    </h1>
                                 </div>
-                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-black text-base">
+                                <div className="w-80  bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
+                                    <div className="w-full flex justify-between items-center">
+                                        <div className="bg-purple-400/20 rounded-md p-2">
+                                            <ChartColumn className="text-purple-500" />
+                                        </div>
+                                        <TrendingUp className="text-green-400" />
+                                    </div>
+                                    <h1 className="text-gray-600 text-base">
                                         Total Value
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -322,9 +375,18 @@ export default function DiamondPage() {
                                                   )
                                                   .toFixed(2)}{" "}
                                     </h1>
+                                    <h1 className="text-gray-500 text-sm">
+                                        Current Market Value
+                                    </h1>
                                 </div>
-                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-black text-base">
+                                <div className="w-80  bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
+                                    <div className="w-full flex justify-between items-center">
+                                        <div className="bg-orange-400/20 rounded-md p-2">
+                                            <Ruler className="text-orange-500" />
+                                        </div>
+                                        <TrendingUp className="text-green-400" />
+                                    </div>
+                                    <h1 className="text-gray-600 text-base">
                                         Total Size
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -338,6 +400,9 @@ export default function DiamondPage() {
                                                   )
                                                   .toFixed(2)}{" "}
                                         ct
+                                    </h1>
+                                    <h1 className="text-sm text-gray-500">
+                                        Carat Weight
                                     </h1>
                                 </div>
                             </div>
@@ -401,8 +466,14 @@ export default function DiamondPage() {
                         <TabsContent value="fancy">
                             {/* Fancy Diamonds Stats */}
                             <div className="flex items-center justify-center gap-5 my-10">
-                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-black text-base">
+                                <div className="w-80 bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
+                                    <div className="w-full flex justify-between items-center">
+                                        <div className="bg-blue-400/20 rounded-md p-2">
+                                            <GridIcon className="text-blue-500" />
+                                        </div>
+                                        <TrendingUp className="text-green-400" />
+                                    </div>
+                                    <h1 className="text-gray-600 text-base">
                                         Fancy Diamonds (Non-RBC)
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -410,9 +481,18 @@ export default function DiamondPage() {
                                             ? "..."
                                             : fancyTotalCount.toLocaleString()}
                                     </h1>
+                                    <h1 className="text-gray-500 text-sm">
+                                        Total Inventory
+                                    </h1>
                                 </div>
-                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-black text-base">
+                                <div className="w-80 bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
+                                    <div className="w-full flex justify-between items-center">
+                                        <div className="bg-green-400/20 rounded-md p-2">
+                                            <CircleCheckBig className="text-green-500" />
+                                        </div>
+                                        <TrendingUp className="text-green-400" />
+                                    </div>
+                                    <h1 className="text-gray-600 text-base">
                                         Available
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -422,9 +502,18 @@ export default function DiamondPage() {
                                                   (d) => d.isAvailable
                                               ).length}
                                     </h1>
+                                    <h1 className="text-gray-500 text-sm">
+                                        Ready for Sale
+                                    </h1>
                                 </div>
-                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-black text-base">
+                                <div className="w-80 bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
+                                    <div className="w-full flex justify-between items-center">
+                                        <div className="bg-purple-400/20 rounded-md p-2">
+                                            <ChartColumn className="text-purple-500" />
+                                        </div>
+                                        <TrendingUp className="text-green-400" />
+                                    </div>
+                                    <h1 className="text-gray-600 text-base">
                                         Total Value
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -439,9 +528,18 @@ export default function DiamondPage() {
                                                   )
                                                   .toFixed(2)}
                                     </h1>
+                                    <h1 className="text-gray-500 text-sm">
+                                        Current Market Value
+                                    </h1>
                                 </div>
-                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-black text-base">
+                                <div className="w-80 bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
+                                    <div className="w-full flex justify-between items-center">
+                                        <div className="bg-orange-400/20 rounded-md p-2">
+                                            <Ruler className="text-orange-500" />
+                                        </div>
+                                        <TrendingUp className="text-green-400" />
+                                    </div>
+                                    <h1 className="text-gray-600 text-base">
                                         Total Size
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -455,6 +553,9 @@ export default function DiamondPage() {
                                                   )
                                                   .toFixed(2)}{" "}
                                         ct
+                                    </h1>
+                                    <h1 className="text-gray-500 text-sm">
+                                        Carat Weight
                                     </h1>
                                 </div>
                             </div>
@@ -481,8 +582,14 @@ export default function DiamondPage() {
                         <TabsContent value="highEnd">
                             {/* High End Diamonds Stats */}
                             <div className="flex items-center justify-center gap-5 my-10">
-                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-black text-base">
+                                <div className="w-80 bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
+                                    <div className="w-full flex justify-between items-center">
+                                        <div className="bg-blue-400/20 rounded-md p-2">
+                                            <GridIcon className="text-blue-500" />
+                                        </div>
+                                        <TrendingUp className="text-green-400" />
+                                    </div>
+                                    <h1 className="text-gray-600 text-base">
                                         High End Diamonds (RBC ≤ 1ct)
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -490,9 +597,18 @@ export default function DiamondPage() {
                                             ? "..."
                                             : highEndTotalCount.toLocaleString()}
                                     </h1>
+                                    <h1 className="text-gray-500 text-sm">
+                                        Total Inventory
+                                    </h1>
                                 </div>
-                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-black text-base">
+                                <div className="w-80 bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
+                                    <div className="w-full flex justify-between items-center">
+                                        <div className="bg-green-400/20 rounded-md p-2">
+                                            <CircleCheckBig className="text-green-500" />
+                                        </div>
+                                        <TrendingUp className="text-green-400" />
+                                    </div>
+                                    <h1 className="text-gray-600 text-base">
                                         Available
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -502,9 +618,18 @@ export default function DiamondPage() {
                                                   (d) => d.isAvailable
                                               ).length}
                                     </h1>
+                                    <h1 className="text-gray-500 text-sm">
+                                        Ready for Sale
+                                    </h1>
                                 </div>
-                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-black text-base">
+                                <div className="w-80 bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
+                                    <div className="w-full flex justify-between items-center">
+                                        <div className="bg-purple-400/20 rounded-md p-2">
+                                            <ChartColumn className="text-purple-500" />
+                                        </div>
+                                        <TrendingUp className="text-green-400" />
+                                    </div>
+                                    <h1 className="text-gray-600 text-base">
                                         Total Value
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -519,9 +644,18 @@ export default function DiamondPage() {
                                                   )
                                                   .toFixed(2)}
                                     </h1>
+                                    <h1 className="text-gray-500 text-sm">
+                                        Current Market Value
+                                    </h1>
                                 </div>
-                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-black text-base">
+                                <div className="w-80 bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
+                                    <div className="w-full flex justify-between items-center">
+                                        <div className="bg-orange-400/20 rounded-md p-2">
+                                            <Ruler className="text-orange-500" />
+                                        </div>
+                                        <TrendingUp className="text-green-400" />
+                                    </div>
+                                    <h1 className="text-gray-600 text-base">
                                         Total Size
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -535,6 +669,9 @@ export default function DiamondPage() {
                                                   )
                                                   .toFixed(2)}{" "}
                                         ct
+                                    </h1>
+                                    <h1 className="text-gray-500 text-sm">
+                                        Carat Weight
                                     </h1>
                                 </div>
                             </div>
@@ -563,8 +700,14 @@ export default function DiamondPage() {
                         <TabsContent value="lowEnd">
                             {/* Low End Diamonds Stats */}
                             <div className="flex items-center justify-center gap-5 my-10">
-                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-black text-base">
+                                <div className="w-80 bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
+                                    <div className="w-full flex justify-between items-center">
+                                        <div className="bg-blue-400/20 rounded-md p-2">
+                                            <GridIcon className="text-blue-500" />
+                                        </div>
+                                        <TrendingUp className="text-green-400" />
+                                    </div>
+                                    <h1 className="text-gray-600 text-base">
                                         Low End Diamonds (RBC ≥ 1ct)
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -572,9 +715,18 @@ export default function DiamondPage() {
                                             ? "..."
                                             : lowEndTotalCount.toLocaleString()}
                                     </h1>
+                                    <h1 className="text-gray-500 text-sm">
+                                        Total Inventory
+                                    </h1>
                                 </div>
-                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-black text-base">
+                                <div className="w-80 bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
+                                    <div className="w-full flex justify-between items-center">
+                                        <div className="bg-green-400/20 rounded-md p-2">
+                                            <CircleCheckBig className="text-green-500" />
+                                        </div>
+                                        <TrendingUp className="text-green-400" />
+                                    </div>
+                                    <h1 className="text-gray-600 text-base">
                                         Available
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -584,9 +736,18 @@ export default function DiamondPage() {
                                                   (d) => d.isAvailable
                                               ).length}
                                     </h1>
+                                    <h1 className="text-gray-500 text-sm">
+                                        Ready for Sale
+                                    </h1>
                                 </div>
-                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-black text-base">
+                                <div className="w-80 bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
+                                    <div className="w-full flex justify-between items-center">
+                                        <div className="bg-purple-400/20 rounded-md p-2">
+                                            <ChartColumn className="text-purple-500" />
+                                        </div>
+                                        <TrendingUp className="text-green-400" />
+                                    </div>
+                                    <h1 className="text-gray-600 text-base">
                                         Total Value
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -601,9 +762,18 @@ export default function DiamondPage() {
                                                   )
                                                   .toFixed(2)}
                                     </h1>
+                                    <h1 className="text-gray-500 text-sm">
+                                        Current Market Value
+                                    </h1>
                                 </div>
-                                <div className="w-80 h-28 bg-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7">
-                                    <h1 className="text-black text-base">
+                                <div className="w-80 bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
+                                    <div className="w-full flex justify-between items-center">
+                                        <div className="bg-orange-400/20 rounded-md p-2">
+                                            <Ruler className="text-orange-500" />
+                                        </div>
+                                        <TrendingUp className="text-green-400" />
+                                    </div>
+                                    <h1 className="text-gray-600 text-base">
                                         Total Size
                                     </h1>
                                     <h1 className="text-2xl font-semibold">
@@ -617,6 +787,9 @@ export default function DiamondPage() {
                                                   )
                                                   .toFixed(2)}{" "}
                                         ct
+                                    </h1>
+                                    <h1 className="text-gray-500 text-sm">
+                                        Carat Weight
                                     </h1>
                                 </div>
                             </div>

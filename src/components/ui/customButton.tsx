@@ -21,7 +21,7 @@ const CustomButton = ({
     | React.ComponentPropsWithoutRef<"button">
 )) => {
     const baseStyles =
-        "px-5 py-2 rounded-md shadow-[0px_2px_5px_0px_rgba(0,0,0,0.25)] inline-flex justify-center items-center gap-1 text-sm font-normal font-inter cursor-pointer ";
+        "px-5 py-3 rounded-md shadow-[0px_2px_5px_0px_rgba(0,0,0,0.25)] inline-flex justify-center items-center gap-1 text-sm font-normal font-inter cursor-pointer ";
     const variantStyles = {
         primary: "bg-gradient-to-b from-blue-700 to-blue-400 text-white ",
         secondary: "bg-black/5 text-black",
