@@ -8,8 +8,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import Link from "next/link";
-import Navbar from "@/components/landing/header";
-import Footer from "@/components/landing/footer";
 
 interface ContactFormData {
     firstName: string;
@@ -377,7 +375,6 @@ export default function ContactPage() {
             </div>
 
             {/* Footer */}
-            <Footer />
         </div>
     );
 }

@@ -3,7 +3,6 @@
 import React from "react";
 import Image from "next/image";
 import HeroImage from "@/../public/assets/abouHero.jpg";
-import Footer from "@/components/landing/footer";
 import Container from "@/components/ui/container";
 
 import image1 from "../../../public/assets/aboutus-diamond1.png";
@@ -188,8 +187,6 @@ const AboutUs = () => {
                 <ClaritySection />
                 <CutSection />
             </Container>
-
-            <Footer />
         </div>
     );
 };

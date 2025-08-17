@@ -3,7 +3,6 @@ import React from "react";
 import { Playfair_Display, Inter } from "next/font/google";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import Footer from "@/components/landing/footer";
 import image1 from "../../../public/assets/aboutus-diamond1.png";
 import image2 from "../../../public/assets/aboutus-diamond2.png";
 import image3 from "../../../public/assets/aboutus-diamond3.png";
@@ -176,8 +175,6 @@ const AboutUs = () => {
                     </div>
                 </div>
             </section>
-
-            <Footer />
         </div>
     );
 };

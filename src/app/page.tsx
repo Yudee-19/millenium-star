@@ -1,5 +1,4 @@
 import DiamondCards from "@/components/landing/certificates";
-import Footer from "@/components/landing/footer";
 import GridSection from "@/components/landing/gridSection";
 import Navbar from "@/components/landing/header";
 import HeroSection from "@/components/landing/heroSection";
@@ -92,7 +91,6 @@ const HomePage = () => {
             <DiamondCards />
 
             {/* <Testimonial /> */}
-            <Footer />
         </div>
     );
 };
