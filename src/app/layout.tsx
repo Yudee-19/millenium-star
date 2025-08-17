@@ -32,7 +32,7 @@ export default function RootLayout({
                 <ConditionalHeader /> {/* Use the conditional header here */}
                 {children}
                 <Toaster />
-                {/* <Footer /> */}
+                <Footer />
             </body>
         </html>
     );
