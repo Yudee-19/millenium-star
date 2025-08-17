@@ -39,10 +39,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
         ),
         cell: ({ row }) => (
             <Link href={`/${row.original.certificateNumber}`}>
-                <DiamondImage
-                    certificateNumber={row.original.certificateNumber}
-                    size={48}
-                />
+                <DiamondImage certificateNumber={row.original._id} size={60} />
             </Link>
         ),
     },

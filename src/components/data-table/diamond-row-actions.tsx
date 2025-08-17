@@ -12,10 +12,18 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Copy, Eye, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import {
+    Copy,
+    Eye,
+    MoreHorizontal,
+    Pencil,
+    Trash2,
+    Upload,
+} from "lucide-react";
 import { diamondSchema, DiamondType } from "@/lib/validations/diamond-schema";
 import { EditDiamondModal } from "@/components/modals/edit-diamond";
 import { DeleteDiamondDialog } from "@/components/modals/delete-diamond-dialog";
+import { AddFilesModal } from "@/components/modals/add-files-modal";
 
 interface DiamondRowActionsProps<TData> {
     row: Row<TData>;
@@ -28,6 +36,7 @@ export function DataTableRowActions<TData>({
 }: DiamondRowActionsProps<TData>) {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [isAddFilesModalOpen, setIsAddFilesModalOpen] = useState(false);
 
     // Safe parsing with error handling
     const parseResult = diamondSchema.safeParse(row.original);
@@ -85,6 +94,13 @@ export function DataTableRowActions<TData>({
         }
     };
 
+    const handleAddFilesSuccess = () => {
+        console.log("✅ Files added successfully, refreshing data...");
+        if (onRefresh) {
+            onRefresh();
+        }
+    };
+
     return (
         <>
             <DropdownMenu>
@@ -117,6 +133,12 @@ export function DataTableRowActions<TData>({
                         <Pencil className="mr-2 h-4 w-4" />
                         Edit Diamond
                     </DropdownMenuItem>
+                    <DropdownMenuItem
+                        onClick={() => setIsAddFilesModalOpen(true)}
+                    >
+                        <Upload className="mr-2 h-4 w-4" />
+                        Add Files
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                         className="text-red-600"
@@ -133,6 +155,14 @@ export function DataTableRowActions<TData>({
                 isOpen={isEditModalOpen}
                 onClose={() => setIsEditModalOpen(false)}
                 onSuccess={handleEditSuccess}
+                diamond={diamond}
+            />
+
+            {/* Add Files Modal */}
+            <AddFilesModal
+                isOpen={isAddFilesModalOpen}
+                onClose={() => setIsAddFilesModalOpen(false)}
+                onSuccess={handleAddFilesSuccess}
                 diamond={diamond}
             />
 

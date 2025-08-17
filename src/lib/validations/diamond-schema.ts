@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const diamondSchema = z.object({
-    _id: z.string().optional(),
+    _id: z.string(),
 
     color: z.enum([
         "D",

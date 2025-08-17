@@ -3,8 +3,7 @@ import { Inter } from "next/font/google";
 import { Playfair_Display } from "next/font/google";
 import "./globals.css";
 import ConditionalHeader from "@/components/layout/ConditionalHeader"; // Import the new component
-import { Toaster } from "sonner";
-
+import { Toaster } from "@/components/ui/sonner";
 const inter = Inter({
     variable: "--font-inter",
     subsets: ["latin"],
@@ -32,6 +31,7 @@ export default function RootLayout({
             >
                 <ConditionalHeader /> {/* Use the conditional header here */}
                 {children}
+                <Toaster />
             </body>
         </html>
     );

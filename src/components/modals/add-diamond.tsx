@@ -20,7 +20,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Loader2 } from "lucide-react";
+import { Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import {
     shape_options,
     color_options,
@@ -32,6 +32,8 @@ import {
     symmetry_options,
 } from "../filters/diamond-filters";
 import { Textarea } from "../ui/textarea";
+import { Progress } from "@/components/ui/progress";
+import { FileUploader } from "@/components/ui/file-uploader";
 
 interface AddDiamondModalProps {
     isOpen: boolean;
@@ -70,6 +72,12 @@ interface DiamondFormData {
     fromTab?: string; // Additional field
 }
 
+interface CreatedDiamond {
+    _id: string;
+    certificateNumber: string;
+    // Add other properties as needed
+}
+
 const initialFormData: DiamondFormData = {
     certificateNumber: "",
     lab: "",
@@ -94,16 +102,22 @@ const initialFormData: DiamondFormData = {
     fromTab: "",
 };
 
+const TOTAL_STEPS = 4;
+
 export function AddDiamondModal({
     isOpen,
     onClose,
     onSuccess,
 }: AddDiamondModalProps) {
+    const [currentStep, setCurrentStep] = useState(1);
     const [formData, setFormData] = useState<DiamondFormData>(initialFormData);
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState<
         Partial<Record<keyof DiamondFormData, string>>
     >({});
+    const [createdDiamond, setCreatedDiamond] = useState<CreatedDiamond | null>(
+        null
+    );
 
     const handleInputChange = (
         field: keyof DiamondFormData,
@@ -123,80 +137,98 @@ export function AddDiamondModal({
         }
     };
 
-    const validateForm = (): boolean => {
+    const validateStep = (step: number): boolean => {
         const newErrors: Partial<Record<keyof DiamondFormData, string>> = {};
 
-        // Required field validations based on schema
-        if (!formData.certificateNumber.trim()) {
-            newErrors.certificateNumber = "Certificate number is required";
-        }
-        if (!formData.lab.trim()) {
-            newErrors.lab = "Lab is required";
-        }
-        if (!formData.shape.trim()) {
-            newErrors.shape = "Shape is required";
-        }
-        if (!formData.color) {
-            newErrors.color = "Color is required";
-        }
-        if (!formData.clarity) {
-            newErrors.clarity = "Clarity is required";
-        }
-        if (!formData.cut) {
-            newErrors.cut = "Cut is required";
-        }
-        if (!formData.polish) {
-            newErrors.polish = "Polish is required";
-        }
-        if (!formData.symmetry) {
-            newErrors.symmetry = "Symmetry is required";
-        }
-        if (!formData.fluorescence) {
-            newErrors.fluorescence = "Fluorescence is required";
-        }
+        switch (step) {
+            case 1: // Basic Information
+                if (!formData.certificateNumber.trim()) {
+                    newErrors.certificateNumber =
+                        "Certificate number is required";
+                }
+                if (!formData.lab.trim()) {
+                    newErrors.lab = "Lab is required";
+                }
+                if (!formData.shape.trim()) {
+                    newErrors.shape = "Shape is required";
+                }
+                if (formData.size !== undefined && formData.size <= 0) {
+                    newErrors.size = "Carat weight must be greater than 0";
+                }
+                break;
 
-        // Measurement validations (all required and > 0)
-        if (formData.length <= 0) {
-            newErrors.length = "Length must be greater than 0";
-        }
-        if (formData.width <= 0) {
-            newErrors.width = "Width must be greater than 0";
-        }
-        if (formData.depth <= 0) {
-            newErrors.depth = "Depth must be greater than 0";
-        }
-        if (formData.totalDepth <= 0 || formData.totalDepth > 100) {
-            newErrors.totalDepth = "Total depth must be between 0 and 100%";
-        }
-        if (formData.table <= 0 || formData.table > 100) {
-            newErrors.table = "Table must be between 0 and 100%";
-        }
+            case 2: // Quality Assessment
+                if (!formData.color) {
+                    newErrors.color = "Color is required";
+                }
+                if (!formData.clarity) {
+                    newErrors.clarity = "Clarity is required";
+                }
+                if (!formData.cut) {
+                    newErrors.cut = "Cut is required";
+                }
+                if (!formData.polish) {
+                    newErrors.polish = "Polish is required";
+                }
+                if (!formData.symmetry) {
+                    newErrors.symmetry = "Symmetry is required";
+                }
+                if (!formData.fluorescence) {
+                    newErrors.fluorescence = "Fluorescence is required";
+                }
+                break;
 
-        // Pricing validations
-        if (formData.rapList < 0) {
-            newErrors.rapList =
-                "Rap list price must be greater than or equal to 0";
-        }
-        if (formData.discount < -100 || formData.discount > 100) {
-            newErrors.discount = "Discount must be between -100% and 100%";
-        }
-        if (formData.price < 0) {
-            newErrors.price = "Price must be greater than or equal to 0";
-        }
+            case 3: // Measurements
+                if (formData.length <= 0) {
+                    newErrors.length = "Length must be greater than 0";
+                }
+                if (formData.width <= 0) {
+                    newErrors.width = "Width must be greater than 0";
+                }
+                if (formData.depth <= 0) {
+                    newErrors.depth = "Depth must be greater than 0";
+                }
+                if (formData.totalDepth <= 0 || formData.totalDepth > 100) {
+                    newErrors.totalDepth =
+                        "Total depth must be between 0 and 100%";
+                }
+                if (formData.table <= 0 || formData.table > 100) {
+                    newErrors.table = "Table must be between 0 and 100%";
+                }
+                break;
 
-        // Optional size validation
-        if (formData.size !== undefined && formData.size < 0) {
-            newErrors.size = "Size must be greater than or equal to 0";
+            case 4: // Pricing & Final Details
+                if (formData.rapList < 0) {
+                    newErrors.rapList =
+                        "Rap list price must be greater than or equal to 0";
+                }
+                if (formData.discount < -100 || formData.discount > 100) {
+                    newErrors.discount =
+                        "Discount must be between -100% and 100%";
+                }
+                if (formData.price < 0) {
+                    newErrors.price =
+                        "Price must be greater than or equal to 0";
+                }
+                break;
         }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleNext = () => {
+        if (validateStep(currentStep)) {
+            setCurrentStep((prev) => Math.min(prev + 1, TOTAL_STEPS));
+        }
+    };
 
-        if (!validateForm()) {
+    const handlePrevious = () => {
+        setCurrentStep((prev) => Math.max(prev - 1, 1));
+    };
+
+    const handleSubmit = async () => {
+        if (!validateStep(currentStep)) {
             return;
         }
 
@@ -304,10 +336,14 @@ export function AddDiamondModal({
 
             console.log("✅ Diamond created successfully:", result);
 
-            // Reset form and close modal
-            setFormData(initialFormData);
+            // Set created diamond for file upload step
+            setCreatedDiamond({
+                _id: result.data._id,
+                certificateNumber: formData.certificateNumber.trim(),
+            });
+
+            // Call onSuccess to refresh the main table
             onSuccess();
-            onClose();
         } catch (error) {
             console.error("❌ Error creating diamond:", error);
             setErrors({
@@ -324,30 +360,50 @@ export function AddDiamondModal({
     const handleClose = () => {
         if (!loading) {
             setFormData(initialFormData);
+            setCurrentStep(1);
             setErrors({});
+            setCreatedDiamond(null);
             onClose();
         }
     };
 
-    return (
-        <Dialog open={isOpen} onOpenChange={handleClose}>
-            <DialogContent className="min-w-5xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                    <DialogTitle>Add New Diamond</DialogTitle>
-                    <DialogDescription>
-                        Fill in the diamond details below. Fields marked with *
-                        are required.
-                    </DialogDescription>
-                </DialogHeader>
+    const getStepTitle = (step: number) => {
+        switch (step) {
+            case 1:
+                return "Basic Information";
+            case 2:
+                return "Quality Assessment";
+            case 3:
+                return "Measurements";
+            case 4:
+                return "Pricing & Final Details";
+            default:
+                return "";
+        }
+    };
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Basic Information */}
-                    <div className="space-y-2">
-                        <Label className="text-base font-semibold">
-                            Basic Information
-                        </Label>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <div className="space-y-2 w-full">
+    const getStepDescription = (step: number) => {
+        switch (step) {
+            case 1:
+                return "Enter the diamond's certificate details and basic properties";
+            case 2:
+                return "Specify the diamond's quality characteristics";
+            case 3:
+                return "Provide precise measurements and proportions";
+            case 4:
+                return "Set pricing information and additional details";
+            default:
+                return "";
+        }
+    };
+
+    const renderStep = () => {
+        switch (currentStep) {
+            case 1:
+                return (
+                    <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
                                 <Label htmlFor="certificateNumber">
                                     Certificate Number *
                                 </Label>
@@ -374,7 +430,7 @@ export function AddDiamondModal({
                                 )}
                             </div>
 
-                            <div className="space-y-2 w-full">
+                            <div className="space-y-2">
                                 <Label htmlFor="lab">Lab *</Label>
                                 <Select
                                     value={formData.lab}
@@ -383,7 +439,7 @@ export function AddDiamondModal({
                                     }
                                 >
                                     <SelectTrigger
-                                        className={`w-full${
+                                        className={`w-full ${
                                             errors.lab ? "border-red-500" : ""
                                         }`}
                                     >
@@ -407,7 +463,7 @@ export function AddDiamondModal({
                                 )}
                             </div>
 
-                            <div className="space-y-2 w-full">
+                            <div className="space-y-2">
                                 <Label htmlFor="shape">Shape *</Label>
                                 <Select
                                     value={formData.shape}
@@ -416,7 +472,7 @@ export function AddDiamondModal({
                                     }
                                 >
                                     <SelectTrigger
-                                        className={`w-full${
+                                        className={`w-full ${
                                             errors.shape ? "border-red-500" : ""
                                         }`}
                                     >
@@ -440,6 +496,41 @@ export function AddDiamondModal({
                                 )}
                             </div>
 
+                            <div className="space-y-2">
+                                <Label htmlFor="size">Carat Weight *</Label>
+                                <Input
+                                    id="size"
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    value={formData.size || ""}
+                                    onChange={(e) =>
+                                        handleInputChange(
+                                            "size",
+                                            e.target.value
+                                                ? parseFloat(e.target.value)
+                                                : 0
+                                        )
+                                    }
+                                    placeholder="0.00"
+                                    className={
+                                        errors.size ? "border-red-500" : ""
+                                    }
+                                />
+                                {errors.size && (
+                                    <p className="text-sm text-red-500">
+                                        {errors.size}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                );
+
+            case 2:
+                return (
+                    <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="color">Color *</Label>
                                 <Select
@@ -508,42 +599,6 @@ export function AddDiamondModal({
                                 )}
                             </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="size">Carat Weight *</Label>
-                                <Input
-                                    id="size"
-                                    type="number"
-                                    step="0.01"
-                                    min="0"
-                                    value={formData.size || ""}
-                                    onChange={(e) =>
-                                        handleInputChange(
-                                            "size",
-                                            e.target.value
-                                                ? parseFloat(e.target.value)
-                                                : 0
-                                        )
-                                    }
-                                    placeholder="0.00"
-                                    className={`w-full ${
-                                        errors.size ? "border-red-500" : ""
-                                    }`}
-                                />
-                                {errors.size && (
-                                    <p className="text-sm text-red-500">
-                                        {errors.size}
-                                    </p>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Cut, Polish, Symmetry, Fluorescence */}
-                    <div className="space-y-2">
-                        <Label className="text-base font-semibold">
-                            Cut Quality
-                        </Label>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="cut">Cut *</Label>
                                 <Select
@@ -685,13 +740,12 @@ export function AddDiamondModal({
                             </div>
                         </div>
                     </div>
+                );
 
-                    {/* Measurements */}
-                    <div className="space-y-2">
-                        <Label className="text-base font-semibold">
-                            Measurements *
-                        </Label>
-                        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            case 3:
+                return (
+                    <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="length">Length (mm) *</Label>
                                 <Input
@@ -829,112 +883,128 @@ export function AddDiamondModal({
                             </div>
                         </div>
                     </div>
+                );
 
-                    {/* Pricing */}
-                    <div className="space-y-2">
-                        <Label className="text-base font-semibold">
-                            Pricing *
-                        </Label>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="rapList">Rap List ($) *</Label>
-                                <Input
-                                    id="rapList"
-                                    type="number"
-                                    min="0"
-                                    value={formData.rapList || ""}
-                                    onChange={(e) =>
-                                        handleInputChange(
-                                            "rapList",
-                                            parseFloat(e.target.value) || 0
-                                        )
-                                    }
-                                    placeholder="0"
-                                    className={
-                                        errors.rapList ? "border-red-500" : ""
-                                    }
-                                />
-                                {errors.rapList && (
-                                    <p className="text-sm text-red-500">
-                                        {errors.rapList}
-                                    </p>
-                                )}
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="discount">Discount (%) *</Label>
-                                <Input
-                                    id="discount"
-                                    type="number"
-                                    step="0.1"
-                                    min="-100"
-                                    max="100"
-                                    value={formData.discount || ""}
-                                    onChange={(e) =>
-                                        handleInputChange(
-                                            "discount",
-                                            parseFloat(e.target.value) || 0
-                                        )
-                                    }
-                                    placeholder="0.0"
-                                    className={
-                                        errors.discount ? "border-red-500" : ""
-                                    }
-                                />
-                                {errors.discount && (
-                                    <p className="text-sm text-red-500">
-                                        {errors.discount}
-                                    </p>
-                                )}
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="price">Final Price ($) *</Label>
-                                <Input
-                                    id="price"
-                                    type="number"
-                                    min="0"
-                                    value={formData.price || ""}
-                                    onChange={(e) =>
-                                        handleInputChange(
-                                            "price",
-                                            parseFloat(e.target.value) || 0
-                                        )
-                                    }
-                                    placeholder="0"
-                                    className={
-                                        errors.price ? "border-red-500" : ""
-                                    }
-                                />
-                                {errors.price && (
-                                    <p className="text-sm text-red-500">
-                                        {errors.price}
-                                    </p>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Additional Fields */}
-                    <div className="space-y-4">
-                        <Label className="text-base font-semibold">
-                            Additional Information
-                        </Label>
-
-                        <div className="flex items-center space-x-2">
-                            <Checkbox
-                                id="isAvailable"
-                                checked={formData.isAvailable}
-                                onCheckedChange={(checked) =>
-                                    handleInputChange("isAvailable", !!checked)
-                                }
-                            />
-                            <Label htmlFor="isAvailable">
-                                Available for sale
+            case 4:
+                return (
+                    <div className="space-y-6">
+                        {/* Pricing Section */}
+                        <div className="space-y-4">
+                            <Label className="text-base font-semibold">
+                                Pricing Information *
                             </Label>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="rapList">
+                                        Rap List ($) *
+                                    </Label>
+                                    <Input
+                                        id="rapList"
+                                        type="number"
+                                        min="0"
+                                        value={formData.rapList || ""}
+                                        onChange={(e) =>
+                                            handleInputChange(
+                                                "rapList",
+                                                parseFloat(e.target.value) || 0
+                                            )
+                                        }
+                                        placeholder="0"
+                                        className={
+                                            errors.rapList
+                                                ? "border-red-500"
+                                                : ""
+                                        }
+                                    />
+                                    {errors.rapList && (
+                                        <p className="text-sm text-red-500">
+                                            {errors.rapList}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="discount">
+                                        Discount (%) *
+                                    </Label>
+                                    <Input
+                                        id="discount"
+                                        type="number"
+                                        step="0.1"
+                                        min="-100"
+                                        max="100"
+                                        value={formData.discount || ""}
+                                        onChange={(e) =>
+                                            handleInputChange(
+                                                "discount",
+                                                parseFloat(e.target.value) || 0
+                                            )
+                                        }
+                                        placeholder="0.0"
+                                        className={
+                                            errors.discount
+                                                ? "border-red-500"
+                                                : ""
+                                        }
+                                    />
+                                    {errors.discount && (
+                                        <p className="text-sm text-red-500">
+                                            {errors.discount}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="price">
+                                        Final Price ($) *
+                                    </Label>
+                                    <Input
+                                        id="price"
+                                        type="number"
+                                        min="0"
+                                        value={formData.price || ""}
+                                        onChange={(e) =>
+                                            handleInputChange(
+                                                "price",
+                                                parseFloat(e.target.value) || 0
+                                            )
+                                        }
+                                        placeholder="0"
+                                        className={
+                                            errors.price ? "border-red-500" : ""
+                                        }
+                                    />
+                                    {errors.price && (
+                                        <p className="text-sm text-red-500">
+                                            {errors.price}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Additional Information */}
+                        <div className="space-y-4">
+                            <Label className="text-base font-semibold">
+                                Additional Information
+                            </Label>
+
+                            <div className="flex items-center space-x-2">
+                                <Checkbox
+                                    id="isAvailable"
+                                    checked={formData.isAvailable}
+                                    onCheckedChange={(checked) =>
+                                        handleInputChange(
+                                            "isAvailable",
+                                            !!checked
+                                        )
+                                    }
+                                />
+                                <Label htmlFor="isAvailable">
+                                    Available for sale
+                                </Label>
+                            </div>
+
                             <div className="space-y-2">
                                 <Label htmlFor="noBgm">
                                     Comments (Optional)
@@ -954,8 +1024,110 @@ export function AddDiamondModal({
                             </div>
                         </div>
                     </div>
+                );
+
+            default:
+                return null;
+        }
+    };
+
+    const progress = (currentStep / TOTAL_STEPS) * 100;
+
+    // If diamond is created, show file upload interface
+    if (createdDiamond) {
+        return (
+            <Dialog open={isOpen} onOpenChange={handleClose}>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle>
+                            Upload Files for Diamond{" "}
+                            {createdDiamond.certificateNumber}
+                        </DialogTitle>
+                        <DialogDescription>
+                            Your diamond has been created successfully! Now you
+                            can upload images, videos, and certificates for the
+                            diamond.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="space-y-6 py-4">
+                        <FileUploader
+                            fileType="images"
+                            certificateNumber={createdDiamond._id}
+                            onUploadSuccess={() => {
+                                // Optional: Add any additional success handling
+                            }}
+                            maxFiles={1}
+                            maxSizePerFile={2}
+                        />
+                        <FileUploader
+                            fileType="videos"
+                            certificateNumber={createdDiamond._id}
+                            onUploadSuccess={() => {
+                                // Optional: Add any additional success handling
+                            }}
+                            maxFiles={1}
+                            maxSizePerFile={2}
+                        />
+                        <FileUploader
+                            fileType="certificates"
+                            certificateNumber={createdDiamond._id}
+                            onUploadSuccess={() => {
+                                // Optional: Add any additional success handling
+                            }}
+                            maxFiles={1}
+                            maxSizePerFile={2}
+                        />
+                    </div>
 
                     <DialogFooter>
+                        <Button
+                            type="button"
+                            variant="default"
+                            onClick={handleClose}
+                        >
+                            Finish
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        );
+    }
+
+    // Original diamond creation form
+    return (
+        <Dialog open={isOpen} onOpenChange={handleClose}>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                    <DialogTitle>Add New Diamond</DialogTitle>
+                    <DialogDescription>
+                        {getStepDescription(currentStep)}
+                    </DialogDescription>
+                </DialogHeader>
+
+                {/* Progress Bar */}
+                <div className="space-y-2">
+                    <div className="flex justify-between text-sm text-gray-600">
+                        <span>
+                            Step {currentStep} of {TOTAL_STEPS}
+                        </span>
+                        <span>{Math.round(progress)}% Complete</span>
+                    </div>
+                    <Progress value={progress} className="w-full" />
+                </div>
+
+                {/* Step Title */}
+                <div className="border-b pb-2">
+                    <h3 className="text-lg font-semibold">
+                        {getStepTitle(currentStep)}
+                    </h3>
+                </div>
+
+                {/* Step Content */}
+                <div className="py-4">{renderStep()}</div>
+
+                <DialogFooter className="flex justify-between">
+                    <div className="flex gap-2">
                         <Button
                             type="button"
                             variant="outline"
@@ -964,14 +1136,46 @@ export function AddDiamondModal({
                         >
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={loading}>
-                            {loading && (
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            )}
-                            {loading ? "Adding Diamond..." : "Add Diamond"}
-                        </Button>
-                    </DialogFooter>
-                </form>
+                    </div>
+
+                    <div className="flex gap-2">
+                        {currentStep > 1 && (
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={handlePrevious}
+                                disabled={loading}
+                            >
+                                <ChevronLeft className="mr-2 h-4 w-4" />
+                                Previous
+                            </Button>
+                        )}
+
+                        {currentStep < TOTAL_STEPS ? (
+                            <Button
+                                type="button"
+                                onClick={handleNext}
+                                disabled={loading}
+                            >
+                                Next
+                                <ChevronRight className="ml-2 h-4 w-4" />
+                            </Button>
+                        ) : (
+                            <Button
+                                type="button"
+                                onClick={handleSubmit}
+                                disabled={loading}
+                            >
+                                {loading && (
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                )}
+                                {loading
+                                    ? "Adding Diamond..."
+                                    : "Create Diamond"}
+                            </Button>
+                        )}
+                    </div>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     );

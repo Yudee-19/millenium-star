@@ -586,7 +586,9 @@ export function EditDiamondModal({
                                 >
                                     <SelectTrigger
                                         className={
-                                            errors.cut ? "border-red-500" : ""
+                                            errors.cut
+                                                ? "border-red-500 w-full"
+                                                : "w-full"
                                         }
                                     >
                                         <SelectValue placeholder="Select cut" />
@@ -620,8 +622,8 @@ export function EditDiamondModal({
                                     <SelectTrigger
                                         className={
                                             errors.polish
-                                                ? "border-red-500"
-                                                : ""
+                                                ? "border-red-500 w-full"
+                                                : "w-full"
                                         }
                                     >
                                         <SelectValue placeholder="Select polish" />
@@ -655,8 +657,8 @@ export function EditDiamondModal({
                                     <SelectTrigger
                                         className={
                                             errors.symmetry
-                                                ? "border-red-500"
-                                                : ""
+                                                ? "border-red-500 w-full"
+                                                : "w-full"
                                         }
                                     >
                                         <SelectValue placeholder="Select symmetry" />
@@ -692,8 +694,8 @@ export function EditDiamondModal({
                                     <SelectTrigger
                                         className={
                                             errors.fluorescence
-                                                ? "border-red-500"
-                                                : ""
+                                                ? "border-red-500 w-full"
+                                                : "w-full"
                                         }
                                     >
                                         <SelectValue placeholder="Select fluorescence" />
@@ -947,25 +949,18 @@ export function EditDiamondModal({
                         </div>
                     </div>
 
+                    <div className="flex items-center space-x-2">
+                        <Checkbox
+                            id="isAvailable"
+                            checked={formData.isAvailable}
+                            onCheckedChange={(checked) =>
+                                handleInputChange("isAvailable", !!checked)
+                            }
+                        />
+                        <Label htmlFor="isAvailable">Available for sale</Label>
+                    </div>
                     {/* Additional Fields */}
-                    <div className="space-y-4">
-                        <Label className="text-base font-semibold">
-                            Additional Information
-                        </Label>
-
-                        <div className="flex items-center space-x-2">
-                            <Checkbox
-                                id="isAvailable"
-                                checked={formData.isAvailable}
-                                onCheckedChange={(checked) =>
-                                    handleInputChange("isAvailable", !!checked)
-                                }
-                            />
-                            <Label htmlFor="isAvailable">
-                                Available for sale
-                            </Label>
-                        </div>
-
+                    {/* <div className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="noBgm">
@@ -1002,7 +997,7 @@ export function EditDiamondModal({
                                 />
                             </div>
                         </div>
-                    </div>
+                    </div> */}
 
                     <DialogFooter>
                         <Button

@@ -16,7 +16,7 @@ const fallbackUrl = "/assets/hero-3.png";
 export const DiamondImage: React.FC<DiamondImageProps> = ({
     certificateNumber,
     className,
-    size = 80,
+    size = 10000000000,
     clickable = false,
 }) => {
     const [imageUrl, setImageUrl] = useState<string>(fallbackUrl);
@@ -34,14 +34,18 @@ export const DiamondImage: React.FC<DiamondImageProps> = ({
         )
             .then((res) => res.json())
             .then((data) => {
+                console.log("Fetched diamond images:", data);
                 if (
                     isMounted &&
-                    data?.imagesUrls &&
-                    Array.isArray(data.imagesUrls) &&
-                    data.imagesUrls.length > 0
+                    data.data?.imagesUrls &&
+                    Array.isArray(data.data.imagesUrls) &&
+                    data.data.imagesUrls.length > 0
                 ) {
-                    setImageUrl(data.imagesUrls[0]);
+                    // Try to get the highest quality image (usually the first one)
+                    console.log("Setting image URL:", data.data.imagesUrls[0]);
+                    setImageUrl(data.data.imagesUrls[0]);
                 } else {
+                    console.log("not Setting image URL:");
                     setImageUrl(fallbackUrl);
                 }
             })
@@ -77,9 +81,19 @@ export const DiamondImage: React.FC<DiamondImageProps> = ({
                 alt={`Diamond ${certificateNumber}`}
                 width={size}
                 height={size}
-                className={cn("object-cover rounded cursor-pointer", className)}
+                // Change from object-cover to object-contain to preserve aspect ratio
+                className={cn(
+                    "object-contain rounded",
+                    clickable && "cursor-pointer",
+                    className
+                )}
                 onClick={clickable ? openModal : undefined}
                 onError={() => setImageUrl(fallbackUrl)}
+                // Add quality settings for better image rendering
+                quality={95}
+                priority={false}
+                // Prevent image optimization that might reduce quality
+                unoptimized={false}
             />
             {clickable && isModalOpen && (
                 <div
@@ -89,11 +103,13 @@ export const DiamondImage: React.FC<DiamondImageProps> = ({
                     <Image
                         src={imageUrl}
                         alt={`Diamond ${certificateNumber} Enlarged`}
-                        width={400}
-                        height={400}
-                        className="object-contain rounded shadow-lg"
+                        width={600}
+                        height={600}
+                        className="object-contain rounded shadow-lg max-w-[90vw] max-h-[90vh]"
                         onClick={(e) => e.stopPropagation()}
                         onError={() => setImageUrl(fallbackUrl)}
+                        quality={100}
+                        priority={true}
                     />
                 </div>
             )}

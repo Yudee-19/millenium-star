@@ -51,16 +51,16 @@ export function ClientFilterSidebar({
         [key: string]: boolean;
     }>({
         shape: true,
-        color: false,
-        clarity: false,
-        lab: false,
-        cut: false,
-        polish: false,
-        symmetry: false,
-        fluorescence: false,
-        price: false,
-        carat: false,
-        searchBy: false,
+        color: true,
+        clarity: true,
+        lab: true,
+        cut: true,
+        polish: true,
+        symmetry: true,
+        fluorescence: true,
+        price: true,
+        carat: true,
+        searchBy: true,
     });
     const [collapsed, setCollapsed] = useState(false);
 
@@ -130,12 +130,12 @@ export function ClientFilterSidebar({
             Heart: "heart.svg",
             Marquise: "marquise.svg",
             Baguette: "baguette.svg",
-            Tapered: "tapered.svg",
+            "Tapered Baguette": "tapered.svg",
             Radiant: "radiant.svg",
             Pear: "pear.svg",
             Square: "square.svg",
             Trilliant: "trilliant.svg",
-            SqEmerald: "sqEmerald.jpg",
+            "Sq. Emerald": "sqEmerald.jpg",
         };
         const fileName = shapeMap[shapeValue];
         return fileName ? `/assets/diamondShapes/${fileName}` : null;
@@ -287,13 +287,13 @@ export function ClientFilterSidebar({
                                     />
                                     <label
                                         htmlFor={`shape-${shape.value}`}
-                                        className={`w-8 h-8 border-2 rounded cursor-pointer flex items-center justify-center transition-colors ${
+                                        className={`w-8 h-8  rounded cursor-pointer flex items-center justify-center transition-colors ${
                                             (filters.shape || []).includes(
                                                 shape.value
                                             )
-                                                ? "border-black  text-white"
-                                                : "border-gray-300 hover:border-gray-400"
-                                        } peer-data-[state=checked]:border-black peer-data-[state=checked]:bg-gray-200 peer-data-[state=checked]:text-white`}
+                                                ? "border-black border-1  text-white"
+                                                : "hover:bg-gray-200"
+                                        } `}
                                     >
                                         {getShapeImage(shape.value) ? (
                                             <img
@@ -448,7 +448,7 @@ export function ClientFilterSidebar({
                                 />
                                 <Label
                                     htmlFor={`color-${color.value}`}
-                                    className={`text-xs block mt-1 cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black peer-data-[state=checked]:border-black`}
+                                    className={`text-xs text-black/70 block mt-1 cursor-pointer hover:bg-gray-200 rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black/ peer-data-[state=checked]:border-black`}
                                 >
                                     {color.value}
                                 </Label>
@@ -484,7 +484,7 @@ export function ClientFilterSidebar({
                                 />
                                 <Label
                                     htmlFor={`clarity-${clarity.value}`}
-                                    className="text-xs block mt-1 cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
+                                    className="text-xs text-black/70 block mt-1 cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
                                 >
                                     {clarity.value}
                                 </Label>
@@ -527,7 +527,7 @@ export function ClientFilterSidebar({
                                 />
                                 <Label
                                     htmlFor={`fluo-${fluo}`}
-                                    className="text-xs cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
+                                    className="text-xs text-black/70 cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
                                 >
                                     {fluo}
                                 </Label>
@@ -585,7 +585,7 @@ export function ClientFilterSidebar({
                                 />
                                 <Label
                                     htmlFor={`cut-${cut.value}`}
-                                    className="text-xs cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
+                                    className="text-xs text-black/70 cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
                                 >
                                     {cut.label}
                                 </Label>
