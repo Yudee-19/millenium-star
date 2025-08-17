@@ -14,6 +14,12 @@ import {
     ChevronLeft,
     ChevronRight,
     Filter,
+    Gem,
+    RulerDimensionLine,
+    Euro,
+    Palette,
+    SearchCheck,
+    Scissors,
 } from "lucide-react";
 import {
     shape_options,
@@ -44,7 +50,7 @@ export function ClientFilterSidebar({
     const [expandedSections, setExpandedSections] = useState<{
         [key: string]: boolean;
     }>({
-        shape: false,
+        shape: true,
         color: false,
         clarity: false,
         lab: false,
@@ -194,7 +200,7 @@ export function ClientFilterSidebar({
         defaultOpen?: boolean;
         icon?: React.ReactNode;
     }) => (
-        <div className="mb-4 rounded-lg shadow-sm bg-white border border-gray-200">
+        <div className="mb-4 rounded-lg  bg-white border border-gray-200">
             <button
                 type="button"
                 className="w-full flex items-center justify-between px-3 py-2 rounded-t-lg bg-gray-50 hover:bg-gray-100 focus:outline-none"
@@ -219,9 +225,9 @@ export function ClientFilterSidebar({
 
     return (
         <div
-            className={`relative transition-all duration-300 ${
+            className={`relative transition-all duration-300 pb-10 ${
                 collapsed ? "w-16" : "w-100"
-            } bg-gray-50 border-r border-gray-200 h-screen shadow-lg flex flex-col`}
+            } bg-gray-50 border-r border-gray-200 h-screen  flex flex-col`}
         >
             {/* Collapse/Expand Button */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-white sticky top-0 z-10">
@@ -254,7 +260,7 @@ export function ClientFilterSidebar({
                 <Section
                     title="Shape"
                     sectionKey="shape"
-                    icon={<Filter className="w-4 h-4" />}
+                    icon={<Gem className="w-4 h-4" />}
                 >
                     {renderItemsWithViewMore(
                         shape_options,
@@ -277,7 +283,7 @@ export function ClientFilterSidebar({
                                                 checked as boolean
                                             )
                                         }
-                                        className="sr-only"
+                                        className="sr-only peer"
                                     />
                                     <label
                                         htmlFor={`shape-${shape.value}`}
@@ -285,9 +291,9 @@ export function ClientFilterSidebar({
                                             (filters.shape || []).includes(
                                                 shape.value
                                             )
-                                                ? "border-black "
+                                                ? "border-black  text-white"
                                                 : "border-gray-300 hover:border-gray-400"
-                                        }`}
+                                        } peer-data-[state=checked]:border-black peer-data-[state=checked]:bg-gray-200 peer-data-[state=checked]:text-white`}
                                     >
                                         {getShapeImage(shape.value) ? (
                                             <img
@@ -344,7 +350,7 @@ export function ClientFilterSidebar({
                 <Section
                     title="Size Range"
                     sectionKey="carat"
-                    icon={<Filter className="w-4 h-4" />}
+                    icon={<RulerDimensionLine className="w-4 h-4" />}
                 >
                     <div className="flex gap-2">
                         <Input
@@ -382,7 +388,7 @@ export function ClientFilterSidebar({
                 <Section
                     title="Price Range"
                     sectionKey="price"
-                    icon={<Filter className="w-4 h-4" />}
+                    icon={<Euro className="w-4 h-4" />}
                 >
                     <div className="flex gap-2">
                         <Input
@@ -418,15 +424,17 @@ export function ClientFilterSidebar({
                 <Section
                     title="Color"
                     sectionKey="color"
-                    icon={<Filter className="w-4 h-4" />}
+                    icon={<Palette className="w-4 h-4" />}
                 >
                     {renderItemsWithViewMore(
                         color_options,
                         "color",
                         (color) => (
                             <div key={color.value} className="text-center">
+                                {/* Color section */}
                                 <Checkbox
                                     id={`color-${color.value}`}
+                                    className="sr-only peer"
                                     checked={(filters.color || []).includes(
                                         color.value
                                     )}
@@ -440,7 +448,7 @@ export function ClientFilterSidebar({
                                 />
                                 <Label
                                     htmlFor={`color-${color.value}`}
-                                    className="text-xs block mt-1 cursor-pointer"
+                                    className={`text-xs block mt-1 cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black peer-data-[state=checked]:border-black`}
                                 >
                                     {color.value}
                                 </Label>
@@ -452,15 +460,17 @@ export function ClientFilterSidebar({
                 <Section
                     title="Clarity"
                     sectionKey="clarity"
-                    icon={<Filter className="w-4 h-4" />}
+                    icon={<SearchCheck className="w-4 h-4" />}
                 >
                     {renderItemsWithViewMore(
                         clarity_options,
                         "clarity",
                         (clarity) => (
                             <div key={clarity.value} className="text-center">
+                                {/* Clarity section */}
                                 <Checkbox
                                     id={`clarity-${clarity.value}`}
+                                    className="sr-only peer"
                                     checked={(filters.clarity || []).includes(
                                         clarity.value
                                     )}
@@ -474,7 +484,7 @@ export function ClientFilterSidebar({
                                 />
                                 <Label
                                     htmlFor={`clarity-${clarity.value}`}
-                                    className="text-xs block mt-1 cursor-pointer"
+                                    className="text-xs block mt-1 cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
                                 >
                                     {clarity.value}
                                 </Label>
@@ -500,8 +510,10 @@ export function ClientFilterSidebar({
                                 key={fluo}
                                 className="flex items-center space-x-2"
                             >
+                                {/* Fluorescence checkboxes */}
                                 <Checkbox
                                     id={`fluo-${fluo}`}
+                                    className="sr-only peer"
                                     checked={(
                                         filters.fluorescence || []
                                     ).includes(fluo)}
@@ -515,7 +527,7 @@ export function ClientFilterSidebar({
                                 />
                                 <Label
                                     htmlFor={`fluo-${fluo}`}
-                                    className="text-xs cursor-pointer"
+                                    className="text-xs cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
                                 >
                                     {fluo}
                                 </Label>
@@ -523,7 +535,7 @@ export function ClientFilterSidebar({
                         ))}
                     </div>
                 </Section>
-                <Section
+                {/* <Section
                     title="Search By"
                     sectionKey="searchBy"
                     icon={<Filter className="w-4 h-4" />}
@@ -542,11 +554,11 @@ export function ClientFilterSidebar({
                             </Label>
                         </div>
                     </div>
-                </Section>
+                </Section> */}
                 <Section
                     title="Cut"
                     sectionKey="cut"
-                    icon={<Filter className="w-4 h-4" />}
+                    icon={<Scissors className="w-4 h-4" />}
                 >
                     {renderItemsWithViewMore(
                         cut_options,
@@ -556,8 +568,10 @@ export function ClientFilterSidebar({
                                 key={cut.value}
                                 className="flex items-center space-x-2"
                             >
+                                {/* Cut section */}
                                 <Checkbox
                                     id={`cut-${cut.value}`}
+                                    className="sr-only peer"
                                     checked={(filters.cut || []).includes(
                                         cut.value
                                     )}
@@ -571,7 +585,7 @@ export function ClientFilterSidebar({
                                 />
                                 <Label
                                     htmlFor={`cut-${cut.value}`}
-                                    className="text-xs cursor-pointer"
+                                    className="text-xs cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
                                 >
                                     {cut.label}
                                 </Label>
@@ -593,8 +607,10 @@ export function ClientFilterSidebar({
                                 key={polish.value}
                                 className="flex items-center space-x-2"
                             >
+                                {/* Polish section */}
                                 <Checkbox
                                     id={`polish-${polish.value}`}
+                                    className="sr-only peer"
                                     checked={(filters.polish || []).includes(
                                         polish.value
                                     )}
@@ -608,7 +624,7 @@ export function ClientFilterSidebar({
                                 />
                                 <Label
                                     htmlFor={`polish-${polish.value}`}
-                                    className="text-xs cursor-pointer"
+                                    className="text-xs cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
                                 >
                                     {polish.label}
                                 </Label>
@@ -630,8 +646,10 @@ export function ClientFilterSidebar({
                                 key={symmetry.value}
                                 className="flex items-center space-x-2"
                             >
+                                {/* Symmetry section */}
                                 <Checkbox
                                     id={`symmetry-${symmetry.value}`}
+                                    className="sr-only peer"
                                     checked={(filters.symmetry || []).includes(
                                         symmetry.value
                                     )}
@@ -645,7 +663,7 @@ export function ClientFilterSidebar({
                                 />
                                 <Label
                                     htmlFor={`symmetry-${symmetry.value}`}
-                                    className="text-xs cursor-pointer"
+                                    className="text-xs cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
                                 >
                                     {symmetry.label}
                                 </Label>
@@ -667,8 +685,10 @@ export function ClientFilterSidebar({
                                 key={lab.value}
                                 className="flex items-center space-x-2"
                             >
+                                {/* Laboratory section */}
                                 <Checkbox
                                     id={`lab-${lab.value}`}
+                                    className="sr-only peer"
                                     checked={(filters.lab || []).includes(
                                         lab.value
                                     )}
@@ -682,7 +702,7 @@ export function ClientFilterSidebar({
                                 />
                                 <Label
                                     htmlFor={`lab-${lab.value}`}
-                                    className="text-xs cursor-pointer"
+                                    className="text-xs cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
                                 >
                                     {lab.label}
                                 </Label>

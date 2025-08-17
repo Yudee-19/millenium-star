@@ -12,8 +12,9 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Diamond } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { DiamondImage } from "../diamond-image";
 
 interface PaginationData {
     currentPage: number;
@@ -150,10 +151,13 @@ export function ClientDiamondTable({
                 </div>
             </div>
 
-            <div className="rounded-lg border border-gray-200 bg-white">
+            <div className="rounded-lg border border-gray-200 bg-white overflow-scroll">
                 <Table>
                     <TableHeader>
                         <TableRow className="bg-gray-200">
+                            <TableHead className="text-xs font-medium text-gray-700 text-left pl-3">
+                                Img.
+                            </TableHead>
                             <TableHead className="text-xs font-medium text-gray-700 text-center">
                                 Diamond Id.
                             </TableHead>
@@ -198,6 +202,13 @@ export function ClientDiamondTable({
                                     router.push(`/${diamond.certificateNumber}`)
                                 }
                             >
+                                <TableCell className="text-sm font-mono">
+                                    <DiamondImage
+                                        certificateNumber={
+                                            diamond.certificateNumber
+                                        }
+                                    />
+                                </TableCell>
                                 <TableCell className="text-sm font-mono">
                                     {diamond.certificateNumber ||
                                         diamond["CERT-NO"] ||
