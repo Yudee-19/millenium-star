@@ -204,9 +204,8 @@ export function ClientDiamondTable({
                             >
                                 <TableCell className="text-sm font-mono">
                                     <DiamondImage
-                                        certificateNumber={
-                                            diamond.certificateNumber
-                                        }
+                                        certificateNumber={diamond._id}
+                                        size={60}
                                     />
                                 </TableCell>
                                 <TableCell className="text-sm font-mono">

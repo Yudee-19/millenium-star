@@ -243,10 +243,8 @@ export function ClientDiamondGrid({
                             {/* Image Placeholder */}
                             <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-3 flex items-center justify-center">
                                 <DiamondImage
-                                    certificateNumber={
-                                        diamond.certificateNumber
-                                    }
-                                    className="w-full"
+                                    certificateNumber={diamond._id}
+                                    className="w-full aspect-square object-cover"
                                 />
                             </div>
 
