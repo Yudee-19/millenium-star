@@ -253,7 +253,7 @@ export function ClientFilterSidebar({
             </div>
             {/* Sidebar Content */}
             <div
-                className={`flex-1 overflow-y-auto px-2 pt-2 ${
+                className={`flex-1 overflow-y-auto px-2 pt-2 pb-10 ${
                     collapsed ? "hidden" : ""
                 }`}
             >
@@ -287,7 +287,7 @@ export function ClientFilterSidebar({
                                     />
                                     <label
                                         htmlFor={`shape-${shape.value}`}
-                                        className={`w-8 h-8  rounded cursor-pointer flex items-center justify-center transition-colors ${
+                                        className={`w-10 h-10 py-3 border-[1px] border-black/10 hover:bg-gray-200 rounded cursor-pointer flex items-center justify-center transition-colors ${
                                             (filters.shape || []).includes(
                                                 shape.value
                                             )
@@ -430,11 +430,11 @@ export function ClientFilterSidebar({
                         color_options,
                         "color",
                         (color) => (
-                            <div key={color.value} className="text-center">
+                            <div key={color.value} className="text-center ">
                                 {/* Color section */}
                                 <Checkbox
                                     id={`color-${color.value}`}
-                                    className="sr-only peer"
+                                    className="sr-only peer "
                                     checked={(filters.color || []).includes(
                                         color.value
                                     )}
@@ -448,7 +448,7 @@ export function ClientFilterSidebar({
                                 />
                                 <Label
                                     htmlFor={`color-${color.value}`}
-                                    className={`text-xs text-black/70 block mt-1 cursor-pointer hover:bg-gray-200 rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black/ peer-data-[state=checked]:border-black`}
+                                    className={`text-xs  border-[1px] py-2 border-black/10 text-black/70 block cursor-pointer hover:bg-gray-200 rounded-sm  transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black/ peer-data-[state=checked]:border-black`}
                                 >
                                     {color.value}
                                 </Label>
@@ -484,7 +484,7 @@ export function ClientFilterSidebar({
                                 />
                                 <Label
                                     htmlFor={`clarity-${clarity.value}`}
-                                    className="text-xs text-black/70 block mt-1 cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
+                                    className="text-xs  text-black/70 block border-[1px] py-2 border-black/10 cursor-pointer rounded-sm px-1 hover:bg-gray-200  transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
                                 >
                                     {clarity.value}
                                 </Label>
@@ -498,7 +498,7 @@ export function ClientFilterSidebar({
                     sectionKey="fluorescence"
                     icon={<Filter className="w-4 h-4" />}
                 >
-                    <div className="space-y-1">
+                    <div className="grid grid-cols-2 gap-2">
                         {[
                             "NON",
                             "FAINT",
@@ -527,7 +527,7 @@ export function ClientFilterSidebar({
                                 />
                                 <Label
                                     htmlFor={`fluo-${fluo}`}
-                                    className="text-xs text-black/70 cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
+                                    className="text-xs border-[1px] py-2 border-black/10 hover:bg-gray-200  text-black/70 cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
                                 >
                                     {fluo}
                                 </Label>
@@ -535,26 +535,6 @@ export function ClientFilterSidebar({
                         ))}
                     </div>
                 </Section>
-                {/* <Section
-                    title="Search By"
-                    sectionKey="searchBy"
-                    icon={<Filter className="w-4 h-4" />}
-                >
-                    <div className="space-y-2">
-                        <div className="flex items-center space-x-2">
-                            <Checkbox id="diamond-id" />
-                            <Label htmlFor="diamond-id" className="text-sm">
-                                DIAMOND ID
-                            </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <Checkbox id="cert-no" />
-                            <Label htmlFor="cert-no" className="text-sm">
-                                CERT NO
-                            </Label>
-                        </div>
-                    </div>
-                </Section> */}
                 <Section
                     title="Cut"
                     sectionKey="cut"
@@ -585,7 +565,7 @@ export function ClientFilterSidebar({
                                 />
                                 <Label
                                     htmlFor={`cut-${cut.value}`}
-                                    className="text-xs text-black/70 cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
+                                    className="text-xs py-2 border-[1px] border-black/10 hover:bg-gray-200  text-black/70 cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
                                 >
                                     {cut.label}
                                 </Label>
@@ -624,7 +604,7 @@ export function ClientFilterSidebar({
                                 />
                                 <Label
                                     htmlFor={`polish-${polish.value}`}
-                                    className="text-xs cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
+                                    className="text-xs py-2 border-[1px] border-black/10 hover:bg-gray-200 cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
                                 >
                                     {polish.label}
                                 </Label>
@@ -663,7 +643,7 @@ export function ClientFilterSidebar({
                                 />
                                 <Label
                                     htmlFor={`symmetry-${symmetry.value}`}
-                                    className="text-xs cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
+                                    className="text-xs py-2 border-[1px] border-black/10 hover:bg-gray-200 cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
                                 >
                                     {symmetry.label}
                                 </Label>
@@ -683,7 +663,7 @@ export function ClientFilterSidebar({
                         (lab) => (
                             <div
                                 key={lab.value}
-                                className="flex items-center space-x-2"
+                                className="grid grid-cols-1 space-x-2"
                             >
                                 {/* Laboratory section */}
                                 <Checkbox
@@ -702,7 +682,7 @@ export function ClientFilterSidebar({
                                 />
                                 <Label
                                     htmlFor={`lab-${lab.value}`}
-                                    className="text-xs cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
+                                    className="text-xs py-2 border-[1px] border-black/10 hover:bg-gray-200 cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
                                 >
                                     {lab.label}
                                 </Label>

@@ -4,6 +4,7 @@ import { Playfair_Display } from "next/font/google";
 import "./globals.css";
 import ConditionalHeader from "@/components/layout/ConditionalHeader"; // Import the new component
 import { Toaster } from "@/components/ui/sonner";
+import Footer from "@/components/landing/footer";
 const inter = Inter({
     variable: "--font-inter",
     subsets: ["latin"],
@@ -14,8 +15,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-    // title: "Millennium Star",
-    title: "Company Name",
+    title: "Millenium Star",
     description: "Diamond Inventory Management",
 };
 
@@ -32,6 +32,7 @@ export default function RootLayout({
                 <ConditionalHeader /> {/* Use the conditional header here */}
                 {children}
                 <Toaster />
+                <Footer />
             </body>
         </html>
     );

@@ -254,7 +254,7 @@ export function ClientDiamondTable({
             </div>
 
             {/* Pagination */}
-            <div className="flex items-center justify-between px-2">
+            <div className="flex items-center justify-between px-2 pb-15">
                 <div className="flex items-center space-x-2">
                     <Button
                         variant="outline"

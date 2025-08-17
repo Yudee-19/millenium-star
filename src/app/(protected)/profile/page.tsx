@@ -387,7 +387,7 @@ const ProfilePage = () => {
                                                     ?.companyName && (
                                                     <div>
                                                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                            Company Name
+                                                            Millenium Star
                                                         </label>
                                                         <div className="flex items-center space-x-2">
                                                             <Building className="h-4 w-4 text-gray-400" />

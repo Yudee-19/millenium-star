@@ -138,7 +138,7 @@ export default function ClientPage() {
     return (
         <InventoryGuard>
             <UserStatusHandler>
-                <div className="min-h-screen bg-gray-50">
+                <div className=" bg-gray-50">
                     <div className="flex">
                         {/* Filter Sidebar */}
                         <ClientFilterSidebar
@@ -151,7 +151,7 @@ export default function ClientPage() {
                         />
 
                         {/* Main Content */}
-                        <div className="flex-1 p-6">
+                        <div className="flex-1 p-6 sticky top-20 max-h-screen overflow-y-auto">
                             {/* Top Controls */}
                             <div className="flex items-center justify-between mb-6">
                                 <div className="flex items-center space-x-4">

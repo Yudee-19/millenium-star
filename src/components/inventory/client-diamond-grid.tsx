@@ -318,7 +318,7 @@ export function ClientDiamondGrid({
             </div>
 
             {/* Pagination */}
-            <div className="flex items-center justify-between pt-4">
+            <div className="flex items-center justify-between pt-4 pb-15">
                 <div className="text-sm text-gray-500">
                     Total: {pagination.totalRecords} diamonds
                 </div>

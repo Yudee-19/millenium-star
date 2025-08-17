@@ -19,6 +19,7 @@ const quickLinks = [
     { href: "/about", label: "About Us" },
     { href: "/inventory", label: "Access Inventory" },
     { href: "/contact", label: "Contact Us" },
+    { href: "/diamond-knowledge", label: "Diamond Knowledge" },
 ];
 
 const socialLinks = [
@@ -37,16 +38,15 @@ const Footer = () => {
                     {/* Logo */}
                     <div className="md:col-span-6">
                         <Link href="/" className="flex  items-center space-x-2">
-                            {/* <Image
+                            <Image
                                 src="/assets/logo.png"
                                 alt="Logo"
                                 width={100}
                                 height={100}
                                 className="h-10 w-auto"
-                            /> */}
+                            />
                             <h1 className="font-playfair text-xl md:text-3xl font-semibold">
-                                {/* MILLENNIUM&nbsp;STAR */}
-                                COMPANY&nbsp;NAME
+                                MILLENNIUM&nbsp;STAR
                             </h1>
                         </Link>
                     </div>

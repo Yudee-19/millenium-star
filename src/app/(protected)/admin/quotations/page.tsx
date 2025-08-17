@@ -221,7 +221,7 @@ const QuotationsPageContent = () => {
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <h1 className="text-3xl  font-medium">Offer Inquiry </h1>
+                <h1 className="text-3xl  font-medium">Offer Enquiry </h1>
                 <Button
                     onClick={fetchQuotations}
                     variant="outline"
