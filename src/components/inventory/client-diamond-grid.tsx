@@ -234,7 +234,7 @@ export function ClientDiamondGrid({
                 {diamonds.map((diamond: any) => (
                     <Card
                         key={diamond._id}
-                        className="hover:shadow-lg cursor-pointer transition-shadow duration-200 border border-gray-200"
+                        className="hover:shadow-lg cursor-pointer transition-shadow duration-200 border h-fit border-gray-200"
                         onClick={() =>
                             router.push(`/${diamond.certificateNumber}`)
                         }

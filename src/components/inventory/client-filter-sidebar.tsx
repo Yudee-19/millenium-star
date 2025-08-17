@@ -227,7 +227,7 @@ export function ClientFilterSidebar({
         <div
             className={`relative transition-all duration-300 pb-10 ${
                 collapsed ? "w-16" : "w-100"
-            } bg-gray-50 border-r border-gray-200 h-screen  flex flex-col`}
+            } bg-gray-50 border-r border-gray-200 h-full flex flex-col`}
         >
             {/* Collapse/Expand Button */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-white sticky top-0 z-10">
@@ -253,7 +253,7 @@ export function ClientFilterSidebar({
             </div>
             {/* Sidebar Content */}
             <div
-                className={`flex-1 overflow-y-auto px-2 pt-2 pb-10 ${
+                className={`flex-1 overflow-y-auto px-2 pt-2 ${
                     collapsed ? "hidden" : ""
                 }`}
             >

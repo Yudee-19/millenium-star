@@ -317,7 +317,7 @@ export default function DiamondDetailPage() {
         : diamond.price;
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 pb-10">
             <Container>
                 <div className="py-8">
                     {/* Diamond Details */}
@@ -352,7 +352,7 @@ export default function DiamondDetailPage() {
                                                 ? "default"
                                                 : "secondary"
                                         }
-                                        className={"bg-gray-900"}
+                                        className={""}
                                     >
                                         {diamond.isAvailable
                                             ? "Available"
@@ -622,12 +622,16 @@ export default function DiamondDetailPage() {
                 )}
 
                 {/* Learn More Section */}
-                <div className="mt-12 text-center">
+                <div className="mt-12 mb-12 h-full flex flex-col justify-between text-center">
                     <p className="text-gray-600 mb-4">
                         Want to learn more about diamond quality and
                         characteristics?
                     </p>
-                    <Button variant="outline" asChild>
+                    <Button
+                        variant="outline"
+                        className="max-w-full mx-auto"
+                        asChild
+                    >
                         <a href="/diamond-knowledge">Learn about Diamonds</a>
                     </Button>
                 </div>
