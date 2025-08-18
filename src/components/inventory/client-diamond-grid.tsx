@@ -33,16 +33,15 @@ export function ClientDiamondGrid({
     const router = useRouter();
     if (loading) {
         return (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {Array.from({ length: 8 }).map((_, index) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                {Array.from({ length: 10 }).map((_, index) => (
                     <Card key={index} className="animate-pulse">
                         <CardContent className="p-4">
                             <div className="aspect-square bg-gray-200 rounded-lg mb-3"></div>
-                            <div className="space-y-2">
+                            <div className="flex flex-col gap-2">
                                 <div className="h-4 bg-gray-200 rounded w-3/4"></div>
                                 <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                                <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-                                <div className="h-6 bg-gray-200 rounded w-full"></div>
+                                <div className="h-6 bg-gray-200 rounded w-full mt-2"></div>
                             </div>
                         </CardContent>
                     </Card>
@@ -72,27 +71,27 @@ export function ClientDiamondGrid({
         }).format(price);
     };
 
-    const getCutGrade = (cut: string) => {
-        const cutMap: { [key: string]: string } = {
-            EX: "Excellent",
-            VG: "Very Good",
-            G: "Good",
-            F: "Fair",
-            P: "Poor",
-        };
-        return cutMap[cut] || cut;
-    };
+    // const getCutGrade = (cut: string) => {
+    //     const cutMap: { [key: string]: string } = {
+    //         EX: "Excellent",
+    //         VG: "Very Good",
+    //         G: "Good",
+    //         F: "Fair",
+    //         P: "Poor",
+    //     };
+    //     return cutMap[cut] || cut;
+    // };
 
-    const getCutColor = (cut: string) => {
-        const colorMap: { [key: string]: string } = {
-            EX: "bg-green-100 text-green-800",
-            VG: "bg-blue-100 text-blue-800",
-            G: "bg-yellow-100 text-yellow-800",
-            F: "bg-orange-100 text-orange-800",
-            P: "bg-red-100 text-red-800",
-        };
-        return colorMap[cut] || "bg-gray-100 text-gray-800";
-    };
+    // const getCutColor = (cut: string) => {
+    //     const colorMap: { [key: string]: string } = {
+    //         EX: "bg-green-100 text-green-800",
+    //         VG: "bg-blue-100 text-blue-800",
+    //         G: "bg-yellow-100 text-yellow-800",
+    //         F: "bg-orange-100 text-orange-800",
+    //         P: "bg-red-100 text-red-800",
+    //     };
+    //     return colorMap[cut] || "bg-gray-100 text-gray-800";
+    // };
 
     const renderPaginationButtons = () => {
         const buttons = [];
@@ -234,7 +233,7 @@ export function ClientDiamondGrid({
                 {diamonds.map((diamond: any) => (
                     <Card
                         key={diamond._id}
-                        className="hover:shadow-lg cursor-pointer transition-shadow duration-200 border min-h-full border-gray-200"
+                        className="hover:shadow-lg cursor-pointer transition-all  duration-200 border h-full border-gray-200"
                         onClick={() =>
                             router.push(`/${diamond.certificateNumber}`)
                         }
@@ -249,7 +248,7 @@ export function ClientDiamondGrid({
                             </div>
 
                             {/* Diamond Details */}
-                            <div className="space-y-2">
+                            <div className="flex flex-col gap-3">
                                 {/* Color and Clarity */}
                                 <div className="flex justify-between items-center">
                                     <div className="text-sm font-medium text-gray-700">
@@ -269,18 +268,6 @@ export function ClientDiamondGrid({
                                         </span>
                                     </div>
                                 </div>
-                                {/* Cut Grade */}
-                                {/* <div className="flex justify-center">
-                                    <Badge
-                                        className={`text-xs ${getCutColor(
-                                            diamond.cut || diamond["Cut"] || ""
-                                        )}`}
-                                    >
-                                        {getCutGrade(
-                                            diamond.cut || diamond["Cut"] || "-"
-                                        )}
-                                    </Badge>
-                                </div> */}
 
                                 {/* Price */}
                                 <div className="text-center">
@@ -288,24 +275,6 @@ export function ClientDiamondGrid({
                                         {formatPrice(diamond.price || 0)}
                                     </div>
                                 </div>
-
-                                {/* Action Buttons */}
-                                {/* <div className="flex gap-2 pt-2">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="flex-1 text-xs"
-                                    >
-                                        View Product
-                                    </Button>
-                                    <Button
-                                        variant="default"
-                                        size="sm"
-                                        className="flex-1 text-xs bg-blue-600 hover:bg-blue-700"
-                                    >
-                                        Contact Seller
-                                    </Button>
-                                </div> */}
 
                                 {/* Certificate Info */}
                                 <div className="text-xs text-gray-500 text-center pt-1">
