@@ -10,6 +10,7 @@ import CustomButton from "@/components/ui/customButton";
 import { Input } from "@/components/ui/input";
 import { useDiamonds } from "@/hooks/use-diamonds";
 import { useFilteredDiamonds } from "@/hooks/use-filtered-diamonds";
+import { DiamondCharts } from "@/components/charts/diamond-charts";
 import {
     ChartColumn,
     CircleCheckBig,
@@ -21,9 +22,11 @@ import {
     Ruler,
     SlashIcon,
     TrendingUp,
+    Upload,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AddDiamondModal } from "@/components/modals/add-diamond";
+import { RapnetUploadModal } from "@/components/modals/rapnet-upload-modal";
 import { AdminGuard } from "@/components/auth/routeGuard";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -36,6 +39,27 @@ import {
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { StatsCard } from "@/components/cards/stats-card";
+import { toast } from "sonner";
+
+interface RapnetUploadData {
+    uploadID: number;
+    uploadType: string;
+    fileFormat: string;
+    stockReplaced: boolean;
+    dateUploaded: string;
+    status: string;
+    errorMessages: string | null;
+    warningMessages: string | null;
+    numLotReceived: number;
+    numValidLots: number;
+    numInvalidLots: number;
+    startTime: string;
+    endTime: string;
+    lastUpdated: string;
+    duration: string | null;
+    progressPercent: number;
+    waitingINQueue: number;
+}
 
 export default function DiamondPage() {
     const { user, logout } = useAuth();
@@ -50,7 +74,7 @@ export default function DiamondPage() {
         paginationMeta,
     } = useDiamonds();
 
-    // Filtered diamonds hooks
+    // ...existing filtered diamonds hooks...
     const {
         diamonds: fancyDiamonds,
         loading: fancyLoading,
@@ -81,11 +105,18 @@ export default function DiamondPage() {
         paginationMeta: lowEndPaginationMeta,
     } = useFilteredDiamonds("diamonds/search?shape=RBC&sizeMin=1");
 
-    // Modal state
+    // Modal states
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isRapnetModalOpen, setIsRapnetModalOpen] = useState(false);
     const [activeTab, setActiveTab] = useState("all");
 
-    // Handle table state changes for main table
+    // Rapnet upload states
+    const [rapnetLoading, setRapnetLoading] = useState(false);
+    const [rapnetUploadData, setRapnetUploadData] =
+        useState<RapnetUploadData | null>(null);
+    const [rapnetError, setRapnetError] = useState<string | null>(null);
+
+    // ...existing handlers...
     const handleTableStateChange = useCallback(
         (state: {
             pagination: { pageIndex: number; pageSize: number };
@@ -98,28 +129,88 @@ export default function DiamondPage() {
         [updateTable]
     );
 
-    // Empty handlers for filtered tables (read-only)
-    const handleFancyTableStateChange = useCallback(() => {
-        // Fancy diamonds table is read-only, no state changes needed
-    }, []);
+    const handleFancyTableStateChange = useCallback(() => {}, []);
+    const handleHighEndTableStateChange = useCallback(() => {}, []);
+    const handleLowEndTableStateChange = useCallback(() => {}, []);
 
-    const handleHighEndTableStateChange = useCallback(() => {
-        // High-end diamonds table is read-only, no state changes needed
-    }, []);
-
-    const handleLowEndTableStateChange = useCallback(() => {
-        // Low-end diamonds table is read-only, no state changes needed
-    }, []);
-
-    // Handle successful diamond addition
     const handleAddDiamondSuccess = () => {
         console.log("✅ Diamond added successfully");
-        refetch(); // Refresh the main table data
-        fancyRefetch(); // Refresh fancy diamonds
-        highEndRefetch(); // Refresh high-end diamonds
-        lowEndRefetch(); // Refresh low-end diamonds
+        refetch();
+        fancyRefetch();
+        highEndRefetch();
+        lowEndRefetch();
     };
 
+    // Rapnet upload functionality
+    const handleRapnetUpload = async () => {
+        setRapnetLoading(true);
+        setRapnetError(null);
+        setRapnetUploadData(null);
+        setIsRapnetModalOpen(true);
+
+        try {
+            // Step 1: Initiate upload
+            const uploadResponse = await fetch(
+                "https://diamond-inventory.onrender.com/api/rapnet/upload-rapnet-csv",
+                {
+                    method: "POST",
+                    credentials: "include",
+                }
+            );
+
+            const uploadData = await uploadResponse.json();
+
+            if (!uploadResponse.ok) {
+                throw new Error(
+                    uploadData.error || "Failed to initiate upload"
+                );
+            }
+
+            const uploadId = uploadData.data?.uploadId;
+            if (!uploadId) {
+                throw new Error("No upload ID received from server");
+            }
+
+            // Step 2: Check upload status
+            const statusResponse = await fetch(
+                `https://diamond-inventory.onrender.com/api/rapnet/upload-status/${uploadId}`,
+                {
+                    method: "GET",
+                    credentials: "include",
+                }
+            );
+
+            const statusData = await statusResponse.json();
+
+            if (!statusResponse.ok) {
+                throw new Error(
+                    statusData.error || "Failed to get upload status"
+                );
+            }
+
+            if (statusData.success && statusData.data) {
+                setRapnetUploadData(statusData.data);
+                toast.success("Rapnet upload completed successfully!");
+            } else {
+                throw new Error("Invalid status response received");
+            }
+        } catch (error) {
+            const errorMessage =
+                error instanceof Error
+                    ? error.message
+                    : "An unexpected error occurred";
+            setRapnetError(errorMessage);
+            toast.error(`Rapnet upload failed: ${errorMessage}`);
+        } finally {
+            setRapnetLoading(false);
+        }
+    };
+
+    const handleRapnetRetry = () => {
+        handleRapnetUpload();
+    };
+
+    // ...existing export functionality...
     const exportToCsv = (diamondsToExport: any[], fileName: string) => {
         if (!diamondsToExport || diamondsToExport.length === 0) {
             alert("No data available to export for the selected tab.");
@@ -247,10 +338,10 @@ export default function DiamondPage() {
 
                 {/* Search and Action Buttons */}
                 <div className="flex  items-start justify-between gap-5 my-5">
-                    <Input
+                    {/* <Input
                         className="bg-white border-2 text-black px-3 py-5 text-base rounded-md max-w-xl"
                         placeholder="Search by Diamond ID, Shape, Color, Clarity, etc."
-                    />
+                    /> */}
                     <div className=" flex items-center justify-start gap-6">
                         <CustomButton
                             className="bg-white hover:bg-gray-100"
@@ -268,6 +359,15 @@ export default function DiamondPage() {
                             <span>Import&nbsp;Excel</span>
                         </CustomButton>
                         <CustomButton
+                            className="bg-blue-600 hover:bg-blue-700 text-white"
+                            variant="secondary"
+                            icon={<Upload size={15} />}
+                            onClick={handleRapnetUpload}
+                            disabled={rapnetLoading}
+                        >
+                            <span>Upload&nbsp;to&nbsp;Rapnet</span>
+                        </CustomButton>
+                        <CustomButton
                             variant="dark"
                             icon={<PlusIcon size={15} />}
                             onClick={() => setIsAddModalOpen(true)}
@@ -277,7 +377,7 @@ export default function DiamondPage() {
                     </div>
                 </div>
 
-                {/* Tabs Section */}
+                {/* ...existing tabs section and content... */}
                 <div className="w-full my-5">
                     <Tabs
                         value={activeTab}
@@ -311,6 +411,7 @@ export default function DiamondPage() {
                             </TabsTrigger>
                         </TabsList>
 
+                        {/* ...existing tab content... */}
                         <TabsContent value="all">
                             {/* Stats Cards */}
                             <div className="flex items-center justify-center gap-5 my-10">
@@ -432,11 +533,12 @@ export default function DiamondPage() {
                                 </TabsContent>
 
                                 <TabsContent value="chart">
-                                    Charts Not Fetched
+                                    <DiamondCharts />
                                 </TabsContent>
                             </Tabs>
                         </TabsContent>
 
+                        {/* ...include all other existing tab content for fancy, highEnd, lowEnd... */}
                         <TabsContent value="fancy">
                             {/* Fancy Diamonds Stats */}
                             <div className="flex items-center justify-center gap-5 my-10">
@@ -764,11 +866,24 @@ export default function DiamondPage() {
                     </Tabs>
                 </div>
 
-                {/* Add Diamond Modal */}
+                {/* Modals */}
                 <AddDiamondModal
                     isOpen={isAddModalOpen}
                     onClose={() => setIsAddModalOpen(false)}
                     onSuccess={handleAddDiamondSuccess}
+                />
+
+                <RapnetUploadModal
+                    isOpen={isRapnetModalOpen}
+                    onClose={() => {
+                        setIsRapnetModalOpen(false);
+                        setRapnetError(null);
+                        setRapnetUploadData(null);
+                    }}
+                    isLoading={rapnetLoading}
+                    uploadData={rapnetUploadData}
+                    error={rapnetError}
+                    onRetry={handleRapnetRetry}
                 />
             </Container>
         </AdminGuard>

@@ -58,6 +58,13 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
                 <div className="w-[120px] font-mono text-xs">{`${certNo}`}</div>
             );
         },
+        filterFn: (row, id, value) => {
+            const certNo =
+                (row.original as any)["CERT-NO"] ||
+                row.original.certificateNumber ||
+                "";
+            return certNo.toLowerCase().includes(value.toLowerCase());
+        },
     },
     {
         accessorKey: "LAB",

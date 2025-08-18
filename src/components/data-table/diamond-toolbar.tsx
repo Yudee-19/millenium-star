@@ -32,15 +32,15 @@ export function DiamondTableToolbar<TData>({
                     placeholder="Search diamonds..."
                     value={
                         (table
-                            .getColumn("CERT-NO")
+                            .getColumn("diamond-Id")
                             ?.getFilterValue() as string) ?? ""
                     }
                     onChange={(event) =>
                         table
-                            .getColumn("CERT-NO")
+                            .getColumn("diamond-Id")
                             ?.setFilterValue(event.target.value)
                     }
-                    className="h-8 w-[150px] lg:w-[250px]"
+                    className="h-8 w-[150px] shadowm lg:w-[250px]"
                 /> */}
                 {table.getColumn("LAB") && (
                     <DataTableFacetedFilter

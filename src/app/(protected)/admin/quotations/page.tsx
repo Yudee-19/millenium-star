@@ -382,9 +382,9 @@ const QuotationsPageContent = () => {
                                         <div className="text-sm font-medium">
                                             {q.carat} ct
                                         </div>
-                                        <div className="text-xs text-gray-500">
+                                        {/* <div className="text-xs text-gray-500">
                                             {q.noOfPieces} pcs
-                                        </div>
+                                        </div> */}
                                     </TableCell>
 
                                     <TableCell>

@@ -48,7 +48,6 @@ export function DataTableRowActions<TData>({
         // Fallback: try to access basic properties directly
         const rawData = row.original as any;
         const diamondId = rawData._id || rawData.id || "unknown";
-        const certNo = rawData["CERT-NO"] || rawData.certNo || "unknown";
 
         return (
             <DropdownMenu>

@@ -247,7 +247,7 @@ export function RequestQuoteModal({
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-4 items-center gap-4">
+                        {/* <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="noOfPieces" className="text-right">
                                 Pieces *
                             </Label>
@@ -276,7 +276,7 @@ export function RequestQuoteModal({
                                     </p>
                                 )}
                             </div>
-                        </div>
+                        </div> */}
 
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="quotePrice" className="text-right">
