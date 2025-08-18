@@ -49,17 +49,33 @@ export const diamondSchema = z.object({
         "P3",
     ]),
 
-    rapList: z.number().min(0),
+    rapList: z.number().min(0).optional(),
 
-    discount: z.number().min(0).max(100),
+    discount: z.number().max(100).optional(),
+    // .min(0)
+    cut: z.enum(["I", "EX", "VG", "G", "F", "P"]).optional(),
 
-    cut: z.enum(["I", "EX", "VG", "G", "F", "P"]),
+    polish: z
+        .enum(["I", "EX", "VG-EX", "VG", "G-VG", "G", "F-G", "F", "P"])
+        .optional(),
 
-    polish: z.enum(["I", "EX", "VG-EX", "VG", "G-VG", "G", "F-G", "F", "P"]),
+    symmetry: z
+        .enum(["I", "EX", "VG-EX", "VG", "G-VG", "G", "F-G", "F", "P"])
+        .optional(),
 
-    symmetry: z.enum(["I", "EX", "VG-EX", "VG", "G-VG", "G", "F-G", "F", "P"]),
+    // Split fluorescence into color and intensity to match MongoDB schema
+    fluorescenceColor: z
+        .enum(["B", "W", "Y", "O", "R", "G", "N"])
+        .optional()
+        .default("N"),
 
-    fluorescence: z.enum(["B", "W", "Y", "O", "R", "G", "N"]),
+    fluorescenceIntensity: z
+        .enum(["VS", "S", "M", "SL", "VSL", "N"])
+        .optional()
+        .default("N"),
+
+    // Keep the combined fluorescence field for backward compatibility
+    fluorescence: z.enum(["B", "W", "Y", "O", "R", "G", "N"]).optional(),
 
     fancyColor: z
         .enum([
@@ -79,9 +95,9 @@ export const diamondSchema = z.object({
             "Y",
             "W",
             "X",
-            "None",
         ])
-        .optional(),
+        .optional()
+        .default("X"),
 
     fancyColorOvertone: z
         .enum([
@@ -117,11 +133,13 @@ export const diamondSchema = z.object({
             "Orange-Brown",
             "Other",
         ])
-        .optional(),
+        .optional()
+        .default("Other"),
 
     fancyColorIntensity: z
-        .enum(["VS", "S", "M", "F", "SL", "VSL", "N", "None"])
-        .optional(),
+        .enum(["F", "VL", "L", "FCL", "FC", "FCD", "I", "FV", "D", "N"])
+        .optional()
+        .default("N"),
 
     laboratory: z
         .enum([
@@ -144,10 +162,10 @@ export const diamondSchema = z.object({
             "DBIOD",
             "SGL",
         ])
-        .optional(),
+        .optional()
+        .default("None"),
 
     shape: z.enum([
-        "RBC",
         "Round",
         "Pear",
         "Emerald",
@@ -188,32 +206,32 @@ export const diamondSchema = z.object({
     ]),
 
     measurements: z.object({
-        length: z.number().min(0),
-        width: z.number().min(0),
-        depth: z.number().min(0),
+        length: z.number().min(0).optional(),
+        width: z.number().min(0).optional(),
+        depth: z.number().min(0).optional(),
     }),
 
-    totalDepth: z.number().min(0).max(100),
+    totalDepth: z.number().min(0).max(100).optional(),
 
-    table: z.number().min(0).max(100),
+    table: z.number().min(0).max(100).optional(),
 
     certificateNumber: z.string(),
 
-    price: z.number().min(0),
+    price: z.number().min(0).optional(),
 
-    size: z.number(),
+    size: z.number(), // Required as per MongoDB schema
 
-    noBgm: z.string().optional(),
+    noBgm: z.string().optional().default(""),
 
-    fromTab: z.string().optional(),
+    fromTab: z.string().optional().default(""),
 
-    isAvailable: z.boolean().optional(),
+    isAvailable: z.boolean().optional().default(true),
 
-    imageUrls: z.array(z.string()).optional(),
+    imageUrls: z.array(z.string()).optional().default([]),
 
-    videoUrls: z.array(z.string()).optional(),
+    videoUrls: z.array(z.string()).optional().default([]),
 
-    certificateUrls: z.array(z.string()).optional(),
+    certificateUrls: z.array(z.string()).optional().default([]),
 
     createdAt: z.string().optional(),
     updatedAt: z.string().optional(),

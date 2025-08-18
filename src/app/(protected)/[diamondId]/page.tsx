@@ -367,12 +367,10 @@ export default function DiamondDetailPage() {
                                     {diamond.discount ? (
                                         <>
                                             <span className="text-2xl font-bold text-gray-600">
-                                                $
-                                                {discountedPrice.toLocaleString()}
+                                                ${discountedPrice}
                                             </span>
                                             <span className="text-lg text-gray-500 line-through">
-                                                $
-                                                {diamond.rapList.toLocaleString()}
+                                                ${diamond.rapList}
                                             </span>
                                             <Badge variant="outline">
                                                 {diamond.discount}% OFF
@@ -380,7 +378,7 @@ export default function DiamondDetailPage() {
                                         </>
                                     ) : (
                                         <span className="text-2xl font-bold text-gray-900">
-                                            ${diamond.price.toLocaleString()}
+                                            ${diamond.price}
                                         </span>
                                     )}
                                 </div>

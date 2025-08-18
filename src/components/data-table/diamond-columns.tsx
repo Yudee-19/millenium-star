@@ -329,11 +329,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
         ),
         cell: ({ row }) => {
             const price = row.getValue("price") as number;
-            return (
-                <div className="w-[100px] font-semibold">
-                    ${price.toLocaleString()}
-                </div>
-            );
+            return <div className="w-[100px] font-semibold">${price}</div>;
         },
     },
     {
