@@ -30,6 +30,7 @@ import {
     flou_options,
     polish_options,
     symmetry_options,
+    fluorescenceIntensity_options,
 } from "../filters/diamond-filters";
 import { Textarea } from "../ui/textarea";
 import { Progress } from "@/components/ui/progress";
@@ -51,7 +52,8 @@ interface DiamondFormData {
     cut: string;
     polish: string;
     symmetry: string;
-    fluorescence: string;
+    fluorescenceColor: string;
+    fluorescenceIntensity: string;
 
     // Required Measurements
     length: number;
@@ -87,7 +89,8 @@ const initialFormData: DiamondFormData = {
     cut: "",
     polish: "",
     symmetry: "",
-    fluorescence: "NON", // Default value as per schema
+    fluorescenceColor: "N",
+    fluorescenceIntensity: "N",
     length: 0,
     width: 0,
     depth: 0,
@@ -173,8 +176,13 @@ export function AddDiamondModal({
                 if (!formData.symmetry) {
                     newErrors.symmetry = "Symmetry is required";
                 }
-                if (!formData.fluorescence) {
-                    newErrors.fluorescence = "Fluorescence is required";
+                if (!formData.fluorescenceColor) {
+                    newErrors.fluorescenceColor =
+                        "Fluorescence color is required";
+                }
+                if (!formData.fluorescenceIntensity) {
+                    newErrors.fluorescenceIntensity =
+                        "Fluorescence intensity is required";
                 }
                 break;
 
@@ -244,7 +252,8 @@ export function AddDiamondModal({
                 cut: formData.cut,
                 polish: formData.polish,
                 symmetry: formData.symmetry,
-                fluorescence: formData.fluorescence,
+                fluorescenceColor: formData.fluorescenceColor,
+                fluorescenceIntensity: formData.fluorescenceIntensity,
                 lab: formData.lab.trim(),
                 shape: formData.shape.trim(),
                 measurements: {
@@ -301,8 +310,10 @@ export function AddDiamondModal({
                             backendErrors.polish = error;
                         } else if (error.includes("Symmetry")) {
                             backendErrors.symmetry = error;
-                        } else if (error.includes("Fluorescence")) {
-                            backendErrors.fluorescence = error;
+                        } else if (error.includes("FluorescenceColor")) {
+                            backendErrors.fluorescenceColor = error;
+                        } else if (error.includes("FluorescenceIntensity")) {
+                            backendErrors.fluorescenceIntensity = error;
                         } else if (error.includes("Length")) {
                             backendErrors.length = error;
                         } else if (error.includes("Width")) {
@@ -703,18 +714,21 @@ export function AddDiamondModal({
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="fluorescence">
-                                    Fluorescence *
+                                <Label htmlFor="fluorescenceColor">
+                                    Fluorescence Color *
                                 </Label>
                                 <Select
-                                    value={formData.fluorescence}
+                                    value={formData.fluorescenceColor}
                                     onValueChange={(value) =>
-                                        handleInputChange("fluorescence", value)
+                                        handleInputChange(
+                                            "fluorescenceColor",
+                                            value
+                                        )
                                     }
                                 >
                                     <SelectTrigger
                                         className={`w-full ${
-                                            errors.fluorescence
+                                            errors.fluorescenceColor
                                                 ? "border-red-500"
                                                 : ""
                                         }`}
@@ -732,9 +746,50 @@ export function AddDiamondModal({
                                         ))}
                                     </SelectContent>
                                 </Select>
-                                {errors.fluorescence && (
+                                {errors.fluorescenceColor && (
                                     <p className="text-sm text-red-500">
-                                        {errors.fluorescence}
+                                        {errors.fluorescenceColor}
+                                    </p>
+                                )}
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="fluorescenceIntensity">
+                                    Fluorescence *
+                                </Label>
+                                <Select
+                                    value={formData.fluorescenceIntensity}
+                                    onValueChange={(value) =>
+                                        handleInputChange(
+                                            "fluorescenceIntensity",
+                                            value
+                                        )
+                                    }
+                                >
+                                    <SelectTrigger
+                                        className={`w-full ${
+                                            errors.fluorescenceIntensity
+                                                ? "border-red-500"
+                                                : ""
+                                        }`}
+                                    >
+                                        <SelectValue placeholder="Select fluorescence Intensity" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {fluorescenceIntensity_options.map(
+                                            (option) => (
+                                                <SelectItem
+                                                    key={option.value}
+                                                    value={option.value}
+                                                >
+                                                    {option.label}
+                                                </SelectItem>
+                                            )
+                                        )}
+                                    </SelectContent>
+                                </Select>
+                                {errors.fluorescenceIntensity && (
+                                    <p className="text-sm text-red-500">
+                                        {errors.fluorescenceIntensity}
                                     </p>
                                 )}
                             </div>

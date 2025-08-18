@@ -12,41 +12,41 @@ import {
 export const shape_options = [
     { value: "Round", label: "Round", icon: Circle },
     { value: "Pear", label: "Pear", icon: Diamond },
-    { value: "Oval", label: "Oval", icon: Circle },
-    { value: "Baguette", label: "Baguette", icon: Square },
-    { value: "Marquise", label: "Marquise", icon: Diamond },
-    { value: "Square", label: "Square", icon: Square },
-    { value: "Radiant", label: "Radiant", icon: Square },
-    { value: "Princess", label: "Princess", icon: Square },
-    { value: "Tapered Baguette", label: "Tapered Baguette", icon: Square },
-    { value: "Trilliant", label: "Trilliant", icon: Triangle },
     { value: "Emerald", label: "Emerald", icon: Octagon },
+    { value: "Square Emerald", label: "Square Emerald", icon: Square },
+    { value: "Princess", label: "Princess", icon: Square },
+    { value: "Marquise", label: "Marquise", icon: Diamond },
     { value: "Asscher", label: "Asscher", icon: Square },
-    { value: "Sq. Emerald", label: "Sq. Emerald", icon: Square },
-    // { value: "Square Radiant", label: "Square Radiant", icon: Square },
-    // { value: "Cushion Brilliant", label: "Cushion Brilliant", icon: Square },
-    // { value: "Cushion Modified", label: "Cushion Modified", icon: Square },
-    // { value: "European Cut", label: "European Cut", icon: Circle },
-    // { value: "Old Miner", label: "Old Miner", icon: Circle },
-    // { value: "Briolette", label: "Briolette", icon: Diamond },
-    // { value: "Bullets", label: "Bullets", icon: Diamond },
-    // { value: "Calf", label: "Calf", icon: Diamond },
-    // { value: "Circular Brilliant", label: "Circular Brilliant", icon: Circle },
-    // { value: "Epaulette", label: "Epaulette", icon: Diamond },
-    // { value: "Flanders", label: "Flanders", icon: Square },
-    // { value: "Half Moon", label: "Half Moon", icon: Circle },
-    // { value: "Hexagonal", label: "Hexagonal", icon: Octagon },
-    // { value: "Kite", label: "Kite", icon: Diamond },
-    // { value: "Lozenge", label: "Lozenge", icon: Diamond },
-    // { value: "Octagonal", label: "Octagonal", icon: Octagon },
-    // { value: "Pentagonal", label: "Pentagonal", icon: Octagon },
-    // { value: "Rose", label: "Rose", icon: Circle },
-    // { value: "Shield", label: "Shield", icon: Diamond },
-    // { value: "Star", label: "Star", icon: StarIcon },
-    // { value: "Tapered Bullet", label: "Tapered Bullet", icon: Diamond },
-    // { value: "Trapezoid", label: "Trapezoid", icon: Square },
-    // { value: "Triangular", label: "Triangular", icon: Triangle },
-    // { value: "Other", label: "Other", icon: Gem },
+    { value: "Baguette", label: "Baguette", icon: Square },
+    { value: "Tapered Baguette", label: "Tapered Baguette", icon: Square },
+    { value: "Tapered Bullet", label: "Tapered Bullet", icon: Diamond },
+    { value: "Calf", label: "Calf", icon: Diamond },
+    { value: "Briolette", label: "Briolette", icon: Diamond },
+    { value: "Bullets", label: "Bullets", icon: Diamond },
+    { value: "Cushion Brilliant", label: "Cushion Brilliant", icon: Square },
+    { value: "Cushion Modified", label: "Cushion Modified", icon: Square },
+    { value: "EuropeanCut", label: "European Cut", icon: Circle },
+    { value: "Epaulette", label: "Epaulette", icon: Diamond },
+    { value: "Flanders", label: "Flanders", icon: Square },
+    { value: "Half Moon", label: "Half Moon", icon: Circle },
+    { value: "Heart", label: "Heart", icon: Heart },
+    { value: "Hexagonal", label: "Hexagonal", icon: Octagon },
+    { value: "Kite", label: "Kite", icon: Diamond },
+    { value: "Lozenge", label: "Lozenge", icon: Diamond },
+    { value: "Octagonal", label: "Octagonal", icon: Octagon },
+    { value: "Old Miner", label: "Old Miner", icon: Circle },
+    { value: "Oval", label: "Oval", icon: Circle },
+    { value: "Pentagonal", label: "Pentagonal", icon: Octagon },
+    { value: "Radiant", label: "Radiant", icon: Square },
+    { value: "Square Radiant", label: "Square Radiant", icon: Square },
+    { value: "Rose", label: "Rose", icon: Circle },
+    { value: "Shield", label: "Shield", icon: Diamond },
+    { value: "Square", label: "Square", icon: Square },
+    { value: "Star", label: "Star", icon: StarIcon },
+    { value: "Trapezoid", label: "Trapezoid", icon: Square },
+    { value: "Triangle", label: "Triangle", icon: Triangle },
+    { value: "Trilliant", label: "Trilliant", icon: Triangle },
+    { value: "Other", label: "Other", icon: Gem },
 ];
 
 export const color_options = [
@@ -96,12 +96,12 @@ export const clarity_options = [
 ];
 
 export const cut_options = [
+    { value: "I", label: "Ideal", icon: Gem },
     { value: "EX", label: "Excellent", icon: Gem },
     { value: "VG", label: "Very Good", icon: Gem },
     { value: "G", label: "Good", icon: Gem },
     { value: "F", label: "Fair", icon: Gem },
     { value: "P", label: "Poor", icon: Gem },
-    { value: "I", label: "Ideal", icon: Gem },
 ];
 
 export const polish_options = [
@@ -128,7 +128,8 @@ export const symmetry_options = [
     { value: "P", label: "Poor", icon: Gem },
 ];
 
-export const flou_options = [
+// Fluorescence Color options
+export const fluorescenceColor_options = [
     { value: "B", label: "Blue", icon: Gem },
     { value: "W", label: "White", icon: Gem },
     { value: "Y", label: "Yellow", icon: Gem },
@@ -137,6 +138,19 @@ export const flou_options = [
     { value: "G", label: "Green", icon: Gem },
     { value: "N", label: "None", icon: Gem },
 ];
+
+// Fluorescence Intensity options
+export const fluorescenceIntensity_options = [
+    { value: "VS", label: "Very Strong", icon: Gem },
+    { value: "S", label: "Strong", icon: Gem },
+    { value: "M", label: "Medium", icon: Gem },
+    { value: "SL", label: "Slight", icon: Gem },
+    { value: "VSL", label: "Very Slight", icon: Gem },
+    { value: "N", label: "None", icon: Gem },
+];
+
+// Keep flou_options for backward compatibility
+export const flou_options = fluorescenceColor_options;
 
 export const lab_options = [
     { value: "GIA", label: "GIA", icon: Gem },
@@ -181,7 +195,6 @@ export const fancyColor_options = [
     { value: "Y", label: "Yellow", icon: Gem },
     { value: "W", label: "White", icon: Gem },
     { value: "X", label: "Other", icon: Gem },
-    { value: "None", label: "None", icon: Gem },
 ];
 
 // FANCY COLOR OVERTONE OPTIONS
@@ -219,14 +232,16 @@ export const fancyColorOvertone_options = [
     { value: "Other", label: "Other", icon: Gem },
 ];
 
-// FANCY COLOR INTENSITY OPTIONS
+// FANCY COLOR INTENSITY OPTIONS - Updated to match schema
 export const fancyColorIntensity_options = [
-    { value: "VS", label: "Very Strong", icon: Gem },
-    { value: "S", label: "Strong", icon: Gem },
-    { value: "M", label: "Medium", icon: Gem },
     { value: "F", label: "Faint", icon: Gem },
-    { value: "SL", label: "Slight", icon: Gem },
-    { value: "VSL", label: "Very Slight", icon: Gem },
+    { value: "VL", label: "Very Light", icon: Gem },
+    { value: "L", label: "Light", icon: Gem },
+    { value: "FCL", label: "Fancy Light", icon: Gem },
+    { value: "FC", label: "Fancy", icon: Gem },
+    { value: "FCD", label: "Fancy Dark", icon: Gem },
+    { value: "I", label: "Intense", icon: Gem },
+    { value: "FV", label: "Fancy Vivid", icon: Gem },
+    { value: "D", label: "Deep", icon: Gem },
     { value: "N", label: "None", icon: Gem },
-    { value: "None", label: "None", icon: Gem },
 ];
