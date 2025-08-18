@@ -170,30 +170,7 @@ export default function DiamondPage() {
             if (!uploadId) {
                 throw new Error("No upload ID received from server");
             }
-
-            // Step 2: Check upload status
-            const statusResponse = await fetch(
-                `https://diamond-inventory.onrender.com/api/rapnet/upload-status/${uploadId}`,
-                {
-                    method: "GET",
-                    credentials: "include",
-                }
-            );
-
-            const statusData = await statusResponse.json();
-
-            if (!statusResponse.ok) {
-                throw new Error(
-                    statusData.error || "Failed to get upload status"
-                );
-            }
-
-            if (statusData.success && statusData.data) {
-                setRapnetUploadData(statusData.data);
-                toast.success("Rapnet upload completed successfully!");
-            } else {
-                throw new Error("Invalid status response received");
-            }
+            await pollUploadStatus(uploadId);
         } catch (error) {
             const errorMessage =
                 error instanceof Error
@@ -204,6 +181,99 @@ export default function DiamondPage() {
         } finally {
             setRapnetLoading(false);
         }
+    };
+
+    const pollUploadStatus = async (uploadId: string) => {
+        const maxAttempts = 60; // Maximum number of attempts (e.g., 5 minutes with 5-second intervals)
+        const pollInterval = 5000; // 5 seconds between polls
+        let attempts = 0;
+
+        const checkStatus = async (): Promise<void> => {
+            attempts++;
+            console.log(
+                `🔄 Checking upload status (attempt ${attempts}/${maxAttempts})...`
+            );
+
+            try {
+                const statusResponse = await fetch(
+                    `https://diamond-inventory.onrender.com/api/rapnet/upload-status/${uploadId}`,
+                    {
+                        method: "GET",
+                        credentials: "include",
+                    }
+                );
+
+                const statusData = await statusResponse.json();
+
+                if (!statusResponse.ok) {
+                    throw new Error(
+                        statusData.error || "Failed to get upload status"
+                    );
+                }
+
+                if (!statusData.success || !statusData.data) {
+                    throw new Error("Invalid status response received");
+                }
+
+                const uploadStatusData = statusData.data;
+                console.log(`📊 Upload status:`, uploadStatusData);
+
+                // Update the modal with current status
+                setRapnetUploadData(uploadStatusData);
+
+                // Check if stockReplaced is true
+                if (
+                    uploadStatusData.stockReplaced === true &&
+                    uploadStatusData.status === "Finished successfully"
+                ) {
+                    console.log("✅ Stock replacement completed successfully!");
+                    toast.success("Rapnet upload completed successfully!");
+                    return; // Exit the polling loop
+                }
+
+                // Check if we've reached maximum attempts
+                if (attempts >= maxAttempts) {
+                    throw new Error(
+                        `Upload status check timed out after ${maxAttempts} attempts. Stock replacement may still be in progress.`
+                    );
+                }
+
+                // Check for error status
+                if (
+                    uploadStatusData.status &&
+                    uploadStatusData.status.toLowerCase().includes("error")
+                ) {
+                    throw new Error(
+                        uploadStatusData.errorMessages ||
+                            `Upload failed with status: ${uploadStatusData.status}`
+                    );
+                }
+
+                // If stockReplaced is still false, wait and check again
+                console.log(
+                    `⏳ Stock not yet replaced. Waiting ${
+                        pollInterval / 1000
+                    } seconds before next check...`
+                );
+
+                // Show progress toast
+                toast.info(
+                    `Upload in progress... (${attempts}/${maxAttempts}) - Status: ${
+                        uploadStatusData.status || "Processing"
+                    }`
+                );
+
+                setTimeout(() => {
+                    checkStatus();
+                }, pollInterval);
+            } catch (error) {
+                console.error("❌ Error checking upload status:", error);
+                throw error;
+            }
+        };
+
+        // Start the polling process
+        await checkStatus();
     };
 
     const handleRapnetRetry = () => {
