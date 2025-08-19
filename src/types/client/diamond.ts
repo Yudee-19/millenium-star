@@ -28,6 +28,8 @@ export interface ClientDiamond {
 }
 
 export interface ClientFilters {
+    sortBy?: string;
+    sortOrder?: string;
     shape?: string[];
     caratMin?: number;
     caratMax?: number;

@@ -42,10 +42,10 @@ export function useDiamonds(): UseDiamondsReturn {
     const [totalCount, setTotalCount] = useState(0);
     const [pageCount, setPageCount] = useState(0);
 
-    // Table state
+    // Table state with default sorting
     const [tableState, setTableState] = useState<TableState>({
         pagination: { pageIndex: 0, pageSize: 10 },
-        sorting: [],
+        sorting: [{ id: "createdAt", desc: false }], // Default sort by createdAt ascending
         columnFilters: [],
     });
 
@@ -69,11 +69,15 @@ export function useDiamonds(): UseDiamondsReturn {
         params.append("page", (state.pagination.pageIndex + 1).toString());
         params.append("limit", state.pagination.pageSize.toString());
 
-        // Sorting
+        // Sorting - always include default if no sorting is specified
         if (state.sorting.length > 0) {
             const sort = state.sorting[0];
             params.append("sortBy", sort.id);
             params.append("sortOrder", sort.desc ? "desc" : "asc");
+        } else {
+            // Default sorting when no sorting is specified
+            params.append("sortBy", "createdAt");
+            params.append("sortOrder", "asc");
         }
 
         // Filters

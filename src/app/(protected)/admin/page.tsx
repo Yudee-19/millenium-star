@@ -84,7 +84,9 @@ export default function DiamondPage() {
         refetch: fancyRefetch,
         updateTable: fancyUpdateTable,
         paginationMeta: fancyPaginationMeta,
-    } = useFilteredDiamonds("diamonds/search?notShape=Round");
+    } = useFilteredDiamonds(
+        "diamonds/search?notShape=Round&sortBy=price&sortOrder=desc"
+    );
 
     const {
         diamonds: highEndDiamonds,
@@ -95,7 +97,9 @@ export default function DiamondPage() {
         refetch: highEndRefetch,
         updateTable: highEndUpdateTable,
         paginationMeta: highEndPaginationMeta,
-    } = useFilteredDiamonds("diamonds/search?shape=Round&sizeMax=1");
+    } = useFilteredDiamonds(
+        "diamonds/search?shape=Round&sizeMax=1&sortBy=createdAt&sortOrder=aesc"
+    );
 
     const {
         diamonds: lowEndDiamonds,
@@ -106,7 +110,9 @@ export default function DiamondPage() {
         refetch: lowEndRefetch,
         updateTable: lowEndUpdateTable,
         paginationMeta: lowEndPaginationMeta,
-    } = useFilteredDiamonds("diamonds/search?shape=Round&sizeMin=1");
+    } = useFilteredDiamonds(
+        "diamonds/search?shape=Round&sizeMin=1&sortBy=createdAt&sortOrder=aesc"
+    );
 
     // Modal states
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);

@@ -56,15 +56,21 @@ export function useClientDiamonds(): UseClientDiamondsReturn {
             setLoading(true);
             setError(null);
 
+            // Add default sorting parameters
+            const defaultFilters: ClientFilters = {
+                sortBy: "createdAt",
+                sortOrder: "asc",
+            };
+
             const [diamondsResponse, filterOptionsData] = await Promise.all([
-                clientDiamondAPI.searchDiamonds({}, 1, 20), // Use search with pagination
+                clientDiamondAPI.searchDiamonds(defaultFilters, 1, 20), // Include default sorting
                 clientDiamondAPI.getFilterOptions(),
             ]);
 
             setDiamonds(diamondsResponse.data);
             setPagination(diamondsResponse.pagination);
             setFilterOptions(filterOptionsData);
-            setCurrentFilters({});
+            setCurrentFilters(defaultFilters);
         } catch (err) {
             setError(
                 err instanceof Error ? err.message : "An unknown error occurred"
@@ -79,15 +85,22 @@ export function useClientDiamonds(): UseClientDiamondsReturn {
             setLoading(true);
             setError(null);
 
+            // Ensure default sorting is always applied if not specified
+            const filtersWithDefaults = {
+                sortBy: "createdAt",
+                sortOrder: "asc",
+                ...filters, // User filters can override defaults
+            };
+
             const results = await clientDiamondAPI.searchDiamonds(
-                filters,
+                filtersWithDefaults,
                 page,
                 20
             );
 
             setDiamonds(results.data);
             setPagination(results.pagination);
-            setCurrentFilters(filters);
+            setCurrentFilters(filtersWithDefaults);
         } catch (err) {
             setError(err instanceof Error ? err.message : "Search failed");
         } finally {
