@@ -82,20 +82,21 @@ export function RapnetUploadModal({
                 </DialogHeader>
 
                 <div className="space-y-6 py-4">
-                    {isLoading && (
-                        <div className="flex items-center justify-center py-8">
-                            <Loader2 className="h-8 w-8 animate-spin mr-3" />
-                            <div className="text-center">
-                                <p className="font-medium">
-                                    Processing Upload...
-                                </p>
-                                <p className="text-sm text-gray-500">
-                                    Please wait while we upload your data to
-                                    Rapnet
-                                </p>
+                    {isLoading &&
+                        uploadData?.status !== "Finished successfully" && (
+                            <div className="flex items-center justify-center py-8">
+                                <Loader2 className="h-8 w-8 animate-spin mr-3" />
+                                <div className="text-center">
+                                    <p className="font-medium">
+                                        Processing Upload...
+                                    </p>
+                                    <p className="text-sm text-gray-500">
+                                        Please wait while we upload your data to
+                                        Rapnet
+                                    </p>
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
                     {error && (
                         <div className="bg-red-50 border border-red-200 rounded-lg p-4">

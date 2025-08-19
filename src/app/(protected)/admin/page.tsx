@@ -229,6 +229,10 @@ export default function DiamondPage() {
                     console.log("✅ Stock replacement completed successfully!");
                     toast.success("Rapnet upload completed successfully!");
                     return; // Exit the polling loop
+                } else if (uploadStatusData.status === "Failed") {
+                    console.log("❌ Stock replacement failed.");
+                    toast.error("Rapnet upload failed.");
+                    return;
                 }
 
                 // Check if we've reached maximum attempts
