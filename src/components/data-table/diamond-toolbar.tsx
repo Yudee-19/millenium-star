@@ -42,9 +42,9 @@ export function DiamondTableToolbar<TData>({
                     }
                     className="h-8 w-[150px] shadowm lg:w-[250px]"
                 /> */}
-                {table.getColumn("LAB") && (
+                {table.getColumn("laboratory") && (
                     <DataTableFacetedFilter
-                        column={table.getColumn("LAB")}
+                        column={table.getColumn("laboratory")}
                         title="Lab"
                         options={lab_options}
                     />
@@ -56,16 +56,16 @@ export function DiamondTableToolbar<TData>({
                         options={shape_options}
                     />
                 )}
-                {table.getColumn("Color") && (
+                {table.getColumn("color") && (
                     <DataTableFacetedFilter
-                        column={table.getColumn("Color")}
+                        column={table.getColumn("color")}
                         title="Color"
                         options={color_options}
                     />
                 )}
-                {table.getColumn("Clarity") && (
+                {table.getColumn("clarity") && (
                     <DataTableFacetedFilter
-                        column={table.getColumn("Clarity")}
+                        column={table.getColumn("clarity")}
                         title="Clarity"
                         options={clarity_options}
                     />
@@ -77,9 +77,9 @@ export function DiamondTableToolbar<TData>({
                         options={cut_options}
                     />
                 )}
-                {table.getColumn("FLOU") && (
+                {table.getColumn("fluorescenceColor") && (
                     <DataTableFacetedFilter
-                        column={table.getColumn("FLOU")}
+                        column={table.getColumn("fluorescenceColor")}
                         title="Fluorescence"
                         options={flou_options}
                     />

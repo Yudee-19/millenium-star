@@ -53,7 +53,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             const certNo =
                 (row.original as any)["CERT-NO"] ||
                 row.original.certificateNumber ||
-                "N/A";
+                "-";
             return (
                 <div className="w-[120px] font-mono text-xs">{`${certNo}`}</div>
             );
@@ -67,13 +67,15 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
         },
     },
     {
-        accessorKey: "LAB",
+        accessorKey: "laboratory",
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="LAB" />
         ),
         cell: ({ row }) => {
             const labValue =
-                row.original.laboratory || (row.original as any)["LAB"] || "-";
+                row.original.laboratory ||
+                (row.original as any)["laboratory"] ||
+                "-";
 
             const lab = lab_options.find((lab) => lab.value === labValue);
             return (
@@ -124,13 +126,13 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
         ),
     },
     {
-        accessorKey: "Color",
+        accessorKey: "color",
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Color" />
         ),
         cell: ({ row }) => {
             const colorValue =
-                row.original.color || (row.original as any)["Color"] || "N/A";
+                row.original.color || (row.original as any)["color"] || "-";
 
             const color = color_options.find(
                 (color) => color.value === colorValue
@@ -147,15 +149,13 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
         },
     },
     {
-        accessorKey: "Clarity",
+        accessorKey: "clarity",
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Clarity" />
         ),
         cell: ({ row }) => {
             const clarityValue =
-                row.original.clarity ||
-                (row.original as any)["Clarity"] ||
-                "N/A";
+                row.original.clarity || (row.original as any)["clarity"] || "-";
             const clarity = clarity_options.find(
                 (clarity) => clarity.value === clarityValue
             );
@@ -178,7 +178,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             <div className="w-[80px]">
                 {row.getValue("RapList") ||
                     (row.original as any)["rapList"] ||
-                    "N/A"}
+                    "-"}
             </div>
         ),
     },
@@ -207,7 +207,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
         ),
         cell: ({ row }) => {
             const cutValue =
-                row.original.cut || (row.original as any)["cut"] || "N/A";
+                row.original.cut || (row.original as any)["cut"] || "-";
             const cut = cut_options.find((cut) => cut.value === cutValue);
             return (
                 <div className="flex w-[80px] items-center">
@@ -226,9 +226,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
         ),
         cell: ({ row }) => (
             <div className="w-[80px] whitespace-pre-wrap">
-                {row.original.polish ||
-                    (row.original as any)["Polish"] ||
-                    "N/A"}
+                {row.original.polish || (row.original as any)["Polish"] || "-"}
             </div>
         ),
     },
@@ -239,23 +237,23 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
         ),
         cell: ({ row }) => (
             <div className="w-[80px] whitespace-pre-wrap">
-                {(row.original as any)["sym"] || row.original.symmetry || "N/A"}
+                {(row.original as any)["sym"] || row.original.symmetry || "-"}
             </div>
         ),
     },
     {
-        accessorKey: "FLOU",
+        accessorKey: "fluorescenceColor",
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Fluo. Color" />
         ),
         cell: ({ row }) => {
             const flou = flou_options.find(
-                (flou) => flou.value === row.getValue("FLOU")
+                (flou) => flou.value === row.original.fluorescenceColor
             );
             return (
                 <div className="flex w-[100px] justify-center items-center">
                     <span className="whitespace-pre-wrap">
-                        {(row.original as any)["FLOU"] ||
+                        {(row.original as any)["fluorescenceColor"] ||
                             row.original.fluorescenceColor ||
                             "-"}
                     </span>
@@ -308,7 +306,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             // Safe access to nested property
             const tDep =
                 row.original.totalDepth || (row.original as any)?.T?.DEP;
-            return <div className="w-[80px]">{tDep ? `${tDep}%` : "N/A"}</div>;
+            return <div className="w-[80px]">{tDep ? `${tDep}%` : "-"}</div>;
         },
     },
     {
@@ -365,41 +363,41 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
 
     // Example columns for newly added fields
 
-    {
-        accessorKey: "fancyColor",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Fancy Color" />
-        ),
-        cell: ({ row }) => (
-            <div className="w-[100px]">{row.original.fancyColor || "-"}</div>
-        ),
-    },
-    {
-        accessorKey: "fancyColorOvertone",
-        header: ({ column }) => (
-            <DataTableColumnHeader
-                column={column}
-                title="Fancy Color Overtone"
-            />
-        ),
-        cell: ({ row }) => (
-            <div className="w-[120px]">
-                {row.original.fancyColorOvertone || "-"}
-            </div>
-        ),
-    },
-    {
-        accessorKey: "fancyColorIntensity",
-        header: ({ column }) => (
-            <DataTableColumnHeader
-                column={column}
-                title="Fancy Color Intensity"
-            />
-        ),
-        cell: ({ row }) => (
-            <div className="w-[120px]">
-                {row.original.fancyColorIntensity || "-"}
-            </div>
-        ),
-    },
+    // {
+    //     accessorKey: "fancyColor",
+    //     header: ({ column }) => (
+    //         <DataTableColumnHeader column={column} title="Fancy Color" />
+    //     ),
+    //     cell: ({ row }) => (
+    //         <div className="w-[100px]">{row.original.fancyColor || "-"}</div>
+    //     ),
+    // },
+    // {
+    //     accessorKey: "fancyColorOvertone",
+    //     header: ({ column }) => (
+    //         <DataTableColumnHeader
+    //             column={column}
+    //             title="Fancy Color Overtone"
+    //         />
+    //     ),
+    //     cell: ({ row }) => (
+    //         <div className="w-[120px]">
+    //             {row.original.fancyColorOvertone || "-"}
+    //         </div>
+    //     ),
+    // },
+    // {
+    //     accessorKey: "fancyColorIntensity",
+    //     header: ({ column }) => (
+    //         <DataTableColumnHeader
+    //             column={column}
+    //             title="Fancy Color Intensity"
+    //         />
+    //     ),
+    //     cell: ({ row }) => (
+    //         <div className="w-[120px]">
+    //             {row.original.fancyColorIntensity || "-"}
+    //         </div>
+    //     ),
+    // },
 ];

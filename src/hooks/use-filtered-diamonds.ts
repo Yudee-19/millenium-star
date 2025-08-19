@@ -10,6 +10,11 @@ interface FilteredDiamondsReturn {
     totalCount: number;
     pageCount: number;
     refetch: () => void;
+    updateTable: (state: {
+        pagination: { pageIndex: number; pageSize: number };
+        sorting: Array<{ id: string; desc: boolean }>;
+        columnFilters: Array<{ id: string; value: any }>;
+    }) => void;
     paginationMeta: {
         currentPage: number;
         totalPages: number;
@@ -21,7 +26,7 @@ interface FilteredDiamondsReturn {
 }
 
 export function useFilteredDiamonds(
-    apiEndpoint: string
+    baseEndpoint: string
 ): FilteredDiamondsReturn {
     const [diamonds, setDiamonds] = useState<DiamondType[]>([]);
     const [loading, setLoading] = useState(true);
@@ -37,14 +42,70 @@ export function useFilteredDiamonds(
         hasPrevPage: boolean;
     } | null>(null);
 
+    // State for table parameters
+    const [tableState, setTableState] = useState({
+        pagination: { pageIndex: 0, pageSize: 10 },
+        sorting: [] as Array<{ id: string; desc: boolean }>,
+        columnFilters: [] as Array<{ id: string; value: any }>,
+    });
+
+    const buildApiUrl = useCallback(() => {
+        const { pagination, sorting, columnFilters } = tableState;
+
+        // Start with base endpoint
+        let url = baseEndpoint;
+        const params = new URLSearchParams();
+
+        // Extract base filters from endpoint if they exist
+        if (baseEndpoint.includes("?")) {
+            const [baseUrl, queryString] = baseEndpoint.split("?");
+            url = baseUrl;
+            const existingParams = new URLSearchParams(queryString);
+            existingParams.forEach((value, key) => {
+                params.set(key, value);
+            });
+        }
+
+        // Add pagination
+        params.set("page", (pagination.pageIndex + 1).toString());
+        params.set("limit", pagination.pageSize.toString());
+
+        // Add sorting
+        if (sorting.length > 0) {
+            const sortField = sorting[0].id;
+            const sortOrder = sorting[0].desc ? "desc" : "asc";
+            params.set("sortBy", sortField);
+            params.set("sortOrder", sortOrder);
+        }
+
+        // Add filters
+        columnFilters.forEach((filter) => {
+            if (filter.value && filter.value.length > 0) {
+                // Handle array filters (from faceted filters)
+                if (Array.isArray(filter.value)) {
+                    filter.value.forEach((val) => {
+                        params.append(filter.id, val.toString());
+                    });
+                } else {
+                    params.set(filter.id, filter.value.toString());
+                }
+            }
+        });
+
+        const finalUrl = `${url}?${params.toString()}`;
+        console.log(`🔍 Built API URL: ${finalUrl}`);
+        return finalUrl;
+    }, [baseEndpoint, tableState]);
+
     const fetchDiamonds = useCallback(async () => {
         try {
             setLoading(true);
             setError(null);
 
-            console.log(`🔍 Fetching filtered diamonds from: ${apiEndpoint}`);
+            const apiUrl = buildApiUrl();
+            console.log(`🔍 Fetching filtered diamonds from: ${apiUrl}`);
 
-            const response = await fetch(`${API_BASE_URL}/${apiEndpoint}`);
+            const response = await fetch(`${API_BASE_URL}/${apiUrl}`);
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -65,7 +126,11 @@ export function useFilteredDiamonds(
                 setPageCount(result.pagination.totalPages);
             } else {
                 // Fallback for older API responses
-                setPageCount(Math.ceil((result.count || 0) / 10));
+                setPageCount(
+                    Math.ceil(
+                        (result.count || 0) / tableState.pagination.pageSize
+                    )
+                );
             }
         } catch (err) {
             setError(
@@ -74,17 +139,32 @@ export function useFilteredDiamonds(
         } finally {
             setLoading(false);
         }
-    }, [apiEndpoint]);
+    }, [buildApiUrl, tableState.pagination.pageSize]);
+
+    const updateTable = useCallback(
+        (newState: {
+            pagination: { pageIndex: number; pageSize: number };
+            sorting: Array<{ id: string; desc: boolean }>;
+            columnFilters: Array<{ id: string; value: any }>;
+        }) => {
+            console.log(
+                "🎯 Filtered Diamonds: Table state change requested:",
+                newState
+            );
+            setTableState(newState);
+        },
+        []
+    );
 
     const refetch = useCallback(() => {
         fetchDiamonds();
     }, [fetchDiamonds]);
 
     useEffect(() => {
-        if (apiEndpoint) {
+        if (baseEndpoint) {
             fetchDiamonds();
         }
-    }, [fetchDiamonds, apiEndpoint]);
+    }, [fetchDiamonds]);
 
     return {
         diamonds,
@@ -93,6 +173,7 @@ export function useFilteredDiamonds(
         totalCount,
         pageCount,
         refetch,
+        updateTable,
         paginationMeta,
     };
 }

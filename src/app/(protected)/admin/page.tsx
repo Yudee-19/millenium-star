@@ -74,7 +74,7 @@ export default function DiamondPage() {
         paginationMeta,
     } = useDiamonds();
 
-    // ...existing filtered diamonds hooks...
+    // ...existing filtered diamonds hooks with updateTable...
     const {
         diamonds: fancyDiamonds,
         loading: fancyLoading,
@@ -82,6 +82,7 @@ export default function DiamondPage() {
         totalCount: fancyTotalCount,
         pageCount: fancyPageCount,
         refetch: fancyRefetch,
+        updateTable: fancyUpdateTable,
         paginationMeta: fancyPaginationMeta,
     } = useFilteredDiamonds("diamonds/search?notShape=Round");
 
@@ -92,6 +93,7 @@ export default function DiamondPage() {
         totalCount: highEndTotalCount,
         pageCount: highEndPageCount,
         refetch: highEndRefetch,
+        updateTable: highEndUpdateTable,
         paginationMeta: highEndPaginationMeta,
     } = useFilteredDiamonds("diamonds/search?shape=Round&sizeMax=1");
 
@@ -102,6 +104,7 @@ export default function DiamondPage() {
         totalCount: lowEndTotalCount,
         pageCount: lowEndPageCount,
         refetch: lowEndRefetch,
+        updateTable: lowEndUpdateTable,
         paginationMeta: lowEndPaginationMeta,
     } = useFilteredDiamonds("diamonds/search?shape=Round&sizeMin=1");
 
@@ -129,9 +132,41 @@ export default function DiamondPage() {
         [updateTable]
     );
 
-    const handleFancyTableStateChange = useCallback(() => {}, []);
-    const handleHighEndTableStateChange = useCallback(() => {}, []);
-    const handleLowEndTableStateChange = useCallback(() => {}, []);
+    const handleFancyTableStateChange = useCallback(
+        (state: {
+            pagination: { pageIndex: number; pageSize: number };
+            sorting: Array<{ id: string; desc: boolean }>;
+            columnFilters: Array<{ id: string; value: any }>;
+        }) => {
+            console.log("🎯 Fancy: Table state change requested:", state);
+            fancyUpdateTable(state);
+        },
+        [fancyUpdateTable]
+    );
+
+    const handleHighEndTableStateChange = useCallback(
+        (state: {
+            pagination: { pageIndex: number; pageSize: number };
+            sorting: Array<{ id: string; desc: boolean }>;
+            columnFilters: Array<{ id: string; value: any }>;
+        }) => {
+            console.log("🎯 High End: Table state change requested:", state);
+            highEndUpdateTable(state);
+        },
+        [highEndUpdateTable]
+    );
+
+    const handleLowEndTableStateChange = useCallback(
+        (state: {
+            pagination: { pageIndex: number; pageSize: number };
+            sorting: Array<{ id: string; desc: boolean }>;
+            columnFilters: Array<{ id: string; value: any }>;
+        }) => {
+            console.log("🎯 Low End: Table state change requested:", state);
+            lowEndUpdateTable(state);
+        },
+        [lowEndUpdateTable]
+    );
 
     const handleAddDiamondSuccess = () => {
         console.log("✅ Diamond added successfully");

@@ -234,7 +234,7 @@ export function ClientDiamondTable({
                                     {diamond.symmetry || diamond["sym"] || "-"}
                                 </TableCell>
                                 <TableCell className="text-sm">
-                                    {diamond.fluorescence ||
+                                    {diamond.fluorescenceColor ||
                                         diamond["FLOU"] ||
                                         "-"}
                                 </TableCell>
