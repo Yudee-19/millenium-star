@@ -191,6 +191,9 @@ export function ClientDiamondTable({
                             <TableHead className="text-xs font-medium text-gray-700 text-center">
                                 Price
                             </TableHead>
+                            <TableHead className="text-xs font-medium text-gray-700 text-center">
+                                Rap List
+                            </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -246,6 +249,9 @@ export function ClientDiamondTable({
                                 </TableCell> */}
                                 <TableCell className="text-sm font-semibold">
                                     {"$ " + formatPrice(diamond.price) || "-"}
+                                </TableCell>
+                                <TableCell className="text-sm font-semibold">
+                                    {"$ " + formatPrice(diamond.rapList) || "-"}
                                 </TableCell>
                             </TableRow>
                         ))}

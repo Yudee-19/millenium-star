@@ -176,7 +176,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
         ),
         cell: ({ row }) => (
             <div className="w-[80px]">
-                {row.getValue("RapList") ||
+                {row.original.rapList ||
                     (row.original as any)["rapList"] ||
                     "-"}
             </div>
@@ -326,7 +326,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             <DataTableColumnHeader column={column} title="Price" />
         ),
         cell: ({ row }) => {
-            const price = row.getValue("price") as number;
+            const price = row.original.price;
             return <div className="w-[100px] font-semibold">${price}</div>;
         },
     },
