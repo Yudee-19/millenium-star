@@ -83,7 +83,7 @@ export default function DiamondPage() {
         pageCount: fancyPageCount,
         refetch: fancyRefetch,
         paginationMeta: fancyPaginationMeta,
-    } = useFilteredDiamonds("diamonds/search?notShape=RBC");
+    } = useFilteredDiamonds("diamonds/search?notShape=Round");
 
     const {
         diamonds: highEndDiamonds,
@@ -93,7 +93,7 @@ export default function DiamondPage() {
         pageCount: highEndPageCount,
         refetch: highEndRefetch,
         paginationMeta: highEndPaginationMeta,
-    } = useFilteredDiamonds("diamonds/search?shape=RBC&sizeMax=1");
+    } = useFilteredDiamonds("diamonds/search?shape=Round&sizeMax=1");
 
     const {
         diamonds: lowEndDiamonds,
@@ -103,7 +103,7 @@ export default function DiamondPage() {
         pageCount: lowEndPageCount,
         refetch: lowEndRefetch,
         paginationMeta: lowEndPaginationMeta,
-    } = useFilteredDiamonds("diamonds/search?shape=RBC&sizeMin=1");
+    } = useFilteredDiamonds("diamonds/search?shape=Round&sizeMin=1");
 
     // Modal states
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);

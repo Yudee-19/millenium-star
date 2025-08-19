@@ -30,6 +30,7 @@ import {
     flou_options,
     polish_options,
     symmetry_options,
+    fluorescenceIntensity_options,
 } from "../filters/diamond-filters";
 import { Textarea } from "../ui/textarea";
 import { DiamondType } from "@/lib/validations/diamond-schema";
@@ -51,7 +52,8 @@ interface DiamondFormData {
     cut: string;
     polish: string;
     symmetry: string;
-    fluorescence: string;
+    fluorescenceColor: string;
+    fluorescenceIntensity: string;
 
     // Required Measurements
     length: number;
@@ -81,7 +83,8 @@ const initialFormData: DiamondFormData = {
     cut: "",
     polish: "",
     symmetry: "",
-    fluorescence: "NON",
+    fluorescenceColor: "N",
+    fluorescenceIntensity: "N",
     length: 0,
     width: 0,
     depth: 0,
@@ -120,7 +123,8 @@ export function EditDiamondModal({
                 cut: diamond.cut || "",
                 polish: diamond.polish || "",
                 symmetry: diamond.symmetry || "",
-                fluorescence: diamond.fluorescence || "NON",
+                fluorescenceColor: diamond.fluorescenceColor || "N",
+                fluorescenceIntensity: diamond.fluorescenceIntensity || "N",
                 length: diamond.measurements?.length || 0,
                 width: diamond.measurements?.width || 0,
                 depth: diamond.measurements?.depth || 0,
@@ -183,8 +187,12 @@ export function EditDiamondModal({
         if (!formData.symmetry) {
             newErrors.symmetry = "Symmetry is required";
         }
-        if (!formData.fluorescence) {
-            newErrors.fluorescence = "Fluorescence is required";
+        if (!formData.fluorescenceColor) {
+            newErrors.fluorescenceColor = "Fluorescence color is required";
+        }
+        if (!formData.fluorescenceIntensity) {
+            newErrors.fluorescenceIntensity =
+                "Fluorescence intensity is required";
         }
 
         // Measurement validations
@@ -244,7 +252,8 @@ export function EditDiamondModal({
                 cut: formData.cut,
                 polish: formData.polish,
                 symmetry: formData.symmetry,
-                fluorescence: formData.fluorescence,
+                fluorescenceColor: formData.fluorescenceColor,
+                fluorescenceIntensity: formData.fluorescenceIntensity,
                 lab: formData.lab.trim(),
                 shape: formData.shape.trim(),
                 measurements: {
@@ -301,8 +310,10 @@ export function EditDiamondModal({
                             backendErrors.polish = error;
                         } else if (error.includes("Symmetry")) {
                             backendErrors.symmetry = error;
-                        } else if (error.includes("Fluorescence")) {
-                            backendErrors.fluorescence = error;
+                        } else if (error.includes("FluorescenceColor")) {
+                            backendErrors.fluorescenceColor = error;
+                        } else if (error.includes("FluorescenceIntensity")) {
+                            backendErrors.fluorescenceIntensity = error;
                         } else if (error.includes("Length")) {
                             backendErrors.length = error;
                         } else if (error.includes("Width")) {
@@ -575,7 +586,7 @@ export function EditDiamondModal({
                         <Label className="text-base font-semibold">
                             Cut Quality
                         </Label>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="cut">Cut *</Label>
                                 <Select
@@ -680,42 +691,95 @@ export function EditDiamondModal({
                                     </p>
                                 )}
                             </div>
+                        </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="fluorescence">
-                                    Fluorescence *
-                                </Label>
-                                <Select
-                                    value={formData.fluorescence}
-                                    onValueChange={(value) =>
-                                        handleInputChange("fluorescence", value)
-                                    }
-                                >
-                                    <SelectTrigger
-                                        className={
-                                            errors.fluorescence
-                                                ? "border-red-500 w-full"
-                                                : "w-full"
+                        {/* Fluorescence Section */}
+                        <div className="mt-4">
+                            <Label className="text-base font-semibold">
+                                Fluorescence
+                            </Label>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                                <div className="space-y-2">
+                                    <Label htmlFor="fluorescenceColor">
+                                        Fluorescence Color *
+                                    </Label>
+                                    <Select
+                                        value={formData.fluorescenceColor}
+                                        onValueChange={(value) =>
+                                            handleInputChange(
+                                                "fluorescenceColor",
+                                                value
+                                            )
                                         }
                                     >
-                                        <SelectValue placeholder="Select fluorescence" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {flou_options.map((option) => (
-                                            <SelectItem
-                                                key={option.value}
-                                                value={option.value}
-                                            >
-                                                {option.label}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                {errors.fluorescence && (
-                                    <p className="text-sm text-red-500">
-                                        {errors.fluorescence}
-                                    </p>
-                                )}
+                                        <SelectTrigger
+                                            className={`w-full ${
+                                                errors.fluorescenceColor
+                                                    ? "border-red-500"
+                                                    : ""
+                                            }`}
+                                        >
+                                            <SelectValue placeholder="Select fluorescence color" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {flou_options.map((option) => (
+                                                <SelectItem
+                                                    key={option.value}
+                                                    value={option.value}
+                                                >
+                                                    {option.label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    {errors.fluorescenceColor && (
+                                        <p className="text-sm text-red-500">
+                                            {errors.fluorescenceColor}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="fluorescenceIntensity">
+                                        Fluorescence Intensity *
+                                    </Label>
+                                    <Select
+                                        value={formData.fluorescenceIntensity}
+                                        onValueChange={(value) =>
+                                            handleInputChange(
+                                                "fluorescenceIntensity",
+                                                value
+                                            )
+                                        }
+                                    >
+                                        <SelectTrigger
+                                            className={`w-full ${
+                                                errors.fluorescenceIntensity
+                                                    ? "border-red-500"
+                                                    : ""
+                                            }`}
+                                        >
+                                            <SelectValue placeholder="Select fluorescence intensity" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {fluorescenceIntensity_options.map(
+                                                (option) => (
+                                                    <SelectItem
+                                                        key={option.value}
+                                                        value={option.value}
+                                                    >
+                                                        {option.label}
+                                                    </SelectItem>
+                                                )
+                                            )}
+                                        </SelectContent>
+                                    </Select>
+                                    {errors.fluorescenceIntensity && (
+                                        <p className="text-sm text-red-500">
+                                            {errors.fluorescenceIntensity}
+                                        </p>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>

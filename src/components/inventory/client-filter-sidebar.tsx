@@ -135,7 +135,7 @@ export function ClientFilterSidebar({
             Pear: "pear.svg",
             Square: "square.svg",
             Trilliant: "trilliant.svg",
-            "Sq. Emerald": "sqEmerald.jpg",
+            "Square Emerald": "sqEmerald.jpg",
         };
         const fileName = shapeMap[shapeValue];
         return fileName ? `/assets/diamondShapes/${fileName}` : null;
