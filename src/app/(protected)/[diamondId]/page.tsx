@@ -36,7 +36,7 @@ interface Diamond {
     cut: string;
     polish: string;
     symmetry: string;
-    fluorescence: string;
+    fluorescenceColor: string;
     laboratory: string;
     price: number;
     discount?: number;
@@ -441,10 +441,10 @@ export default function DiamondDetailPage() {
                                         </div>
                                         <div className="flex justify-between items-center px-5 py-4 border-b border-gray-100">
                                             <span className="text-gray-600 font-bold">
-                                                Fluorescence:
+                                                Fluorescence Color:
                                             </span>
                                             <span className="font-normal text-gray-400">
-                                                {diamond.fluorescence}
+                                                {diamond.fluorescenceColor}
                                             </span>
                                         </div>
 

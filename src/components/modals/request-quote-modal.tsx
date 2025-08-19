@@ -223,6 +223,7 @@ export function RequestQuoteModal({
                             </Label>
                             <div className="col-span-3">
                                 <Input
+                                    disabled
                                     id="carat"
                                     type="number"
                                     step="0.01"
