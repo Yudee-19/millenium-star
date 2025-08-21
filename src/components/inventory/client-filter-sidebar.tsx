@@ -11,8 +11,6 @@ import {
     RotateCcw,
     ChevronDown,
     ChevronUp,
-    ChevronLeft,
-    ChevronRight,
     Filter,
     Gem,
     RulerDimensionLine,
@@ -29,7 +27,9 @@ import {
     polish_options,
     symmetry_options,
     lab_options,
+    flou_options,
 } from "@/components/filters/diamond-filters";
+import Container from "../ui/container";
 
 interface ClientFilterSidebarProps {
     filters: ClientFilters;
@@ -60,9 +60,11 @@ export function ClientFilterSidebar({
         fluorescence: true,
         price: true,
         carat: true,
-        searchBy: true,
     });
-    const [collapsed, setCollapsed] = useState(false);
+    const [showAdvanced, setShowAdvanced] = useState(false);
+
+    // Ref for the advanced filters content
+    const advancedContentRef = useRef<HTMLDivElement>(null);
 
     // Debounce timer ref
     const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -108,13 +110,6 @@ export function ClientFilterSidebar({
         onSearch(filters);
     };
 
-    const toggleSection = (section: string) => {
-        setExpandedSections((prev) => ({
-            ...prev,
-            [section]: !prev[section],
-        }));
-    };
-
     // Helper function to get SVG image path for shapes
     const getShapeImage = (shapeValue: string) => {
         const shapeMap: { [key: string]: string } = {
@@ -141,136 +136,19 @@ export function ClientFilterSidebar({
         return fileName ? `/assets/diamondShapes/${fileName}` : null;
     };
 
-    // Helper function to render items with view more/less functionality
-    const renderItemsWithViewMore = (
-        items: any[],
-        sectionKey: string,
-        renderItem: (item: any) => React.ReactNode,
-        itemsPerRow: number = 4
-    ) => {
-        const isExpanded = expandedSections[sectionKey];
-        const visibleItems = isExpanded ? items : items.slice(0, 10);
-        const hasMore = items.length > 10;
-
-        return (
-            <>
-                <div
-                    className={`grid gap-2`}
-                    style={{
-                        gridTemplateColumns: `repeat(${itemsPerRow}, 1fr)`,
-                    }}
-                >
-                    {visibleItems.map((item) => renderItem(item))}
-                </div>
-                {hasMore && (
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => toggleSection(sectionKey)}
-                        className="w-full mt-2 text-xs text-gray-600 hover:text-gray-800"
-                    >
-                        {isExpanded ? (
-                            <>
-                                <ChevronUp className="w-3 h-3 mr-1" />
-                                View Less
-                            </>
-                        ) : (
-                            <>
-                                <ChevronDown className="w-3 h-3 mr-1" />
-                                View More ({items.length - 10} more)
-                            </>
-                        )}
-                    </Button>
-                )}
-            </>
-        );
-    };
-
-    // Section wrapper for collapsible cards
-    const Section = ({
-        title,
-        sectionKey,
-        children,
-        defaultOpen = false,
-        icon,
-    }: {
-        title: string;
-        sectionKey: string;
-        children: React.ReactNode;
-        defaultOpen?: boolean;
-        icon?: React.ReactNode;
-    }) => (
-        <div className="mb-4 rounded-lg  bg-white border border-gray-200">
-            <button
-                type="button"
-                className="w-full flex items-center justify-between px-3 py-2 rounded-t-lg bg-gray-50 hover:bg-gray-100 focus:outline-none"
-                onClick={() => toggleSection(sectionKey)}
-                aria-expanded={expandedSections[sectionKey]}
-            >
-                <span className="flex items-center gap-2 font-medium text-gray-700 text-sm">
-                    {icon}
-                    {title}
-                </span>
-                {expandedSections[sectionKey] ? (
-                    <ChevronUp className="w-4 h-4" />
-                ) : (
-                    <ChevronDown className="w-4 h-4" />
-                )}
-            </button>
-            {expandedSections[sectionKey] && (
-                <div className="px-3 py-2">{children}</div>
-            )}
-        </div>
-    );
-
     return (
-        <div
-            className={`relative transition-all duration-300 pb-10 ${
-                collapsed ? "w-16" : "w-100"
-            } bg-gray-50 border-r border-gray-200 h-full flex flex-col`}
-        >
-            {/* Collapse/Expand Button */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-white sticky top-0 z-10">
-                <span className="flex items-center gap-2 font-bold text-lg text-gray-700">
-                    <Filter className="w-5 h-5" />
-                    {!collapsed && "Filters"}
-                </span>
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setCollapsed((c) => !c)}
-                    className="rounded-full"
-                    aria-label={
-                        collapsed ? "Expand sidebar" : "Collapse sidebar"
-                    }
-                >
-                    {collapsed ? (
-                        <ChevronRight className="w-5 h-5" />
-                    ) : (
-                        <ChevronLeft className="w-5 h-5" />
-                    )}
-                </Button>
-            </div>
-            {/* Sidebar Content */}
-            <div
-                className={`flex-1 overflow-y-auto px-2 pt-2 ${
-                    collapsed ? "hidden" : ""
-                }`}
-            >
-                <Section
-                    title="Shape"
-                    sectionKey="shape"
-                    icon={<Gem className="w-4 h-4" />}
-                >
-                    {renderItemsWithViewMore(
-                        shape_options,
-                        "shape",
-                        (shape) => (
-                            <div
-                                key={shape.value}
-                                className="flex flex-col items-center"
-                            >
-                                <div className="relative">
+        <div className="w-full bg-white border border-gray-200 rounded-lg p-4 mb-6">
+            <Container>
+                <div className="flex flex-col justify-between gap-5 md:flex-row">
+                    {/* Shape Filter - Always visible */}
+                    <div className="mb-6 flex-1">
+                        <Label className="text-sm font-medium text-gray-700 mb-3  flex items-center gap-2">
+                            <Gem className="w-4 h-4" />
+                            Shape
+                        </Label>
+                        <div className="flex  flex-wrap gap-2">
+                            {shape_options.slice(0, 12).map((shape) => (
+                                <div key={shape.value} className="">
                                     <Checkbox
                                         id={`shape-${shape.value}`}
                                         checked={(filters.shape || []).includes(
@@ -287,13 +165,13 @@ export function ClientFilterSidebar({
                                     />
                                     <label
                                         htmlFor={`shape-${shape.value}`}
-                                        className={`w-10 h-10 py-3 border-[1px] border-black/10 hover:bg-gray-200 rounded cursor-pointer flex items-center justify-center transition-colors ${
+                                        className={` cursor-pointer justify-center transition-all flex flex-col rounded-md px-6 py-4 border border-gray-300 items-center hover:border-gray-400 peer-data-[state=checked]:border-black ${
                                             (filters.shape || []).includes(
                                                 shape.value
                                             )
-                                                ? "border-black border-1  text-white"
-                                                : "hover:bg-gray-200"
-                                        } `}
+                                                ? " bg-gray-200 border-black border-1"
+                                                : ""
+                                        }`}
                                     >
                                         {getShapeImage(shape.value) ? (
                                             <img
@@ -301,416 +179,411 @@ export function ClientFilterSidebar({
                                                     getShapeImage(shape.value)!
                                                 }
                                                 alt={shape.label}
-                                                className="w-10 h-10 pt-1 object-contain"
-                                                onError={(e) => {
-                                                    const target =
-                                                        e.currentTarget as HTMLImageElement;
-                                                    target.style.display =
-                                                        "none";
-                                                    const parent =
-                                                        target.parentElement;
-                                                    if (parent) {
-                                                        const fallback =
-                                                            parent.querySelector(
-                                                                ".fallback-text"
-                                                            ) as HTMLElement;
-                                                        if (fallback) {
-                                                            fallback.style.display =
-                                                                "block";
-                                                        }
-                                                    }
-                                                }}
+                                                className="w-12 h-12 object-contain"
                                             />
-                                        ) : null}
-                                        <span
-                                            className="text-xs fallback-text"
-                                            style={{
-                                                display: getShapeImage(
-                                                    shape.value
-                                                )
-                                                    ? "none"
-                                                    : "block",
-                                            }}
-                                        >
-                                            {shape.value}
+                                        ) : (
+                                            <span className="text-xs text-center">
+                                                {shape.value}
+                                            </span>
+                                        )}
+                                        <span className="text-xs text-gray-600 mt-1 text-center">
+                                            {shape.label}
                                         </span>
                                     </label>
                                 </div>
-                                <Label
-                                    htmlFor={`shape-${shape.value}`}
-                                    className="text-xs text-center cursor-pointer mt-1"
-                                >
-                                    {shape.label}
-                                </Label>
-                            </div>
-                        ),
-                        5
-                    )}
-                </Section>
-                <Section
-                    title="Size Range"
-                    sectionKey="carat"
-                    icon={<RulerDimensionLine className="w-4 h-4" />}
-                >
-                    <div className="flex gap-2">
-                        <Input
-                            type="number"
-                            placeholder="Min"
-                            step="0.01"
-                            value={filters.caratMin || ""}
-                            onChange={(e) =>
-                                updateFilter(
-                                    "caratMin",
-                                    e.target.value
-                                        ? parseFloat(e.target.value)
-                                        : undefined
-                                )
-                            }
-                            className="text-sm"
-                        />
-                        <Input
-                            type="number"
-                            placeholder="Max"
-                            step="0.01"
-                            value={filters.caratMax || ""}
-                            onChange={(e) =>
-                                updateFilter(
-                                    "caratMax",
-                                    e.target.value
-                                        ? parseFloat(e.target.value)
-                                        : undefined
-                                )
-                            }
-                            className="text-sm"
-                        />
+                            ))}
+                        </div>
                     </div>
-                </Section>
-                <Section
-                    title="Price Range"
-                    sectionKey="price"
-                    icon={<Euro className="w-4 h-4" />}
-                >
-                    <div className="flex gap-2">
-                        <Input
-                            type="number"
-                            placeholder="Min"
-                            value={filters.priceMin || ""}
-                            onChange={(e) =>
-                                updateFilter(
-                                    "priceMin",
-                                    e.target.value
-                                        ? parseInt(e.target.value)
-                                        : undefined
-                                )
-                            }
-                            className="text-sm"
-                        />
-                        <Input
-                            type="number"
-                            placeholder="Max"
-                            value={filters.priceMax || ""}
-                            onChange={(e) =>
-                                updateFilter(
-                                    "priceMax",
-                                    e.target.value
-                                        ? parseInt(e.target.value)
-                                        : undefined
-                                )
-                            }
-                            className="text-sm"
-                        />
+                    <div className="flex flex-col gap-4">
+                        <div>
+                            <Label className="text-sm font-medium text-gray-700 mb-2  flex items-center gap-2">
+                                <RulerDimensionLine className="w-4 h-4" />
+                                Carat
+                            </Label>
+                            <div className="flex gap-2">
+                                <Input
+                                    type="number"
+                                    placeholder="From"
+                                    step="0.01"
+                                    value={filters.sizeMin || ""}
+                                    onChange={(e) =>
+                                        updateFilter(
+                                            "sizeMin",
+                                            e.target.value
+                                                ? parseFloat(e.target.value)
+                                                : undefined
+                                        )
+                                    }
+                                    className="text-xs h-8"
+                                />
+                                <Input
+                                    type="number"
+                                    placeholder="To"
+                                    step="0.01"
+                                    value={filters.sizeMax || ""}
+                                    onChange={(e) =>
+                                        updateFilter(
+                                            "sizeMax",
+                                            e.target.value
+                                                ? parseFloat(e.target.value)
+                                                : undefined
+                                        )
+                                    }
+                                    className="text-xs h-8"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Price Range */}
+                        <div>
+                            <Label className="text-sm font-medium text-gray-700 mb-2  flex items-center gap-2">
+                                <Euro className="w-4 h-4" />
+                                Price
+                            </Label>
+                            <div className="flex gap-2">
+                                <Input
+                                    type="number"
+                                    placeholder="Min"
+                                    value={filters.priceMin || ""}
+                                    onChange={(e) =>
+                                        updateFilter(
+                                            "priceMin",
+                                            e.target.value
+                                                ? parseInt(e.target.value)
+                                                : undefined
+                                        )
+                                    }
+                                    className="text-xs h-8"
+                                />
+                                <Input
+                                    type="number"
+                                    placeholder="Max"
+                                    value={filters.priceMax || ""}
+                                    onChange={(e) =>
+                                        updateFilter(
+                                            "priceMax",
+                                            e.target.value
+                                                ? parseInt(e.target.value)
+                                                : undefined
+                                        )
+                                    }
+                                    className="text-xs h-8"
+                                />
+                            </div>
+                        </div>
                     </div>
-                </Section>
-                <Section
-                    title="Color"
-                    sectionKey="color"
-                    icon={<Palette className="w-4 h-4" />}
-                >
-                    {renderItemsWithViewMore(
-                        color_options,
-                        "color",
-                        (color) => (
-                            <div key={color.value} className="text-center ">
-                                {/* Color section */}
-                                <Checkbox
-                                    id={`color-${color.value}`}
-                                    className="sr-only peer "
-                                    checked={(filters.color || []).includes(
-                                        color.value
-                                    )}
-                                    onCheckedChange={(checked) =>
-                                        updateArrayFilter(
-                                            "color",
-                                            color.value,
-                                            checked as boolean
-                                        )
-                                    }
-                                />
-                                <Label
-                                    htmlFor={`color-${color.value}`}
-                                    className={`text-xs  border-[1px] py-2 border-black/10 text-black/70 block cursor-pointer hover:bg-gray-200 rounded-sm  transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black/ peer-data-[state=checked]:border-black`}
-                                >
-                                    {color.value}
-                                </Label>
-                            </div>
-                        ),
-                        7
-                    )}
-                </Section>
-                <Section
-                    title="Clarity"
-                    sectionKey="clarity"
-                    icon={<SearchCheck className="w-4 h-4" />}
-                >
-                    {renderItemsWithViewMore(
-                        clarity_options,
-                        "clarity",
-                        (clarity) => (
-                            <div key={clarity.value} className="text-center">
-                                {/* Clarity section */}
-                                <Checkbox
-                                    id={`clarity-${clarity.value}`}
-                                    className="sr-only peer"
-                                    checked={(filters.clarity || []).includes(
-                                        clarity.value
-                                    )}
-                                    onCheckedChange={(checked) =>
-                                        updateArrayFilter(
-                                            "clarity",
-                                            clarity.value,
-                                            checked as boolean
-                                        )
-                                    }
-                                />
-                                <Label
-                                    htmlFor={`clarity-${clarity.value}`}
-                                    className="text-xs  text-black/70 block border-[1px] py-2 border-black/10 cursor-pointer rounded-sm px-1 hover:bg-gray-200  transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
-                                >
-                                    {clarity.value}
-                                </Label>
-                            </div>
-                        ),
-                        4
-                    )}
-                </Section>
-                <Section
-                    title="Fluorescence"
-                    sectionKey="fluorescence"
-                    icon={<Filter className="w-4 h-4" />}
-                >
-                    <div className="grid grid-cols-2 gap-2">
-                        {[
-                            "NON",
-                            "FAINT",
-                            "MEDIUM",
-                            "STRONG",
-                            "VERY STRONG",
-                        ].map((fluo) => (
-                            <div
-                                key={fluo}
-                                className="flex items-center space-x-2"
-                            >
-                                {/* Fluorescence checkboxes */}
-                                <Checkbox
-                                    id={`fluo-${fluo}`}
-                                    className="sr-only peer"
-                                    checked={(
-                                        filters.fluorescence || []
-                                    ).includes(fluo)}
-                                    onCheckedChange={(checked) =>
-                                        updateArrayFilter(
-                                            "fluorescence",
-                                            fluo,
-                                            checked as boolean
-                                        )
-                                    }
-                                />
-                                <Label
-                                    htmlFor={`fluo-${fluo}`}
-                                    className="text-xs border-[1px] py-2 border-black/10 hover:bg-gray-200  text-black/70 cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
-                                >
-                                    {fluo}
-                                </Label>
-                            </div>
-                        ))}
+                </div>
+                {/* Horizontal Filter Sections */}
+                <div className="grid grid-cols-1 gap-6 mb-6">
+                    {/* Color */}
+                    <div>
+                        <Label className="text-sm font-medium text-gray-700 mb-2  flex items-center gap-2">
+                            <Palette className="w-4 h-4" />
+                            Color
+                        </Label>
+                        <div className="flex flex-wrap gap-1">
+                            {color_options.map((color) => (
+                                <div key={color.value}>
+                                    <Checkbox
+                                        id={`color-${color.value}`}
+                                        className="sr-only peer"
+                                        checked={(filters.color || []).includes(
+                                            color.value
+                                        )}
+                                        onCheckedChange={(checked) =>
+                                            updateArrayFilter(
+                                                "color",
+                                                color.value,
+                                                checked as boolean
+                                            )
+                                        }
+                                    />
+                                    <Label
+                                        htmlFor={`color-${color.value}`}
+                                        className="text-xs px-3 py-2 border border-gray-300 rounded cursor-pointer hover:bg-gray-100 hover:border-black transition-colors peer-data-[state=checked]:bg-gray-200  peer-data-[state=checked]:border-black "
+                                    >
+                                        {color.value}
+                                    </Label>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                </Section>
-                <Section
-                    title="Cut"
-                    sectionKey="cut"
-                    icon={<Scissors className="w-4 h-4" />}
-                >
-                    {renderItemsWithViewMore(
-                        cut_options,
-                        "cut",
-                        (cut) => (
-                            <div
-                                key={cut.value}
-                                className="flex items-center space-x-2"
-                            >
-                                {/* Cut section */}
-                                <Checkbox
-                                    id={`cut-${cut.value}`}
-                                    className="sr-only peer"
-                                    checked={(filters.cut || []).includes(
-                                        cut.value
-                                    )}
-                                    onCheckedChange={(checked) =>
-                                        updateArrayFilter(
-                                            "cut",
-                                            cut.value,
-                                            checked as boolean
-                                        )
-                                    }
-                                />
-                                <Label
-                                    htmlFor={`cut-${cut.value}`}
-                                    className="text-xs py-2 border-[1px] border-black/10 hover:bg-gray-200  text-black/70 cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
-                                >
-                                    {cut.label}
-                                </Label>
-                            </div>
-                        ),
-                        2
-                    )}
-                </Section>
-                <Section
-                    title="Polish"
-                    sectionKey="polish"
-                    icon={<Filter className="w-4 h-4" />}
-                >
-                    {renderItemsWithViewMore(
-                        polish_options,
-                        "polish",
-                        (polish) => (
-                            <div
-                                key={polish.value}
-                                className="flex items-center space-x-2"
-                            >
-                                {/* Polish section */}
-                                <Checkbox
-                                    id={`polish-${polish.value}`}
-                                    className="sr-only peer"
-                                    checked={(filters.polish || []).includes(
-                                        polish.value
-                                    )}
-                                    onCheckedChange={(checked) =>
-                                        updateArrayFilter(
-                                            "polish",
-                                            polish.value,
-                                            checked as boolean
-                                        )
-                                    }
-                                />
-                                <Label
-                                    htmlFor={`polish-${polish.value}`}
-                                    className="text-xs py-2 border-[1px] border-black/10 hover:bg-gray-200 cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
-                                >
-                                    {polish.label}
-                                </Label>
-                            </div>
-                        ),
-                        2
-                    )}
-                </Section>
-                <Section
-                    title="Symmetry"
-                    sectionKey="symmetry"
-                    icon={<Filter className="w-4 h-4" />}
-                >
-                    {renderItemsWithViewMore(
-                        symmetry_options,
-                        "symmetry",
-                        (symmetry) => (
-                            <div
-                                key={symmetry.value}
-                                className="flex items-center space-x-2"
-                            >
-                                {/* Symmetry section */}
-                                <Checkbox
-                                    id={`symmetry-${symmetry.value}`}
-                                    className="sr-only peer"
-                                    checked={(filters.symmetry || []).includes(
-                                        symmetry.value
-                                    )}
-                                    onCheckedChange={(checked) =>
-                                        updateArrayFilter(
-                                            "symmetry",
-                                            symmetry.value,
-                                            checked as boolean
-                                        )
-                                    }
-                                />
-                                <Label
-                                    htmlFor={`symmetry-${symmetry.value}`}
-                                    className="text-xs py-2 border-[1px] border-black/10 hover:bg-gray-200 cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
-                                >
-                                    {symmetry.label}
-                                </Label>
-                            </div>
-                        ),
-                        2
-                    )}
-                </Section>
-                <Section
-                    title="Laboratory"
-                    sectionKey="lab"
-                    icon={<Filter className="w-4 h-4" />}
-                >
-                    {renderItemsWithViewMore(
-                        lab_options,
-                        "lab",
-                        (lab) => (
-                            <div
-                                key={lab.value}
-                                className="grid grid-cols-1 space-x-2"
-                            >
-                                {/* Laboratory section */}
-                                <Checkbox
-                                    id={`lab-${lab.value}`}
-                                    className="sr-only peer"
-                                    checked={(filters.lab || []).includes(
-                                        lab.value
-                                    )}
-                                    onCheckedChange={(checked) =>
-                                        updateArrayFilter(
-                                            "lab",
-                                            lab.value,
-                                            checked as boolean
-                                        )
-                                    }
-                                />
-                                <Label
-                                    htmlFor={`lab-${lab.value}`}
-                                    className="text-xs py-2 border-[1px] border-black/10 hover:bg-gray-200 cursor-pointer rounded-sm px-1 transition-colors peer-data-[state=checked]:font-semibold peer-data-[state=checked]:text-white peer-data-[state=checked]:bg-black"
-                                >
-                                    {lab.label}
-                                </Label>
-                            </div>
-                        ),
-                        2
-                    )}
-                </Section>
-                {/* Buttons */}
-                <div className="flex gap-2 pt-4">
+                </div>
+
+                <div className="flex items-center justify-center pt-4 my-5">
                     <Button
-                        onClick={handleSearch}
-                        disabled={loading}
-                        className="flex-1 text-sm"
+                        variant="ghost"
+                        onClick={() => setShowAdvanced(!showAdvanced)}
+                        className="text-sm text-gray-700 hover:bg-gray-200 cursor-pointer transition-all duration-200"
                     >
-                        <Search className="w-4 h-4 mr-2" />
-                        {loading ? "SEARCHING..." : "SEARCH"}
-                    </Button>
-                    <Button
-                        variant="outline"
-                        onClick={onReset}
-                        className="flex-1 text-sm"
-                    >
-                        <RotateCcw className="w-4 h-4 mr-2" />
-                        RESET
+                        {showAdvanced ? (
+                            <>
+                                <ChevronUp className="w-4 h-4 mr-1 transition-transform duration-200" />
+                                Hide Advanced Filters
+                            </>
+                        ) : (
+                            <>
+                                <ChevronDown className="w-4 h-4 mr-1 transition-transform duration-200" />
+                                Show Advanced Filters
+                            </>
+                        )}
                     </Button>
                 </div>
-            </div>
+
+                {/* Advanced Filters - Collapsible with Animation */}
+                <div
+                    className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                        showAdvanced
+                            ? "max-h-[2000px] opacity-100"
+                            : "max-h-0 opacity-0"
+                    }`}
+                >
+                    <div
+                        ref={advancedContentRef}
+                        className={`pt-6 mb-6 transform transition-all duration-500 ease-in-out ${
+                            showAdvanced
+                                ? "translate-y-0 scale-100"
+                                : "-translate-y-4 scale-95"
+                        }`}
+                    >
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {/* Clarity */}
+                            <div className="animate-fade-in-up">
+                                <Label className="text-sm font-medium text-gray-700 mb-2  flex items-center gap-2">
+                                    <SearchCheck className="w-4 h-4" />
+                                    Clarity
+                                </Label>
+                                <div className="flex flex-wrap gap-4">
+                                    {clarity_options.map((clarity) => (
+                                        <div key={clarity.value}>
+                                            <Checkbox
+                                                id={`clarity-${clarity.value}`}
+                                                className="sr-only peer"
+                                                checked={(
+                                                    filters.clarity || []
+                                                ).includes(clarity.value)}
+                                                onCheckedChange={(checked) =>
+                                                    updateArrayFilter(
+                                                        "clarity",
+                                                        clarity.value,
+                                                        checked as boolean
+                                                    )
+                                                }
+                                            />
+                                            <Label
+                                                htmlFor={`clarity-${clarity.value}`}
+                                                className="text-xs px-3 py-2 border border-gray-300 rounded cursor-pointer hover:bg-gray-100 transition-colors peer-data-[state=checked]:bg-gray-200 peer-data-[state=checked]:text-black peer-data-[state=checked]:border-black"
+                                            >
+                                                {clarity.value}
+                                            </Label>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Fluorescence */}
+                            <div className="animate-fade-in-up">
+                                <Label className="text-sm font-medium text-gray-700 mb-2  flex items-center gap-2">
+                                    <Filter className="w-4 h-4" />
+                                    Fluorescence Color
+                                </Label>
+                                <div className="flex flex-wrap gap-4">
+                                    {flou_options.map((fluo) => (
+                                        <div key={fluo.value}>
+                                            <Checkbox
+                                                id={`fluo-${fluo.value}`}
+                                                className="sr-only peer"
+                                                checked={(
+                                                    filters.fluorescenceColor ||
+                                                    []
+                                                ).includes(fluo.value)}
+                                                onCheckedChange={(checked) =>
+                                                    updateArrayFilter(
+                                                        "fluorescenceColor",
+                                                        fluo.value,
+                                                        checked as boolean
+                                                    )
+                                                }
+                                            />
+                                            <Label
+                                                htmlFor={`fluo-${fluo.value}`}
+                                                className="text-xs px-3 py-2 border border-gray-300 rounded cursor-pointer hover:bg-gray-100 transition-colors peer-data-[state=checked]:bg-gray-200 peer-data-[state=checked]:text-black peer-data-[state=checked]:border-black"
+                                            >
+                                                {fluo.label}
+                                            </Label>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Cut */}
+                            <div className="animate-fade-in-up">
+                                <Label className="text-sm font-medium text-gray-700 mb-2  flex items-center gap-2">
+                                    <Scissors className="w-4 h-4" />
+                                    Cut
+                                </Label>
+                                <div className="flex flex-wrap gap-4">
+                                    {cut_options.map((cut) => (
+                                        <div key={cut.value}>
+                                            <Checkbox
+                                                id={`cut-${cut.value}`}
+                                                className="sr-only peer"
+                                                checked={(
+                                                    filters.cut || []
+                                                ).includes(cut.value)}
+                                                onCheckedChange={(checked) =>
+                                                    updateArrayFilter(
+                                                        "cut",
+                                                        cut.value,
+                                                        checked as boolean
+                                                    )
+                                                }
+                                            />
+                                            <Label
+                                                htmlFor={`cut-${cut.value}`}
+                                                className="text-xs px-3 py-2 border border-gray-300 rounded cursor-pointer hover:bg-gray-100 transition-colors peer-data-[state=checked]:bg-gray-200 peer-data-[state=checked]:text-black peer-data-[state=checked]:border-black"
+                                            >
+                                                {cut.label}
+                                            </Label>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Polish */}
+                            <div className="animate-fade-in-up">
+                                <Label className="text-sm font-medium text-gray-700 mb-2  flex items-center gap-2">
+                                    <Filter className="w-4 h-4" />
+                                    Polish
+                                </Label>
+                                <div className="flex flex-wrap gap-4">
+                                    {polish_options.map((polish) => (
+                                        <div key={polish.value}>
+                                            <Checkbox
+                                                id={`polish-${polish.value}`}
+                                                className="sr-only peer"
+                                                checked={(
+                                                    filters.polish || []
+                                                ).includes(polish.value)}
+                                                onCheckedChange={(checked) =>
+                                                    updateArrayFilter(
+                                                        "polish",
+                                                        polish.value,
+                                                        checked as boolean
+                                                    )
+                                                }
+                                            />
+                                            <Label
+                                                htmlFor={`polish-${polish.value}`}
+                                                className="text-xs px-3 py-2 border border-gray-300 rounded cursor-pointer hover:bg-gray-100 transition-colors peer-data-[state=checked]:bg-gray-200 peer-data-[state=checked]:text-black peer-data-[state=checked]:border-black"
+                                            >
+                                                {polish.label}
+                                            </Label>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Symmetry */}
+                            <div className="animate-fade-in-up">
+                                <Label className="text-sm font-medium text-gray-700 mb-2  flex items-center gap-2">
+                                    <Filter className="w-4 h-4" />
+                                    Symmetry
+                                </Label>
+                                <div className="flex flex-wrap gap-4">
+                                    {symmetry_options.map((symmetry) => (
+                                        <div key={symmetry.value}>
+                                            <Checkbox
+                                                id={`symmetry-${symmetry.value}`}
+                                                className="sr-only peer"
+                                                checked={(
+                                                    filters.symmetry || []
+                                                ).includes(symmetry.value)}
+                                                onCheckedChange={(checked) =>
+                                                    updateArrayFilter(
+                                                        "symmetry",
+                                                        symmetry.value,
+                                                        checked as boolean
+                                                    )
+                                                }
+                                            />
+                                            <Label
+                                                htmlFor={`symmetry-${symmetry.value}`}
+                                                className="text-xs px-3 py-2 border border-gray-300 rounded cursor-pointer hover:bg-gray-100 transition-colors peer-data-[state=checked]:bg-gray-200 peer-data-[state=checked]:text-black peer-data-[state=checked]:border-black"
+                                            >
+                                                {symmetry.label}
+                                            </Label>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Laboratory */}
+                        <div className="mt-6 animate-fade-in-up">
+                            <Label className="text-sm font-medium text-gray-700 mb-2  flex items-center gap-2">
+                                <Filter className="w-4 h-4" />
+                                Laboratory
+                            </Label>
+                            <div className="flex flex-wrap gap-4">
+                                {[
+                                    { value: "GIA", label: "GIA" },
+                                    { value: "HRD", label: "HRD" },
+                                    {
+                                        value: "None",
+                                        label: "Other",
+                                    },
+                                ].map((lab) => (
+                                    <div key={lab.value}>
+                                        <Checkbox
+                                            id={`lab-${lab.value}`}
+                                            className="sr-only peer"
+                                            checked={(
+                                                filters.laboratory || []
+                                            ).includes(lab.value)}
+                                            onCheckedChange={(checked) =>
+                                                updateArrayFilter(
+                                                    "laboratory",
+                                                    lab.value,
+                                                    checked as boolean
+                                                )
+                                            }
+                                        />
+                                        <Label
+                                            htmlFor={`lab-${lab.value}`}
+                                            className="text-xs px-3 py-2 border border-gray-300 rounded cursor-pointer hover:bg-gray-100 transition-colors peer-data-[state=checked]:bg-gray-200 peer-data-[state=checked]:text-black peer-data-[state=checked]:border-black"
+                                        >
+                                            {lab.label}
+                                        </Label>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Bottom Controls */}
+                <div className="flex items-center justify-between pt-4 border-t">
+                    <div className="flex justify-end gap-3">
+                        <Button
+                            variant="outline"
+                            onClick={onReset}
+                            className="text-sm px-6"
+                        >
+                            <RotateCcw className="w-4 h-4 mr-2" />
+                            Reset
+                        </Button>
+                        <Button
+                            onClick={handleSearch}
+                            disabled={loading}
+                            className="text-sm px-8"
+                        >
+                            <Search className="w-4 h-4 mr-2" />
+                            {loading ? "Searching..." : "Search"}
+                        </Button>
+                    </div>
+                </div>
+            </Container>
         </div>
     );
 }

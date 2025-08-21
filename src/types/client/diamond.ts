@@ -5,10 +5,12 @@ export interface ClientDiamond {
     clarity: string;
     rapList: number;
     discount: number;
+    laboratory: string;
+    size: number;
     cut: string;
     polish: string;
     symmetry: string;
-    fluorescence: string;
+    fluorescenceColor: string;
     measurements: {
         length: number;
         width: number;
@@ -31,8 +33,8 @@ export interface ClientFilters {
     sortBy?: string;
     sortOrder?: string;
     shape?: string[];
-    caratMin?: number;
-    caratMax?: number;
+    sizeMin?: number;
+    sizeMax?: number;
     priceMin?: number;
     priceMax?: number;
     discountMin?: number;
@@ -44,8 +46,8 @@ export interface ClientFilters {
     cut?: string[];
     polish?: string[];
     symmetry?: string[];
-    fluorescence?: string[];
-    lab?: string[];
+    fluorescenceColor?: string[];
+    laboratory?: string[];
     searchTerm?: string;
     isAvailable?: boolean;
 }

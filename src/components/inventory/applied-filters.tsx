@@ -133,20 +133,20 @@ export function AppliedFilters({
         }
 
         // Fluorescence filters
-        if (filters.fluorescence && filters.fluorescence.length > 0) {
-            filters.fluorescence.forEach((fluorescence) => {
+        if (filters.fluorescenceColor && filters.fluorescenceColor.length > 0) {
+            filters.fluorescenceColor.forEach((fluorescence) => {
                 addBadge(
                     `Fluorescence: ${fluorescence}`,
-                    "fluorescence",
+                    "fluorescenceColor",
                     fluorescence
                 );
             });
         }
 
-        // Lab filters
-        if (filters.lab && filters.lab.length > 0) {
-            filters.lab.forEach((lab) => {
-                addBadge(`Lab: ${lab}`, "lab", lab);
+        // Laboratory filters
+        if (filters.laboratory && filters.laboratory.length > 0) {
+            filters.laboratory.forEach((lab) => {
+                addBadge(`Laboratory: ${lab}`, "laboratory", lab);
             });
         }
 
@@ -168,16 +168,16 @@ export function AppliedFilters({
         }
 
         // Carat range
-        if (filters.caratMin !== undefined || filters.caratMax !== undefined) {
-            const min = filters.caratMin ? `${filters.caratMin}ct` : "";
-            const max = filters.caratMax ? `${filters.caratMax}ct` : "";
+        if (filters.sizeMin !== undefined || filters.sizeMax !== undefined) {
+            const min = filters.sizeMin ? `${filters.sizeMin}ct` : "";
+            const max = filters.sizeMax ? `${filters.sizeMax}ct` : "";
             const caratLabel =
                 min && max
                     ? `${min} - ${max}`
                     : min
                     ? `From ${min}`
                     : `Up to ${max}`;
-            addBadge(`Size: ${caratLabel}`, "caratMin"); // We'll handle both min/max together
+            addBadge(`Size: ${caratLabel}`, "sizeMin"); // We'll handle both min/max together
         }
 
         // Search term

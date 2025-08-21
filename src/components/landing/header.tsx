@@ -38,8 +38,12 @@ const Navbar = () => {
             label: "Inventory",
             onClick: () => accessInventoryClickHandler(),
         },
-        { href: "/diamond-knowledge", label: "Diamond Knowledge" },
-        { href: "/contact", label: "Contact us" },
+        ...(user?.role !== "ADMIN"
+            ? [
+                  { href: "/diamond-knowledge", label: "Diamond Knowledge" },
+                  { href: "/contact", label: "Contact us" },
+              ]
+            : []),
     ];
 
     // Admin-only nav items

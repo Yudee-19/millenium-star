@@ -174,6 +174,9 @@ export function ClientDiamondTable({
                                 Cut
                             </TableHead>
                             <TableHead className="text-xs font-medium text-gray-700 text-center">
+                                Size (in ct.)
+                            </TableHead>
+                            <TableHead className="text-xs font-medium text-gray-700 text-center">
                                 Polish
                             </TableHead>
                             <TableHead className="text-xs font-medium text-gray-700 text-center">
@@ -197,7 +200,7 @@ export function ClientDiamondTable({
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {diamonds.map((diamond: any) => (
+                        {diamonds.map((diamond: ClientDiamond) => (
                             <TableRow
                                 key={diamond._id}
                                 className="hover:bg-gray-50 hover:cursor-pointer text-center odd:bg-white even:bg-gray-100"
@@ -212,37 +215,34 @@ export function ClientDiamondTable({
                                     />
                                 </TableCell>
                                 <TableCell className="text-sm font-mono">
-                                    {diamond.certificateNumber ||
-                                        diamond["CERT-NO"] ||
-                                        "-"}
+                                    {diamond.certificateNumber || "-"}
                                 </TableCell>
                                 <TableCell className="text-sm">
-                                    {diamond.shape || diamond["Shape"] || "-"}
+                                    {diamond.shape || "-"}
                                 </TableCell>
                                 <TableCell className="text-sm ">
-                                    {diamond.color || diamond["Color"] || "-"}
+                                    {diamond.color || "-"}
                                 </TableCell>
                                 <TableCell className="text-sm">
-                                    {diamond.clarity ||
-                                        diamond["Clarity"] ||
-                                        "-"}
+                                    {diamond.clarity || "-"}
                                 </TableCell>
                                 <TableCell className="text-sm">
-                                    {diamond.cut || diamond["Cut"] || "-"}
+                                    {diamond.cut || "-"}
                                 </TableCell>
                                 <TableCell className="text-sm">
-                                    {diamond.polish || diamond["Polish"] || "-"}
+                                    {diamond.size || "-"}
                                 </TableCell>
                                 <TableCell className="text-sm">
-                                    {diamond.symmetry || diamond["sym"] || "-"}
+                                    {diamond.polish || "-"}
                                 </TableCell>
                                 <TableCell className="text-sm">
-                                    {diamond.fluorescenceColor ||
-                                        diamond["FLOU"] ||
-                                        "-"}
+                                    {diamond.symmetry || "-"}
                                 </TableCell>
                                 <TableCell className="text-sm">
-                                    {diamond.lab || diamond["LAB"] || "-"}
+                                    {diamond.fluorescenceColor || "-"}
+                                </TableCell>
+                                <TableCell className="text-sm">
+                                    {diamond.laboratory || "-"}
                                 </TableCell>
                                 {/* <TableCell className="text-sm">
                                     {diamond._id.slice(-8)}

@@ -67,10 +67,10 @@ export default function ClientPage() {
             // Remove price max filter and reset min to range minimum
             delete newFilters.priceMax;
             delete newFilters.priceMin;
-        } else if (key === "caratMax") {
-            // Remove carat max filter and reset min to range minimum
-            delete newFilters.caratMax;
-            delete newFilters.caratMin;
+        } else if (key === "sizeMax") {
+            // Remove size max filter and reset min to range minimum
+            delete newFilters.sizeMax;
+            delete newFilters.sizeMin;
         } else if (key === "discountMax") {
             // Remove discount max filter and reset min to range minimum
             delete newFilters.discountMax;
@@ -139,7 +139,7 @@ export default function ClientPage() {
         <InventoryGuard>
             <UserStatusHandler>
                 <div className=" bg-gray-50">
-                    <div className="flex">
+                    <div className="flex-col">
                         {/* Filter Sidebar */}
                         <ClientFilterSidebar
                             filters={filters}
@@ -151,7 +151,7 @@ export default function ClientPage() {
                         />
 
                         {/* Main Content */}
-                        <div className="flex-1 p-6 sticky top-20 max-h-screen overflow-y-auto">
+                        <div className="flex-1 p-6   ">
                             {/* Top Controls */}
                             <div className="flex items-center justify-between mb-6">
                                 <div className="flex items-center space-x-4">
