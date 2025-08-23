@@ -141,7 +141,7 @@ export function ClientFilterSidebar({
             <Container>
                 <div className="flex flex-col justify-between gap-5 md:flex-row">
                     {/* Shape Filter - Always visible */}
-                    <div className="mb-6 flex-1">
+                    <div className="mb-6 flex-1 bg-gray-200/50 p-5">
                         <Label className="text-sm font-medium text-gray-700 mb-3  flex items-center gap-2">
                             <Gem className="w-4 h-4" />
                             Shape
@@ -165,7 +165,7 @@ export function ClientFilterSidebar({
                                     />
                                     <label
                                         htmlFor={`shape-${shape.value}`}
-                                        className={` cursor-pointer justify-center transition-all flex flex-col rounded-md px-6 py-4 border border-gray-300 items-center hover:border-gray-400 peer-data-[state=checked]:border-black ${
+                                        className={` cursor-pointer bg-white justify-center transition-all flex flex-col rounded-md px-6 py-4 border border-gray-300 items-center hover:border-gray-400 peer-data-[state=checked]:border-black ${
                                             (filters.shape || []).includes(
                                                 shape.value
                                             )
@@ -194,7 +194,7 @@ export function ClientFilterSidebar({
                             ))}
                         </div>
                     </div>
-                    <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-4 bg-gray-200/50 p-5 mb-6">
                         <div>
                             <Label className="text-sm font-medium text-gray-700 mb-2  flex items-center gap-2">
                                 <RulerDimensionLine className="w-4 h-4" />
@@ -214,7 +214,7 @@ export function ClientFilterSidebar({
                                                 : undefined
                                         )
                                     }
-                                    className="text-xs h-8"
+                                    className="text-xs h-8 bg-white"
                                 />
                                 <Input
                                     type="number"
@@ -229,7 +229,7 @@ export function ClientFilterSidebar({
                                                 : undefined
                                         )
                                     }
-                                    className="text-xs h-8"
+                                    className="text-xs h-8 bg-white"
                                 />
                             </div>
                         </div>
@@ -253,7 +253,7 @@ export function ClientFilterSidebar({
                                                 : undefined
                                         )
                                     }
-                                    className="text-xs h-8"
+                                    className="text-xs h-8 bg-white"
                                 />
                                 <Input
                                     type="number"
@@ -267,14 +267,14 @@ export function ClientFilterSidebar({
                                                 : undefined
                                         )
                                     }
-                                    className="text-xs h-8"
+                                    className="text-xs h-8 bg-white"
                                 />
                             </div>
                         </div>
                     </div>
                 </div>
                 {/* Horizontal Filter Sections */}
-                <div className="grid grid-cols-1 gap-6 mb-6">
+                <div className="grid grid-cols-1 gap-6 mb-6 bg-gray-200/50 p-5">
                     {/* Color */}
                     <div>
                         <Label className="text-sm font-medium text-gray-700 mb-2  flex items-center gap-2">
@@ -300,7 +300,7 @@ export function ClientFilterSidebar({
                                     />
                                     <Label
                                         htmlFor={`color-${color.value}`}
-                                        className="text-xs px-3 py-2 border border-gray-300 rounded cursor-pointer hover:bg-gray-100 hover:border-black transition-colors peer-data-[state=checked]:bg-gray-200  peer-data-[state=checked]:border-black "
+                                        className="text-xs px-3 py-2 border bg-white border-gray-300 rounded cursor-pointer hover:bg-gray-100 hover:border-black transition-colors peer-data-[state=checked]:bg-gray-200  peer-data-[state=checked]:border-black "
                                     >
                                         {color.value}
                                     </Label>
@@ -310,11 +310,11 @@ export function ClientFilterSidebar({
                     </div>
                 </div>
 
-                <div className="flex items-center justify-center pt-4 my-5">
+                <div className="flex items-center justify-center pt-4 my-5 bg-gray-200/50 p-5">
                     <Button
                         variant="ghost"
                         onClick={() => setShowAdvanced(!showAdvanced)}
-                        className="text-sm text-gray-700 hover:bg-gray-200 cursor-pointer transition-all duration-200"
+                        className="text-sm text-gray-700 bg-white hover:bg-gray-100 hover:border-1 hover:border-black cursor-pointer transition-all duration-200"
                     >
                         {showAdvanced ? (
                             <>
@@ -332,7 +332,7 @@ export function ClientFilterSidebar({
 
                 {/* Advanced Filters - Collapsible with Animation */}
                 <div
-                    className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                    className={` bg-gray-200/50 p-5 overflow-hidden transition-all duration-500 ease-in-out ${
                         showAdvanced
                             ? "max-h-[2000px] opacity-100"
                             : "max-h-0 opacity-0"
@@ -372,7 +372,7 @@ export function ClientFilterSidebar({
                                             />
                                             <Label
                                                 htmlFor={`clarity-${clarity.value}`}
-                                                className="text-xs px-3 py-2 border border-gray-300 rounded cursor-pointer hover:bg-gray-100 transition-colors peer-data-[state=checked]:bg-gray-200 peer-data-[state=checked]:text-black peer-data-[state=checked]:border-black"
+                                                className="text-xs bg-white px-3 py-2 border border-gray-300 rounded cursor-pointer hover:bg-gray-100 transition-colors peer-data-[state=checked]:bg-gray-200 peer-data-[state=checked]:text-black peer-data-[state=checked]:border-black"
                                             >
                                                 {clarity.value}
                                             </Label>
@@ -407,7 +407,7 @@ export function ClientFilterSidebar({
                                             />
                                             <Label
                                                 htmlFor={`fluo-${fluo.value}`}
-                                                className="text-xs px-3 py-2 border border-gray-300 rounded cursor-pointer hover:bg-gray-100 transition-colors peer-data-[state=checked]:bg-gray-200 peer-data-[state=checked]:text-black peer-data-[state=checked]:border-black"
+                                                className="text-xs bg-white px-3 py-2 border border-gray-300 rounded cursor-pointer hover:bg-gray-100 transition-colors peer-data-[state=checked]:bg-gray-200 peer-data-[state=checked]:text-black peer-data-[state=checked]:border-black"
                                             >
                                                 {fluo.label}
                                             </Label>
@@ -441,7 +441,7 @@ export function ClientFilterSidebar({
                                             />
                                             <Label
                                                 htmlFor={`cut-${cut.value}`}
-                                                className="text-xs px-3 py-2 border border-gray-300 rounded cursor-pointer hover:bg-gray-100 transition-colors peer-data-[state=checked]:bg-gray-200 peer-data-[state=checked]:text-black peer-data-[state=checked]:border-black"
+                                                className="text-xs bg-white px-3 py-2 border border-gray-300 rounded cursor-pointer hover:bg-gray-100 transition-colors peer-data-[state=checked]:bg-gray-200 peer-data-[state=checked]:text-black peer-data-[state=checked]:border-black"
                                             >
                                                 {cut.label}
                                             </Label>
@@ -475,7 +475,7 @@ export function ClientFilterSidebar({
                                             />
                                             <Label
                                                 htmlFor={`polish-${polish.value}`}
-                                                className="text-xs px-3 py-2 border border-gray-300 rounded cursor-pointer hover:bg-gray-100 transition-colors peer-data-[state=checked]:bg-gray-200 peer-data-[state=checked]:text-black peer-data-[state=checked]:border-black"
+                                                className="text-xs bg-white px-3 py-2 border border-gray-300 rounded cursor-pointer hover:bg-gray-100 transition-colors peer-data-[state=checked]:bg-gray-200 peer-data-[state=checked]:text-black peer-data-[state=checked]:border-black"
                                             >
                                                 {polish.label}
                                             </Label>
@@ -509,7 +509,7 @@ export function ClientFilterSidebar({
                                             />
                                             <Label
                                                 htmlFor={`symmetry-${symmetry.value}`}
-                                                className="text-xs px-3 py-2 border border-gray-300 rounded cursor-pointer hover:bg-gray-100 transition-colors peer-data-[state=checked]:bg-gray-200 peer-data-[state=checked]:text-black peer-data-[state=checked]:border-black"
+                                                className="text-xs bg-white px-3 py-2 border border-gray-300 rounded cursor-pointer hover:bg-gray-100 transition-colors peer-data-[state=checked]:bg-gray-200 peer-data-[state=checked]:text-black peer-data-[state=checked]:border-black"
                                             >
                                                 {symmetry.label}
                                             </Label>
@@ -551,7 +551,7 @@ export function ClientFilterSidebar({
                                         />
                                         <Label
                                             htmlFor={`lab-${lab.value}`}
-                                            className="text-xs px-3 py-2 border border-gray-300 rounded cursor-pointer hover:bg-gray-100 transition-colors peer-data-[state=checked]:bg-gray-200 peer-data-[state=checked]:text-black peer-data-[state=checked]:border-black"
+                                            className="text-xs bg-white px-3 py-2 border border-gray-300 rounded cursor-pointer hover:bg-gray-100 transition-colors peer-data-[state=checked]:bg-gray-200 peer-data-[state=checked]:text-black peer-data-[state=checked]:border-black"
                                         >
                                             {lab.label}
                                         </Label>
