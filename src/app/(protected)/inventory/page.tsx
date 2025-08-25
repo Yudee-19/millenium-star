@@ -22,9 +22,11 @@ export default function ClientPage() {
     const router = useRouter();
     const {
         diamonds,
-        filterOptions,
         pagination,
         loading,
+        currentSorting,
+        handleSortChange,
+        filterOptions,
         error,
         searchDiamonds,
         resetFilters,
@@ -36,7 +38,6 @@ export default function ClientPage() {
     const [view, setView] = useState<"table" | "grid">("table");
 
     const handleFiltersChange = (newFilters: ClientFilters) => {
-        console.log("Filter change received:", newFilters); // Add this for debugging
         setFilters(newFilters);
     };
 
@@ -228,6 +229,8 @@ export default function ClientPage() {
                                     loading={loading}
                                     pagination={pagination}
                                     onPageChange={handlePageChange}
+                                    onSortChange={handleSortChange}
+                                    currentSorting={currentSorting}
                                 />
                             ) : (
                                 <ClientDiamondGrid

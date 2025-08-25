@@ -25,6 +25,10 @@ interface UseClientDiamondsReturn {
     searchDiamonds: (filters: ClientFilters, page?: number) => Promise<void>;
     resetFilters: () => Promise<void>;
     currentFilters: ClientFilters;
+    currentSorting: { id: string; desc: boolean }[];
+    handleSortChange: (
+        sorting: { id: string; desc: boolean }[]
+    ) => Promise<void>;
 }
 
 export function useClientDiamonds(): UseClientDiamondsReturn {
@@ -50,6 +54,9 @@ export function useClientDiamonds(): UseClientDiamondsReturn {
     const [currentFilters, setCurrentFilters] = useState<ClientFilters>({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [currentSorting, setCurrentSorting] = useState<
+        { id: string; desc: boolean }[]
+    >([{ id: "createdAt", desc: false }]);
 
     const loadInitialData = async () => {
         try {
@@ -80,32 +87,55 @@ export function useClientDiamonds(): UseClientDiamondsReturn {
         }
     };
 
-    const searchDiamonds = async (filters: ClientFilters, page: number = 1) => {
+    const searchDiamonds = async (
+        filters: ClientFilters,
+        page: number = 1,
+        sortingOverride?: { id: string; desc: boolean }[] // Add this parameter
+    ) => {
         try {
             setLoading(true);
             setError(null);
 
+            // Use override sorting if provided, otherwise use current state
+            const sorting = sortingOverride || currentSorting;
+
+            // Convert sorting state to API format
+            const sortBy = sorting.length > 0 ? sorting[0].id : "createdAt";
+            const sortOrder =
+                sorting.length > 0 ? (sorting[0].desc ? "desc" : "asc") : "asc";
+
             // Ensure default sorting is always applied if not specified
             const filtersWithDefaults = {
-                sortBy: "createdAt",
-                sortOrder: "asc",
-                ...filters, // User filters can override defaults
+                ...filters,
+                sortBy,
+                sortOrder,
             };
+            console.log("Filters with defaults:", filtersWithDefaults);
 
-            const results = await clientDiamondAPI.searchDiamonds(
+            const response = await clientDiamondAPI.searchDiamonds(
                 filtersWithDefaults,
                 page,
                 20
             );
 
-            setDiamonds(results.data);
-            setPagination(results.pagination);
+            setDiamonds(response.data);
+            setPagination(response.pagination);
             setCurrentFilters(filtersWithDefaults);
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Search failed");
+            setError(
+                err instanceof Error ? err.message : "An unknown error occurred"
+            );
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleSortChange = async (
+        sorting: { id: string; desc: boolean }[]
+    ) => {
+        setCurrentSorting(sorting);
+        // Pass the new sorting directly to searchDiamonds
+        await searchDiamonds(currentFilters, 1, sorting);
     };
 
     const resetFilters = async () => {
@@ -125,5 +155,7 @@ export function useClientDiamonds(): UseClientDiamondsReturn {
         searchDiamonds,
         resetFilters,
         currentFilters,
+        currentSorting,
+        handleSortChange,
     };
 }

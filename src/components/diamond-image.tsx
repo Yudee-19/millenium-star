@@ -34,7 +34,7 @@ export const DiamondImage: React.FC<DiamondImageProps> = ({
         )
             .then((res) => res.json())
             .then((data) => {
-                console.log("Fetched diamond images:", data);
+                // console.log("Fetched diamond images:", data);
                 if (
                     isMounted &&
                     data.data?.imagesUrls &&
@@ -42,10 +42,10 @@ export const DiamondImage: React.FC<DiamondImageProps> = ({
                     data.data.imagesUrls.length > 0
                 ) {
                     // Try to get the highest quality image (usually the first one)
-                    console.log("Setting image URL:", data.data.imagesUrls[0]);
+                    // console.log("Setting image URL:", data.data.imagesUrls[0]);
                     setImageUrl(data.data.imagesUrls[0]);
                 } else {
-                    console.log("not Setting image URL:");
+                    // console.log("not Setting image URL:");
                     setImageUrl(fallbackUrl);
                 }
             })

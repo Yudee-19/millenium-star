@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Diamond } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { DiamondImage } from "../diamond-image";
+import { ClientTableColumnHeader } from "./client-table-column-header";
 
 interface PaginationData {
     currentPage: number;
@@ -30,6 +31,8 @@ interface ClientDiamondTableProps {
     loading: boolean;
     pagination: PaginationData;
     onPageChange: (page: number) => void;
+    onSortChange?: (sorting: { id: string; desc: boolean }[]) => void;
+    currentSorting?: { id: string; desc: boolean }[];
 }
 
 export function ClientDiamondTable({
@@ -37,6 +40,8 @@ export function ClientDiamondTable({
     loading,
     pagination,
     onPageChange,
+    onSortChange,
+    currentSorting = [],
 }: ClientDiamondTableProps) {
     const router = useRouter();
     if (loading) {
@@ -156,46 +161,106 @@ export function ClientDiamondTable({
                     <TableHeader>
                         <TableRow className="bg-gray-200">
                             <TableHead className="text-xs font-medium text-gray-700 text-left pl-3">
-                                Img.
+                                <ClientTableColumnHeader
+                                    title="Img."
+                                    canSort={false}
+                                />
                             </TableHead>
                             <TableHead className="text-xs font-medium text-gray-700 text-center">
-                                Diamond Id.
+                                <ClientTableColumnHeader
+                                    title="Diamond Id."
+                                    sortKey="certificateNumber"
+                                    currentSorting={currentSorting}
+                                    onSortChange={onSortChange}
+                                />
                             </TableHead>
                             <TableHead className="text-xs font-medium text-gray-700 text-center">
-                                Shape
+                                <ClientTableColumnHeader
+                                    title="Shape"
+                                    sortKey="shape"
+                                    currentSorting={currentSorting}
+                                    onSortChange={onSortChange}
+                                />
                             </TableHead>
                             <TableHead className="text-xs font-medium  text-gray-700 text-center">
-                                Color
+                                <ClientTableColumnHeader
+                                    title="Color"
+                                    sortKey="color"
+                                    currentSorting={currentSorting}
+                                    onSortChange={onSortChange}
+                                />
                             </TableHead>
                             <TableHead className="text-xs font-medium text-gray-700 text-center">
-                                Clarity
+                                <ClientTableColumnHeader
+                                    title="Clarity"
+                                    sortKey="clarity"
+                                    currentSorting={currentSorting}
+                                    onSortChange={onSortChange}
+                                />
                             </TableHead>
                             <TableHead className="text-xs font-medium text-gray-700 text-center">
-                                Cut
+                                <ClientTableColumnHeader
+                                    title="Cut"
+                                    sortKey="cut"
+                                    currentSorting={currentSorting}
+                                    onSortChange={onSortChange}
+                                />
                             </TableHead>
                             <TableHead className="text-xs font-medium text-gray-700 text-center">
-                                Size (in ct.)
+                                <ClientTableColumnHeader
+                                    title="Size (in ct.)"
+                                    sortKey="size"
+                                    currentSorting={currentSorting}
+                                    onSortChange={onSortChange}
+                                />
                             </TableHead>
                             <TableHead className="text-xs font-medium text-gray-700 text-center">
-                                Polish
+                                <ClientTableColumnHeader
+                                    title="Polish"
+                                    sortKey="polish"
+                                    currentSorting={currentSorting}
+                                    onSortChange={onSortChange}
+                                />
                             </TableHead>
                             <TableHead className="text-xs font-medium text-gray-700 text-center">
-                                Symmetry
+                                <ClientTableColumnHeader
+                                    title="Symmetry"
+                                    sortKey="symmetry"
+                                    currentSorting={currentSorting}
+                                    onSortChange={onSortChange}
+                                />
                             </TableHead>
                             <TableHead className="text-xs font-medium text-gray-700 text-center">
-                                Fluorescence
+                                <ClientTableColumnHeader
+                                    title="Fluorescence"
+                                    sortKey="fluorescenceColor"
+                                    currentSorting={currentSorting}
+                                    onSortChange={onSortChange}
+                                />
                             </TableHead>
                             <TableHead className="text-xs font-medium text-gray-700 text-center">
-                                Lab
+                                <ClientTableColumnHeader
+                                    title="Lab"
+                                    sortKey="laboratory"
+                                    currentSorting={currentSorting}
+                                    onSortChange={onSortChange}
+                                />
                             </TableHead>
-                            {/* <TableHead className="text-xs font-medium text-gray-700 text-center">
-                                Stone Id
-                            </TableHead> */}
                             <TableHead className="text-xs font-medium text-gray-700 text-center">
-                                Price
+                                <ClientTableColumnHeader
+                                    title="Price"
+                                    sortKey="price"
+                                    currentSorting={currentSorting}
+                                    onSortChange={onSortChange}
+                                />
                             </TableHead>
                             <TableHead className="text-xs font-medium text-gray-700 text-center">
-                                Rap List
+                                <ClientTableColumnHeader
+                                    title="Rap List"
+                                    sortKey="rapList"
+                                    currentSorting={currentSorting}
+                                    onSortChange={onSortChange}
+                                />
                             </TableHead>
                         </TableRow>
                     </TableHeader>

@@ -60,7 +60,7 @@ export const color_options = [
     { value: "K", label: "K", icon: Gem },
     { value: "L", label: "L", icon: Gem },
     { value: "M", label: "M", icon: Gem },
-    { value: "Other", label: "Other", icon: Gem },
+    { value: "others", label: "others", icon: Gem },
     { value: "N", label: "N", icon: Gem },
     { value: "O", label: "O", icon: Gem },
     { value: "P", label: "P", icon: Gem },
