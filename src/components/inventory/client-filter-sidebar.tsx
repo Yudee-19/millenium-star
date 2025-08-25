@@ -165,7 +165,7 @@ export function ClientFilterSidebar({
                                     />
                                     <label
                                         htmlFor={`shape-${shape.value}`}
-                                        className={` cursor-pointer bg-white justify-center transition-all flex flex-col rounded-md px-6 py-4 border border-gray-300 items-center hover:border-gray-400 peer-data-[state=checked]:border-black ${
+                                        className={` cursor-pointer bg-white justify-center transition-all flex flex-col rounded-md px-6 py-4 border border-gray-300 items-center hover:border-gray-400hover:bg-gray-100  peer-data-[state=checked]:bg-gray-200 peer-data-[state=checked]:text-black peer-data-[state=checked]:border-black ${
                                             (filters.shape || []).includes(
                                                 shape.value
                                             )
@@ -278,11 +278,11 @@ export function ClientFilterSidebar({
                     {/* Color */}
                     <div>
                         <Label className="text-sm font-medium text-gray-700 mb-2  flex items-center gap-2">
-                            <Palette className="w-4 h-4" />
+                            <Filter className="w-4 h-4" />
                             Color
                         </Label>
                         <div className="flex flex-wrap gap-1">
-                            {color_options.map((color) => (
+                            {color_options.slice(0, 11).map((color) => (
                                 <div key={color.value}>
                                     <Checkbox
                                         id={`color-${color.value}`}
@@ -419,7 +419,7 @@ export function ClientFilterSidebar({
                             {/* Cut */}
                             <div className="animate-fade-in-up">
                                 <Label className="text-sm font-medium text-gray-700 mb-2  flex items-center gap-2">
-                                    <Scissors className="w-4 h-4" />
+                                    <Filter className="w-4 h-4" />
                                     Cut
                                 </Label>
                                 <div className="flex flex-wrap gap-4">

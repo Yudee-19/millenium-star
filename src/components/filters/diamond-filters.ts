@@ -60,6 +60,7 @@ export const color_options = [
     { value: "K", label: "K", icon: Gem },
     { value: "L", label: "L", icon: Gem },
     { value: "M", label: "M", icon: Gem },
+    { value: "Other", label: "Other", icon: Gem },
     { value: "N", label: "N", icon: Gem },
     { value: "O", label: "O", icon: Gem },
     { value: "P", label: "P", icon: Gem },
@@ -78,7 +79,6 @@ export const color_options = [
 export const clarity_options = [
     { value: "FL", label: "FL", icon: Gem },
     { value: "IF", label: "IF", icon: Gem },
-    { value: "Loupe Clean", label: "Loupe Clean", icon: Gem },
     { value: "LC", label: "LC", icon: Gem },
     { value: "VVS1", label: "VVS1", icon: Gem },
     { value: "VVS2", label: "VVS2", icon: Gem },

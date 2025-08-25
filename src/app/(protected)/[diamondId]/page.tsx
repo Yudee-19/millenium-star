@@ -367,14 +367,14 @@ export default function DiamondDetailPage() {
                                     {diamond.discount ? (
                                         <>
                                             <span className="text-2xl font-bold text-gray-600">
-                                                ${discountedPrice}
+                                                ${diamond.price}
                                             </span>
-                                            <span className="text-lg text-gray-500 line-through">
+                                            {/* <span className="text-lg text-gray-500 line-through">
                                                 ${diamond.rapList}
                                             </span>
                                             <Badge variant="outline">
                                                 {diamond.discount}% OFF
-                                            </Badge>
+                                            </Badge> */}
                                         </>
                                     ) : (
                                         <span className="text-2xl font-bold text-gray-900">
