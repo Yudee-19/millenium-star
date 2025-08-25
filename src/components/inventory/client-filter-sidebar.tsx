@@ -346,7 +346,7 @@ export function ClientFilterSidebar({
                                 : "-translate-y-4 scale-95"
                         }`}
                     >
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
                             {/* Clarity */}
                             <div className="animate-fade-in-up">
                                 <Label className="text-sm font-medium text-gray-700 mb-2  flex items-center gap-2">
@@ -517,46 +517,46 @@ export function ClientFilterSidebar({
                                     ))}
                                 </div>
                             </div>
-                        </div>
 
-                        {/* Laboratory */}
-                        <div className="mt-6 animate-fade-in-up">
-                            <Label className="text-sm font-medium text-gray-700 mb-2  flex items-center gap-2">
-                                <Filter className="w-4 h-4" />
-                                Laboratory
-                            </Label>
-                            <div className="flex flex-wrap gap-4">
-                                {[
-                                    { value: "GIA", label: "GIA" },
-                                    { value: "HRD", label: "HRD" },
-                                    {
-                                        value: "None",
-                                        label: "Other",
-                                    },
-                                ].map((lab) => (
-                                    <div key={lab.value}>
-                                        <Checkbox
-                                            id={`lab-${lab.value}`}
-                                            className="sr-only peer"
-                                            checked={(
-                                                filters.laboratory || []
-                                            ).includes(lab.value)}
-                                            onCheckedChange={(checked) =>
-                                                updateArrayFilter(
-                                                    "laboratory",
-                                                    lab.value,
-                                                    checked as boolean
-                                                )
-                                            }
-                                        />
-                                        <Label
-                                            htmlFor={`lab-${lab.value}`}
-                                            className="text-xs bg-white px-3 py-2 border border-gray-300 rounded cursor-pointer hover:bg-gray-100 transition-colors peer-data-[state=checked]:bg-gray-200 peer-data-[state=checked]:text-black peer-data-[state=checked]:border-black"
-                                        >
-                                            {lab.label}
-                                        </Label>
-                                    </div>
-                                ))}
+                            {/* Laboratory */}
+                            <div className="animate-fade-in-up">
+                                <Label className="text-sm font-medium text-gray-700 mb-2  flex items-center gap-2">
+                                    <Filter className="w-4 h-4" />
+                                    Laboratory
+                                </Label>
+                                <div className="flex flex-wrap gap-4">
+                                    {[
+                                        { value: "GIA", label: "GIA" },
+                                        { value: "HRD", label: "HRD" },
+                                        {
+                                            value: "None",
+                                            label: "Other",
+                                        },
+                                    ].map((lab) => (
+                                        <div key={lab.value}>
+                                            <Checkbox
+                                                id={`lab-${lab.value}`}
+                                                className="sr-only peer"
+                                                checked={(
+                                                    filters.laboratory || []
+                                                ).includes(lab.value)}
+                                                onCheckedChange={(checked) =>
+                                                    updateArrayFilter(
+                                                        "laboratory",
+                                                        lab.value,
+                                                        checked as boolean
+                                                    )
+                                                }
+                                            />
+                                            <Label
+                                                htmlFor={`lab-${lab.value}`}
+                                                className="text-xs bg-white px-3 py-2 border border-gray-300 rounded cursor-pointer hover:bg-gray-100 transition-colors peer-data-[state=checked]:bg-gray-200 peer-data-[state=checked]:text-black peer-data-[state=checked]:border-black"
+                                            >
+                                                {lab.label}
+                                            </Label>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div>

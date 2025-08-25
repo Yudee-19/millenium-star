@@ -1003,8 +1003,7 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
                     {/* Header */}
                     <div className="text-center space-y-2">
                         <DialogTitle className="text-3xl font-bold font-playfair tracking-wide text-gray-800">
-                            {/* MILLENNIUM&nbsp;STAR */}
-                            COMPANY&nbsp;NAME
+                            MILLENNIUM&nbsp;STAR
                         </DialogTitle>
                         <h2 className="text-2xl font-light font-playfair text-gray-700">
                             {getStepTitle()}

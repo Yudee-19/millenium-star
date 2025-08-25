@@ -16,8 +16,7 @@ export function SiteHeader() {
                             className="h-10 w-auto"
                         /> */}
                         <h1 className="font-playfair text-xl md:text-3xl font-semibold">
-                            {/* MILLENNIUM&nbsp;STAR */}
-                            COMPANY&nbsp;NAME
+                            MILLENNIUM&nbsp;STAR
                         </h1>
                     </Link>
                     {/* {siteConfig.mainNav?.length ? (
