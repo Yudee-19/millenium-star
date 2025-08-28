@@ -170,19 +170,6 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
         },
     },
     {
-        accessorKey: "RapList",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="RapList" />
-        ),
-        cell: ({ row }) => (
-            <div className="w-[80px]">
-                {row.original.rapList ||
-                    (row.original as any)["rapList"] ||
-                    "-"}
-            </div>
-        ),
-    },
-    {
         accessorKey: "discount",
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Discount" />
@@ -195,7 +182,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
                         discount < 0 ? "text-red-600" : "text-green-600"
                     }`}
                 >
-                    {discount}%
+                    {discount < 0 ? discount.toFixed(2) : discount}%
                 </div>
             );
         },
@@ -220,7 +207,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
         },
     },
     {
-        accessorKey: "Polish",
+        accessorKey: "polish",
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Polish" />
         ),
@@ -231,7 +218,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
         ),
     },
     {
-        accessorKey: "sym",
+        accessorKey: "symmetry",
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Symmetry" />
         ),
@@ -298,9 +285,9 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
         ),
     },
     {
-        accessorKey: "T.DEP",
+        accessorKey: "totalDepth",
         header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="T.DEP" />
+            <DataTableColumnHeader column={column} title="Total Depth" />
         ),
         cell: ({ row }) => {
             // Safe access to nested property
@@ -310,13 +297,13 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
         },
     },
     {
-        accessorKey: "TABLE",
+        accessorKey: "table",
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Table" />
         ),
         cell: ({ row }) => (
             <div className="w-[80px]">
-                {row.getValue("TABLE") || row.original.table || "-"}%
+                {row.getValue("table") || row.original.table || "-"}%
             </div>
         ),
     },
@@ -343,7 +330,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             const price = row.original.pricePerCarat;
             return (
                 <div className="w-[100px] font-semibold">
-                    ${price?.toLocaleString()}
+                    ${price ? price.toLocaleString() : price}
                 </div>
             );
         },
@@ -357,7 +344,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             const rapList = row.original.rapList;
             return (
                 <div className="w-[100px] font-semibold">
-                    ${rapList?.toLocaleString()}
+                    ${rapList ? rapList.toLocaleString() : rapList}
                 </div>
             );
         },

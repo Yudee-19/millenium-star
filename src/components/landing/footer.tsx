@@ -98,8 +98,7 @@ const Footer = () => {
                     <p
                         className={`${inter.className} text-sm text-gray-400 order-2 sm:order-1 mt-4 sm:mt-0`}
                     >
-                        {/* &copy; {new Date().getFullYear()} Millennium Star. All */}
-                        &copy; {new Date().getFullYear()} Company Name. All
+                        &copy; {new Date().getFullYear()} Millennium Star. All
                         rights reserved.
                     </p>
                     <div

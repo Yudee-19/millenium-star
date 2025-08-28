@@ -456,7 +456,6 @@ export function EnhancedImportCSVModal({
 
             // Import all CSV files
             const batchResult = await importMultipleCSV(csvFilesToUpload);
-            console.log("hello error");
 
             // Store results for display
             setImportResults(batchResult);

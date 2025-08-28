@@ -1,27 +1,15 @@
 "use client";
 import { useCallback, useState } from "react";
 import { diamondColumns } from "@/components/data-table/diamond-columns";
-import { DataTable } from "@/components/data-table/data-table";
-import { DiamondTableToolbar } from "@/components/data-table/diamond-toolbar";
 import { SiteHeader } from "@/components/layout/site-header";
-import { Shell } from "@/components/shells/shell";
 import Container from "@/components/ui/container";
 import CustomButton from "@/components/ui/customButton";
-import { Input } from "@/components/ui/input";
 import { useDiamonds } from "@/hooks/use-diamonds";
 import { useFilteredDiamonds } from "@/hooks/use-filtered-diamonds";
-import { DiamondCharts } from "@/components/charts/diamond-charts";
 import {
-    ChartColumn,
-    CircleCheckBig,
     DownloadIcon,
     FileTextIcon,
-    FunnelPlus,
-    GridIcon,
     PlusIcon,
-    Ruler,
-    SlashIcon,
-    TrendingUp,
     Upload,
     Mail,
     Info,
@@ -39,12 +27,9 @@ import {
     BreadcrumbItem,
     BreadcrumbLink,
     BreadcrumbList,
-    BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { StatsCard } from "@/components/cards/stats-card";
 import { toast } from "sonner";
-// Replace the old import with the new enhanced modal
 import { EnhancedImportCSVModal } from "@/components/modals/enhanced-import-csv-modal";
 import {
     Tooltip,
@@ -52,6 +37,12 @@ import {
     TooltipContent,
 } from "@/components/ui/tooltip";
 import axios from "axios";
+
+// Import tab components
+import AllTabContent from "@/components/admin-tabs/allTabContent";
+import FancyTabContent from "@/components/admin-tabs/fancyTabContent";
+import HighEndTabContent from "@/components/admin-tabs/highEndTabContent";
+import LowEndTabContent from "@/components/admin-tabs/lowEndTabContent";
 
 interface RapnetUploadData {
     uploadID: number;
@@ -73,7 +64,6 @@ interface RapnetUploadData {
     waitingINQueue: number;
 }
 
-// Add this interface with other interfaces at the top
 interface RefreshResponse {
     success: boolean;
     data: {
@@ -98,7 +88,6 @@ export default function DiamondPage() {
         paginationMeta,
     } = useDiamonds();
 
-    // ...existing filtered diamonds hooks with updateTable...
     const {
         diamonds: fancyDiamonds,
         loading: fancyLoading,
@@ -154,7 +143,7 @@ export default function DiamondPage() {
     // Add refresh state
     const [isRefreshing, setIsRefreshing] = useState(false);
 
-    // ...existing handlers...
+    // Table state change handlers
     const handleTableStateChange = useCallback(
         (state: {
             pagination: { pageIndex: number; pageSize: number };
@@ -227,7 +216,6 @@ export default function DiamondPage() {
         setIsRapnetModalOpen(true);
 
         try {
-            // Step 1: Initiate upload
             const uploadResponse = await fetch(
                 "https://diamond-inventory.onrender.com/api/rapnet/upload-rapnet-csv",
                 {
@@ -262,8 +250,8 @@ export default function DiamondPage() {
     };
 
     const pollUploadStatus = async (uploadId: string) => {
-        const maxAttempts = 60; // Maximum number of attempts (e.g., 5 minutes with 5-second intervals)
-        const pollInterval = 5000; // 5 seconds between polls
+        const maxAttempts = 60;
+        const pollInterval = 5000;
         let attempts = 0;
 
         const checkStatus = async (): Promise<void> => {
@@ -296,31 +284,27 @@ export default function DiamondPage() {
                 const uploadStatusData = statusData.data;
                 console.log(`📊 Upload status:`, uploadStatusData);
 
-                // Update the modal with current status
                 setRapnetUploadData(uploadStatusData);
 
-                // Check if stockReplaced is true
                 if (
                     uploadStatusData.stockReplaced === true &&
                     uploadStatusData.status === "Finished successfully"
                 ) {
                     console.log("✅ Stock replacement completed successfully!");
                     toast.success("Rapnet upload completed successfully!");
-                    return; // Exit the polling loop
+                    return;
                 } else if (uploadStatusData.status === "Failed") {
                     console.log("❌ Stock replacement failed.");
                     toast.error("Rapnet upload failed.");
                     return;
                 }
 
-                // Check if we've reached maximum attempts
                 if (attempts >= maxAttempts) {
                     throw new Error(
                         `Upload status check timed out after ${maxAttempts} attempts. Stock replacement may still be in progress.`
                     );
                 }
 
-                // Check for error status
                 if (
                     uploadStatusData.status &&
                     uploadStatusData.status.toLowerCase().includes("error")
@@ -331,14 +315,12 @@ export default function DiamondPage() {
                     );
                 }
 
-                // If stockReplaced is still false, wait and check again
                 console.log(
                     `⏳ Stock not yet replaced. Waiting ${
                         pollInterval / 1000
                     } seconds before next check...`
                 );
 
-                // Show progress toast
                 toast.info(
                     `Upload in progress... (${attempts}/${maxAttempts}) - Status: ${
                         uploadStatusData.status || "Processing"
@@ -354,7 +336,6 @@ export default function DiamondPage() {
             }
         };
 
-        // Start the polling process
         await checkStatus();
     };
 
@@ -362,7 +343,6 @@ export default function DiamondPage() {
         handleRapnetUpload();
     };
 
-    // ...existing export functionality...
     const exportToCsv = (diamondsToExport: any[], fileName: string) => {
         if (!diamondsToExport || diamondsToExport.length === 0) {
             alert("No data available to export for the selected tab.");
@@ -475,7 +455,6 @@ export default function DiamondPage() {
         }
     };
 
-    // Add refresh handler
     const handleRefresh = async () => {
         setIsRefreshing(true);
 
@@ -487,7 +466,6 @@ export default function DiamondPage() {
             if (response.data.success) {
                 const { data } = response.data;
 
-                // Show success toast with details
                 toast.success(
                     <div className="space-y-2">
                         <p className="font-semibold">
@@ -506,7 +484,6 @@ export default function DiamondPage() {
                     </div>
                 );
 
-                // Refresh all diamond data
                 refetch();
                 fancyRefetch();
                 highEndRefetch();
@@ -561,11 +538,11 @@ export default function DiamondPage() {
         <AdminGuard>
             <Container className="bg-[#F9FAFB]">
                 {/* Header Section */}
-                <h1 className="text-3xl  font-medium">Admin Dashboard</h1>
+                <h1 className="text-3xl font-medium">Admin Dashboard</h1>
                 <Breadcrumb className="my-3">
                     <BreadcrumbList>
                         <BreadcrumbItem>
-                            <BreadcrumbLink href="/">HOME</BreadcrumbLink>{" "}
+                            <BreadcrumbLink href="/">HOME</BreadcrumbLink>
                         </BreadcrumbItem>
                         <BreadcrumbSeparator>{"/"}</BreadcrumbSeparator>
                         <BreadcrumbItem>
@@ -575,10 +552,10 @@ export default function DiamondPage() {
                 </Breadcrumb>
 
                 {/* Search and Action Buttons */}
-                <div className="flex  items-start justify-between gap-5 my-5">
-                    <div className=" flex items-center justify-start gap-6">
+                <div className="flex items-start justify-between gap-5 my-5">
+                    <div className="flex items-center justify-start gap-6">
                         <CustomButton
-                            className="bg-purple-600 hover:bg-purple-700 text-white"
+                            className="bg-white hover:bg-gray-100 border-1 border-gray-200 text-black"
                             variant="secondary"
                             icon={<DownloadIcon size={15} />}
                             onClick={handleExport}
@@ -587,7 +564,7 @@ export default function DiamondPage() {
                         </CustomButton>
                         <div className="flex items-center gap-2">
                             <CustomButton
-                                className="bg-lime-600 hover:bg-lime-700 text-white"
+                                className="bg-white hover:bg-gray-100 border-1 border-gray-200 text-black"
                                 variant="secondary"
                                 icon={<FileTextIcon size={15} />}
                                 onClick={() => setIsImportCSVModalOpen(true)}
@@ -621,7 +598,7 @@ export default function DiamondPage() {
                             </Tooltip>
                         </div>
                         <CustomButton
-                            className="bg-green-600 hover:bg-green-700 text-white"
+                            className="bg-white hover:bg-gray-100 border-1 border-gray-200 text-black"
                             variant="secondary"
                             icon={<Mail size={15} />}
                             onClick={() => setIsEmailExportModalOpen(true)}
@@ -629,7 +606,7 @@ export default function DiamondPage() {
                             <span>Send&nbsp;Email</span>
                         </CustomButton>
                         <CustomButton
-                            className="bg-blue-600 hover:bg-blue-700 text-white"
+                            className="bg-white hover:bg-gray-100 border-1 border-gray-200 text-black"
                             variant="secondary"
                             icon={<Upload size={15} />}
                             onClick={handleRapnetUpload}
@@ -638,7 +615,7 @@ export default function DiamondPage() {
                             <span>Upload&nbsp;to&nbsp;Rapnet</span>
                         </CustomButton>
                         <CustomButton
-                            className="bg-orange-600 hover:bg-orange-700 text-white"
+                            className="bg-white hover:bg-gray-100 border-1 border-gray-200 text-black"
                             variant="secondary"
                             icon={
                                 <RefreshCw
@@ -665,7 +642,7 @@ export default function DiamondPage() {
                     </div>
                 </div>
 
-                {/* ...existing tabs section and content... */}
+                {/* Tabs Section */}
                 <div className="w-full my-5">
                     <Tabs
                         value={activeTab}
@@ -673,10 +650,7 @@ export default function DiamondPage() {
                         className="w-full"
                     >
                         <TabsList className="w-full font-medium rounded-md py-6">
-                            <TabsTrigger
-                                value="all"
-                                className="rounded-md    p-5"
-                            >
+                            <TabsTrigger value="all" className="rounded-md p-5">
                                 All
                             </TabsTrigger>
                             <TabsTrigger
@@ -687,469 +661,70 @@ export default function DiamondPage() {
                             </TabsTrigger>
                             <TabsTrigger
                                 value="highEnd"
-                                className="rounded-md  p-5"
+                                className="rounded-md p-5"
                             >
                                 High End
                             </TabsTrigger>
                             <TabsTrigger
                                 value="lowEnd"
-                                className="rounded-md  p-5"
+                                className="rounded-md p-5"
                             >
                                 Low End
                             </TabsTrigger>
                         </TabsList>
 
-                        {/* ...existing tab content... */}
                         <TabsContent value="all">
-                            {/* Stats Cards */}
-                            <div className="flex items-center justify-center gap-5 my-10">
-                                <StatsCard
-                                    icon={GridIcon}
-                                    iconColor="text-blue-500"
-                                    iconBgColor="bg-blue-400/20"
-                                    label="Total Diamonds"
-                                    value={
-                                        loading
-                                            ? "..."
-                                            : totalCount.toLocaleString()
-                                    }
-                                    subtext="All Inventory"
-                                />
-
-                                <StatsCard
-                                    icon={CircleCheckBig}
-                                    iconColor="text-green-500"
-                                    iconBgColor="bg-green-400/20"
-                                    label="Available"
-                                    value={
-                                        loading
-                                            ? "..."
-                                            : diamonds.filter(
-                                                  (d) => d.isAvailable
-                                              ).length
-                                    }
-                                    subtext="Ready for Sale"
-                                />
-
-                                <StatsCard
-                                    icon={ChartColumn}
-                                    iconColor="text-purple-500"
-                                    iconBgColor="bg-purple-400/20"
-                                    label="Total Value"
-                                    value={
-                                        loading
-                                            ? "..."
-                                            : `$${diamonds
-                                                  .reduce(
-                                                      (sum, d) =>
-                                                          sum + (d.price || 0),
-                                                      0
-                                                  )
-                                                  .toFixed(2)}`
-                                    }
-                                    subtext="Current Market Value"
-                                />
-
-                                <StatsCard
-                                    icon={Ruler}
-                                    iconColor="text-orange-500"
-                                    iconBgColor="bg-orange-400/20"
-                                    label="Total Size"
-                                    value={
-                                        loading
-                                            ? "..."
-                                            : `${diamonds
-                                                  .reduce(
-                                                      (sum, d) =>
-                                                          sum + (d.size || 0),
-                                                      0
-                                                  )
-                                                  .toFixed(2)} ct`
-                                    }
-                                    subtext="Carat Weight"
-                                />
-                            </div>
-
-                            <Tabs defaultValue="tableview" className="">
-                                <TabsList className="rounded-md space-x-3">
-                                    <TabsTrigger
-                                        value="tableview"
-                                        className="rounded-md text-black p-3"
-                                    >
-                                        Table View
-                                    </TabsTrigger>
-                                    <TabsTrigger
-                                        value="rapport"
-                                        className="rounded-md text-black p-3"
-                                    >
-                                        Rapport
-                                    </TabsTrigger>
-                                    <TabsTrigger
-                                        value="chart"
-                                        className="rounded-md text-black p-3"
-                                    >
-                                        Chart
-                                    </TabsTrigger>
-                                </TabsList>
-
-                                <TabsContent value="tableview">
-                                    <Shell>
-                                        <div className="flex h-full min-h-screen overflow-x-auto flex-col">
-                                            <div className="flex flex-col space-y-8">
-                                                <DataTable
-                                                    data={diamonds}
-                                                    columns={diamondColumns}
-                                                    toolbar={
-                                                        DiamondTableToolbar
-                                                    }
-                                                    pageCount={pageCount}
-                                                    loading={loading}
-                                                    onStateChange={
-                                                        handleTableStateChange
-                                                    }
-                                                    paginationMeta={
-                                                        paginationMeta
-                                                    }
-                                                />
-                                            </div>
-                                        </div>
-                                    </Shell>
-                                </TabsContent>
-
-                                <TabsContent value="rapport">
-                                    Rappaport Unavailable
-                                </TabsContent>
-
-                                <TabsContent value="chart">
-                                    <DiamondCharts />
-                                </TabsContent>
-                            </Tabs>
+                            <AllTabContent
+                                diamonds={diamonds}
+                                loading={loading}
+                                totalCount={totalCount}
+                                diamondColumns={diamondColumns}
+                                pageCount={pageCount}
+                                handleTableStateChange={handleTableStateChange}
+                                paginationMeta={paginationMeta}
+                            />
                         </TabsContent>
 
-                        {/* ...include all other existing tab content for fancy, highEnd, lowEnd... */}
                         <TabsContent value="fancy">
-                            {/* Fancy Diamonds Stats */}
-                            <div className="flex items-center justify-center gap-5 my-10">
-                                <StatsCard
-                                    icon={GridIcon}
-                                    iconColor="text-blue-500"
-                                    iconBgColor="bg-blue-400/20"
-                                    label="Fancy Diamonds (Non-RBC)"
-                                    value={
-                                        fancyLoading
-                                            ? "..."
-                                            : fancyTotalCount.toLocaleString()
-                                    }
-                                    subtext="Total Inventory"
-                                />
-
-                                <StatsCard
-                                    icon={CircleCheckBig}
-                                    iconColor="text-green-500"
-                                    iconBgColor="bg-green-400/20"
-                                    label="Available"
-                                    value={
-                                        fancyLoading
-                                            ? "..."
-                                            : fancyDiamonds.filter(
-                                                  (d) => d.isAvailable
-                                              ).length
-                                    }
-                                    subtext="Ready for Sale"
-                                />
-
-                                <StatsCard
-                                    icon={ChartColumn}
-                                    iconColor="text-purple-500"
-                                    iconBgColor="bg-purple-400/20"
-                                    label="Total Value"
-                                    value={
-                                        fancyLoading
-                                            ? "..."
-                                            : `$${fancyDiamonds
-                                                  .reduce(
-                                                      (sum, d) =>
-                                                          sum + (d.price || 0),
-                                                      0
-                                                  )
-                                                  .toFixed(2)}`
-                                    }
-                                    subtext="Current Market Value"
-                                />
-
-                                <StatsCard
-                                    icon={Ruler}
-                                    iconColor="text-orange-500"
-                                    iconBgColor="bg-orange-400/20"
-                                    label="Total Size"
-                                    value={
-                                        fancyLoading
-                                            ? "..."
-                                            : `${fancyDiamonds
-                                                  .reduce(
-                                                      (sum, d) =>
-                                                          sum + (d.size || 0),
-                                                      0
-                                                  )
-                                                  .toFixed(2)} ct`
-                                    }
-                                    subtext="Carat Weight"
-                                />
-                            </div>
-
-                            <Shell>
-                                <div className="flex h-full min-h-screen overflow-x-auto flex-col">
-                                    <div className="flex flex-col space-y-8">
-                                        <DataTable
-                                            data={fancyDiamonds}
-                                            columns={diamondColumns}
-                                            toolbar={DiamondTableToolbar}
-                                            pageCount={fancyPageCount}
-                                            loading={fancyLoading}
-                                            onStateChange={
-                                                handleFancyTableStateChange
-                                            }
-                                            paginationMeta={fancyPaginationMeta}
-                                        />
-                                    </div>
-                                </div>
-                            </Shell>
+                            <FancyTabContent
+                                fancyDiamonds={fancyDiamonds}
+                                fancyLoading={fancyLoading}
+                                fancyTotalCount={fancyTotalCount}
+                                diamondColumns={diamondColumns}
+                                fancyPageCount={fancyPageCount}
+                                handleFancyTableStateChange={
+                                    handleFancyTableStateChange
+                                }
+                                fancyPaginationMeta={fancyPaginationMeta}
+                            />
                         </TabsContent>
 
                         <TabsContent value="highEnd">
-                            {/* High End Diamonds Stats */}
-                            <div className="flex items-center justify-center gap-5 my-10">
-                                <div className="w-80 bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
-                                    <div className="w-full flex justify-between items-center">
-                                        <div className="bg-blue-400/20 rounded-md p-2">
-                                            <GridIcon className="text-blue-500" />
-                                        </div>
-                                        <TrendingUp className="text-green-400" />
-                                    </div>
-                                    <h1 className="text-gray-600 text-base">
-                                        High End Diamonds (RBC ≤ 1ct)
-                                    </h1>
-                                    <h1 className="text-2xl font-semibold">
-                                        {highEndLoading
-                                            ? "..."
-                                            : highEndTotalCount.toLocaleString()}
-                                    </h1>
-                                    <h1 className="text-gray-500 text-sm">
-                                        Total Inventory
-                                    </h1>
-                                </div>
-                                <div className="w-80 bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
-                                    <div className="w-full flex justify-between items-center">
-                                        <div className="bg-green-400/20 rounded-md p-2">
-                                            <CircleCheckBig className="text-green-500" />
-                                        </div>
-                                        <TrendingUp className="text-green-400" />
-                                    </div>
-                                    <h1 className="text-gray-600 text-base">
-                                        Available
-                                    </h1>
-                                    <h1 className="text-2xl font-semibold">
-                                        {highEndLoading
-                                            ? "..."
-                                            : highEndDiamonds.filter(
-                                                  (d) => d.isAvailable
-                                              ).length}
-                                    </h1>
-                                    <h1 className="text-gray-500 text-sm">
-                                        Ready for Sale
-                                    </h1>
-                                </div>
-                                <div className="w-80 bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
-                                    <div className="w-full flex justify-between items-center">
-                                        <div className="bg-purple-400/20 rounded-md p-2">
-                                            <ChartColumn className="text-purple-500" />
-                                        </div>
-                                        <TrendingUp className="text-green-400" />
-                                    </div>
-                                    <h1 className="text-gray-600 text-base">
-                                        Total Value
-                                    </h1>
-                                    <h1 className="text-2xl font-semibold">
-                                        $
-                                        {highEndLoading
-                                            ? "..."
-                                            : highEndDiamonds
-                                                  .reduce(
-                                                      (sum, d) =>
-                                                          sum + (d.price || 0),
-                                                      0
-                                                  )
-                                                  .toFixed(2)}
-                                    </h1>
-                                    <h1 className="text-gray-500 text-sm">
-                                        Current Market Value
-                                    </h1>
-                                </div>
-                                <div className="w-80 bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
-                                    <div className="w-full flex justify-between items-center">
-                                        <div className="bg-orange-400/20 rounded-md p-2">
-                                            <Ruler className="text-orange-500" />
-                                        </div>
-                                        <TrendingUp className="text-green-400" />
-                                    </div>
-                                    <h1 className="text-gray-600 text-base">
-                                        Total Size
-                                    </h1>
-                                    <h1 className="text-2xl font-semibold">
-                                        {highEndLoading
-                                            ? "..."
-                                            : highEndDiamonds
-                                                  .reduce(
-                                                      (sum, d) =>
-                                                          sum + (d.size || 0),
-                                                      0
-                                                  )
-                                                  .toFixed(2)}{" "}
-                                        ct
-                                    </h1>
-                                    <h1 className="text-gray-500 text-sm">
-                                        Carat Weight
-                                    </h1>
-                                </div>
-                            </div>
-
-                            <Shell>
-                                <div className="flex h-full min-h-screen overflow-x-auto flex-col">
-                                    <div className="flex flex-col space-y-8">
-                                        <DataTable
-                                            data={highEndDiamonds}
-                                            columns={diamondColumns}
-                                            toolbar={DiamondTableToolbar}
-                                            pageCount={highEndPageCount}
-                                            loading={highEndLoading}
-                                            onStateChange={
-                                                handleHighEndTableStateChange
-                                            }
-                                            paginationMeta={
-                                                highEndPaginationMeta
-                                            }
-                                        />
-                                    </div>
-                                </div>
-                            </Shell>
+                            <HighEndTabContent
+                                highEndDiamonds={highEndDiamonds}
+                                highEndLoading={highEndLoading}
+                                highEndTotalCount={highEndTotalCount}
+                                diamondColumns={diamondColumns}
+                                highEndPageCount={highEndPageCount}
+                                handleHighEndTableStateChange={
+                                    handleHighEndTableStateChange
+                                }
+                                highEndPaginationMeta={highEndPaginationMeta}
+                            />
                         </TabsContent>
 
                         <TabsContent value="lowEnd">
-                            {/* Low End Diamonds Stats */}
-                            <div className="flex items-center justify-center gap-5 my-10">
-                                <div className="w-80 bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
-                                    <div className="w-full flex justify-between items-center">
-                                        <div className="bg-blue-400/20 rounded-md p-2">
-                                            <GridIcon className="text-blue-500" />
-                                        </div>
-                                        <TrendingUp className="text-green-400" />
-                                    </div>
-                                    <h1 className="text-gray-600 text-base">
-                                        Low End Diamonds (RBC ≥ 1ct)
-                                    </h1>
-                                    <h1 className="text-2xl font-semibold">
-                                        {lowEndLoading
-                                            ? "..."
-                                            : lowEndTotalCount.toLocaleString()}
-                                    </h1>
-                                    <h1 className="text-gray-500 text-sm">
-                                        Total Inventory
-                                    </h1>
-                                </div>
-                                <div className="w-80 bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
-                                    <div className="w-full flex justify-between items-center">
-                                        <div className="bg-green-400/20 rounded-md p-2">
-                                            <CircleCheckBig className="text-green-500" />
-                                        </div>
-                                        <TrendingUp className="text-green-400" />
-                                    </div>
-                                    <h1 className="text-gray-600 text-base">
-                                        Available
-                                    </h1>
-                                    <h1 className="text-2xl font-semibold">
-                                        {lowEndLoading
-                                            ? "..."
-                                            : lowEndDiamonds.filter(
-                                                  (d) => d.isAvailable
-                                              ).length}
-                                    </h1>
-                                    <h1 className="text-gray-500 text-sm">
-                                        Ready for Sale
-                                    </h1>
-                                </div>
-                                <div className="w-80 bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
-                                    <div className="w-full flex justify-between items-center">
-                                        <div className="bg-purple-400/20 rounded-md p-2">
-                                            <ChartColumn className="text-purple-500" />
-                                        </div>
-                                        <TrendingUp className="text-green-400" />
-                                    </div>
-                                    <h1 className="text-gray-600 text-base">
-                                        Total Value
-                                    </h1>
-                                    <h1 className="text-2xl font-semibold">
-                                        $
-                                        {lowEndLoading
-                                            ? "..."
-                                            : lowEndDiamonds
-                                                  .reduce(
-                                                      (sum, d) =>
-                                                          sum + (d.price || 0),
-                                                      0
-                                                  )
-                                                  .toFixed(2)}
-                                    </h1>
-                                    <h1 className="text-gray-500 text-sm">
-                                        Current Market Value
-                                    </h1>
-                                </div>
-                                <div className="w-80 bg-white border-2 border-gray-200 rounded-xl flex flex-col justify-center items-start gap-2 px-7 py-3">
-                                    <div className="w-full flex justify-between items-center">
-                                        <div className="bg-orange-400/20 rounded-md p-2">
-                                            <Ruler className="text-orange-500" />
-                                        </div>
-                                        <TrendingUp className="text-green-400" />
-                                    </div>
-                                    <h1 className="text-gray-600 text-base">
-                                        Total Size
-                                    </h1>
-                                    <h1 className="text-2xl font-semibold">
-                                        {lowEndLoading
-                                            ? "..."
-                                            : lowEndDiamonds
-                                                  .reduce(
-                                                      (sum, d) =>
-                                                          sum + (d.size || 0),
-                                                      0
-                                                  )
-                                                  .toFixed(2)}{" "}
-                                        ct
-                                    </h1>
-                                    <h1 className="text-gray-500 text-sm">
-                                        Carat Weight
-                                    </h1>
-                                </div>
-                            </div>
-
-                            <Shell>
-                                <div className="flex h-full min-h-screen overflow-x-auto flex-col">
-                                    <div className="flex flex-col space-y-8">
-                                        <DataTable
-                                            data={lowEndDiamonds}
-                                            columns={diamondColumns}
-                                            toolbar={DiamondTableToolbar}
-                                            pageCount={lowEndPageCount}
-                                            loading={lowEndLoading}
-                                            onStateChange={
-                                                handleLowEndTableStateChange
-                                            }
-                                            paginationMeta={
-                                                lowEndPaginationMeta
-                                            }
-                                        />
-                                    </div>
-                                </div>
-                            </Shell>
+                            <LowEndTabContent
+                                lowEndDiamonds={lowEndDiamonds}
+                                lowEndLoading={lowEndLoading}
+                                lowEndTotalCount={lowEndTotalCount}
+                                diamondColumns={diamondColumns}
+                                lowEndPageCount={lowEndPageCount}
+                                handleLowEndTableStateChange={
+                                    handleLowEndTableStateChange
+                                }
+                                lowEndPaginationMeta={lowEndPaginationMeta}
+                            />
                         </TabsContent>
                     </Tabs>
                 </div>
