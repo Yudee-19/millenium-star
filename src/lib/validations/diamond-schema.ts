@@ -51,6 +51,10 @@ export const diamondSchema = z.object({
 
     rapList: z.number().min(0).optional(),
 
+    pricePerCarat: z.number().min(0).optional(),
+
+    rapnetAmount: z.number().min(0).optional(),
+
     discount: z.number().max(100).optional(),
     // .min(0)
     cut: z.enum(["I", "EX", "VG", "G", "F", "P"]).optional(),
@@ -63,18 +67,16 @@ export const diamondSchema = z.object({
         .enum(["I", "EX", "VG-EX", "VG", "G-VG", "G", "F-G", "F", "P"])
         .optional(),
 
-    // Split fluorescence into color and intensity to match MongoDB schema
     fluorescenceColor: z
         .enum(["B", "W", "Y", "O", "R", "G", "N"])
         .optional()
         .default("N"),
 
     fluorescenceIntensity: z
-        .enum(["VS", "S", "M", "SL", "VSL", "N"])
+        .enum(["VS", "S", "M", "SL", "VSL", "N", "F"])
         .optional()
         .default("N"),
 
-    // Keep the combined fluorescence field for backward compatibility
     fluorescence: z.enum(["B", "W", "Y", "O", "R", "G", "N"]).optional(),
 
     fancyColor: z
@@ -219,13 +221,13 @@ export const diamondSchema = z.object({
 
     price: z.number().min(0).optional(),
 
-    size: z.number(), // Required as per MongoDB schema
+    size: z.number(),
 
-    noBgm: z.string().optional().default(""),
+    noBgm: z.enum(["yes", "no", "bgm"]).optional().default("no"),
 
     fromTab: z.string().optional().default(""),
 
-    isAvailable: z.boolean().optional().default(true),
+    isAvailable: z.enum(["G", "S", "M", "NA"]).optional().default("G"),
 
     imageUrls: z.array(z.string()).optional().default([]),
 

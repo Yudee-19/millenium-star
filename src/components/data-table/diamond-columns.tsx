@@ -45,7 +45,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
     },
 
     {
-        accessorKey: "diamond-Id",
+        accessorKey: "certificateNumber",
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Diamond-Id" />
         ),
@@ -321,13 +321,45 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
         ),
     },
     {
+        accessorKey: "pricePerCarat",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Price/Carat" />
+        ),
+        cell: ({ row }) => {
+            const price = row.original.pricePerCarat;
+            return (
+                <div className="w-[100px] font-semibold">
+                    ${price?.toLocaleString()}
+                </div>
+            );
+        },
+    },
+    {
         accessorKey: "price",
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Price" />
         ),
         cell: ({ row }) => {
-            const price = row.original.price;
-            return <div className="w-[100px] font-semibold">${price}</div>;
+            const price = row.original.pricePerCarat;
+            return (
+                <div className="w-[100px] font-semibold">
+                    ${price?.toLocaleString()}
+                </div>
+            );
+        },
+    },
+    {
+        accessorKey: "rapList",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="RapList" />
+        ),
+        cell: ({ row }) => {
+            const rapList = row.original.rapList;
+            return (
+                <div className="w-[100px] font-semibold">
+                    ${rapList?.toLocaleString()}
+                </div>
+            );
         },
     },
     {
@@ -336,18 +368,24 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             <DataTableColumnHeader column={column} title="Availability" />
         ),
         cell: ({ row }) => {
-            const isAvailable = row.getValue("isAvailable") as boolean;
+            const isAvailable = row.getValue("isAvailable") as string;
             return (
                 <div className="w-[100px]">
                     <Badge
-                        variant={isAvailable ? "default" : "secondary"}
+                        variant={isAvailable === "G" ? "default" : "secondary"}
                         className={
-                            isAvailable
+                            isAvailable === "G"
                                 ? "bg-green-100 text-green-800"
                                 : "bg-red-100 text-red-800"
                         }
                     >
-                        {isAvailable ? "Available" : "Not Available"}
+                        {isAvailable === "G"
+                            ? "Available"
+                            : isAvailable === "S"
+                            ? "Sold"
+                            : isAvailable === "M"
+                            ? "Memo"
+                            : "N/A"}
                     </Badge>
                 </div>
             );

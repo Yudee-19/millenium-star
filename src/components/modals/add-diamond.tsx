@@ -27,14 +27,20 @@ import {
     clarity_options,
     cut_options,
     lab_options,
-    flou_options,
     polish_options,
     symmetry_options,
     fluorescenceIntensity_options,
+    availability_options,
+    noBgm_options,
+    fluorescenceColor_options,
+    fancyColor_options,
+    fancyColorOvertone_options,
+    fancyColorIntensity_options,
 } from "../filters/diamond-filters";
 import { Textarea } from "../ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { FileUploader } from "@/components/ui/file-uploader";
+import { toast } from "sonner";
 
 interface AddDiamondModalProps {
     isOpen: boolean;
@@ -69,9 +75,13 @@ interface DiamondFormData {
 
     // Optional fields
     size?: number; // Legacy field, optional
-    isAvailable: boolean;
+    isAvailable: string;
     noBgm?: string; // Additional field for comments
     fromTab?: string; // Additional field
+
+    fancyColor: string;
+    fancyColorOvertone: string;
+    fancyColorIntensity: string;
 }
 
 interface CreatedDiamond {
@@ -100,9 +110,12 @@ const initialFormData: DiamondFormData = {
     discount: 0,
     price: 0,
     size: undefined,
-    isAvailable: true,
-    noBgm: "",
+    isAvailable: "G",
+    noBgm: "no",
     fromTab: "",
+    fancyColor: "X",
+    fancyColorOvertone: "Other",
+    fancyColorIntensity: "N",
 };
 
 const TOTAL_STEPS = 4;
@@ -265,9 +278,12 @@ export function AddDiamondModal({
                 table: formData.table,
                 certificateNumber: formData.certificateNumber.trim(),
                 price: formData.price,
+                fancyColor: formData.fancyColor,
+                fancyColorOvertone: formData.fancyColorOvertone,
+                fancyColorIntensity: formData.fancyColorIntensity,
                 ...(formData.size !== undefined && { size: formData.size }),
                 isAvailable: formData.isAvailable,
-                ...(formData.noBgm && { noBgm: formData.noBgm.trim() }),
+                ...(formData.noBgm && { noBgm: formData.noBgm }),
                 ...(formData.fromTab && { fromTab: formData.fromTab.trim() }),
             };
 
@@ -283,16 +299,34 @@ export function AddDiamondModal({
                     body: JSON.stringify(apiData),
                 }
             );
+            const result = await response.json();
 
             if (!response.ok) {
-                const errorData = await response.json().catch(() => null);
+                if (result?.errors && Array.isArray(result.errors)) {
+                    // Display validation errors as toast
+                    toast.error("Validation Failed", {
+                        description: (
+                            <div className="space-y-1 text-black">
+                                {result.errors.map(
+                                    (error: string, index: number) => (
+                                        <div
+                                            key={index}
+                                            className="text-sm text-black"
+                                        >
+                                            • {error}
+                                        </div>
+                                    )
+                                )}
+                            </div>
+                        ),
+                        duration: 5000,
+                    });
 
-                // Handle validation errors from backend
-                if (errorData?.errors && Array.isArray(errorData.errors)) {
+                    // Map backend error messages to form fields for inline display
                     const backendErrors: Partial<
                         Record<keyof DiamondFormData, string>
                     > = {};
-                    errorData.errors.forEach((error: string) => {
+                    result.errors.forEach((error: string) => {
                         // Map backend error messages to form fields
                         if (error.includes("Certificate number")) {
                             backendErrors.certificateNumber = error;
@@ -300,6 +334,8 @@ export function AddDiamondModal({
                             backendErrors.color = error;
                         } else if (error.includes("Clarity")) {
                             backendErrors.clarity = error;
+                        } else if (error.includes("Discount")) {
+                            backendErrors.discount = error;
                         } else if (error.includes("Lab")) {
                             backendErrors.lab = error;
                         } else if (error.includes("Shape")) {
@@ -333,19 +369,48 @@ export function AddDiamondModal({
                     return;
                 }
 
-                throw new Error(
-                    errorData?.message ||
-                        `HTTP error! status: ${response.status}`
-                );
+                // UPDATED: Handle other API errors with toast
+                const errorMessage =
+                    result?.message || `HTTP error! status: ${response.status}`;
+                toast.error("Failed to Create Diamond", {
+                    description: errorMessage,
+                    duration: 4000,
+                });
+
+                throw new Error(errorMessage);
             }
 
-            const result = await response.json();
-
             if (!result.success) {
-                throw new Error(result.message || "Failed to create diamond");
+                // UPDATED: Handle unsuccessful responses
+                const errorMessage =
+                    result.message || "Failed to create diamond";
+                toast.error("Creation Failed", {
+                    description: errorMessage,
+                    duration: 4000,
+                });
+                throw new Error(errorMessage);
             }
 
             console.log("✅ Diamond created successfully:", result);
+
+            // ADDED: Display success toast notification
+            toast.success("Diamond Created Successfully! 💎", {
+                description: (
+                    <div className="space-y-1">
+                        <div className="font-medium">
+                            Certificate: {result.data.certificateNumber}
+                        </div>
+                        <div className="text-sm text-black">
+                            {result.data.size} carat {result.data.color}{" "}
+                            {result.data.clarity} {result.data.shape}
+                        </div>
+                        <div className="text-sm text-green-600">
+                            Ready for file uploads
+                        </div>
+                    </div>
+                ),
+                duration: 6000,
+            });
 
             // Set created diamond for file upload step
             setCreatedDiamond({
@@ -357,6 +422,20 @@ export function AddDiamondModal({
             onSuccess();
         } catch (error) {
             console.error("❌ Error creating diamond:", error);
+
+            // UPDATED: Only show error toast if not already handled above
+            if (
+                error instanceof Error &&
+                !error.message.includes("HTTP error")
+            ) {
+                toast.error("Unexpected Error", {
+                    description:
+                        error.message ||
+                        "An unexpected error occurred while creating the diamond",
+                    duration: 4000,
+                });
+            }
+
             setErrors({
                 certificateNumber:
                     error instanceof Error
@@ -367,7 +446,6 @@ export function AddDiamondModal({
             setLoading(false);
         }
     };
-
     const handleClose = () => {
         if (!loading) {
             setFormData(initialFormData);
@@ -610,6 +688,93 @@ export function AddDiamondModal({
                                 )}
                             </div>
 
+                            {/* Fancy Color Fields */}
+                            <div className="space-y-2">
+                                <Label htmlFor="fancyColor">Fancy Color</Label>
+                                <Select
+                                    value={formData.fancyColor}
+                                    onValueChange={(value) =>
+                                        handleInputChange("fancyColor", value)
+                                    }
+                                >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select fancy color" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {fancyColor_options.map((option) => (
+                                            <SelectItem
+                                                key={option.value}
+                                                value={option.value}
+                                            >
+                                                {option.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="fancyColorOvertone">
+                                    Fancy Color Overtone
+                                </Label>
+                                <Select
+                                    value={formData.fancyColorOvertone}
+                                    onValueChange={(value) =>
+                                        handleInputChange(
+                                            "fancyColorOvertone",
+                                            value
+                                        )
+                                    }
+                                >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select fancy color overtone" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {fancyColorOvertone_options.map(
+                                            (option) => (
+                                                <SelectItem
+                                                    key={option.value}
+                                                    value={option.value}
+                                                >
+                                                    {option.label}
+                                                </SelectItem>
+                                            )
+                                        )}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="fancyColorIntensity">
+                                    Fancy Color Intensity
+                                </Label>
+                                <Select
+                                    value={formData.fancyColorIntensity}
+                                    onValueChange={(value) =>
+                                        handleInputChange(
+                                            "fancyColorIntensity",
+                                            value
+                                        )
+                                    }
+                                >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select fancy color intensity" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {fancyColorIntensity_options.map(
+                                            (option) => (
+                                                <SelectItem
+                                                    key={option.value}
+                                                    value={option.value}
+                                                >
+                                                    {option.label}
+                                                </SelectItem>
+                                            )
+                                        )}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
                             <div className="space-y-2">
                                 <Label htmlFor="cut">Cut *</Label>
                                 <Select
@@ -736,14 +901,16 @@ export function AddDiamondModal({
                                         <SelectValue placeholder="Select fluorescence" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {flou_options.map((option) => (
-                                            <SelectItem
-                                                key={option.value}
-                                                value={option.value}
-                                            >
-                                                {option.label}
-                                            </SelectItem>
-                                        ))}
+                                        {fluorescenceColor_options.map(
+                                            (option) => (
+                                                <SelectItem
+                                                    key={option.value}
+                                                    value={option.value}
+                                                >
+                                                    {option.label}
+                                                </SelectItem>
+                                            )
+                                        )}
                                     </SelectContent>
                                 </Select>
                                 {errors.fluorescenceColor && (
@@ -1044,38 +1211,54 @@ export function AddDiamondModal({
                                 Additional Information
                             </Label>
 
-                            <div className="flex items-center space-x-2">
-                                <Checkbox
-                                    id="isAvailable"
-                                    checked={formData.isAvailable}
-                                    onCheckedChange={(checked) =>
-                                        handleInputChange(
-                                            "isAvailable",
-                                            !!checked
-                                        )
-                                    }
-                                />
+                            <div className="space-y-2">
                                 <Label htmlFor="isAvailable">
-                                    Available for sale
+                                    Availability Status
                                 </Label>
+                                <Select
+                                    value={formData.isAvailable}
+                                    onValueChange={(value) =>
+                                        handleInputChange("isAvailable", value)
+                                    }
+                                >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select availability" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {availability_options.map((option) => (
+                                            <SelectItem
+                                                key={option.value}
+                                                value={option.value}
+                                            >
+                                                {option.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="noBgm">
-                                    Comments (Optional)
-                                </Label>
-                                <Textarea
-                                    id="noBgm"
+                                <Label htmlFor="noBgm">BGM Status</Label>
+                                <Select
                                     value={formData.noBgm}
-                                    onChange={(e) =>
-                                        handleInputChange(
-                                            "noBgm",
-                                            e.target.value
-                                        )
+                                    onValueChange={(value) =>
+                                        handleInputChange("noBgm", value)
                                     }
-                                    placeholder="Add any additional notes about this diamond..."
-                                    rows={3}
-                                />
+                                >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select BGM status" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {noBgm_options.map((option) => (
+                                            <SelectItem
+                                                key={option.value}
+                                                value={option.value}
+                                            >
+                                                {option.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </div>
                         </div>
                     </div>

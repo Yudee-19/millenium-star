@@ -174,8 +174,10 @@ export const lab_options = [
 ];
 
 export const availability_options = [
-    { value: true, label: "Available", icon: Gem },
-    { value: false, label: "Not Available", icon: Gem },
+    { value: "G", label: "Good/Available", icon: Gem },
+    { value: "S", label: "Sold", icon: Gem },
+    { value: "M", label: "Memo", icon: Gem },
+    { value: "NA", label: "Not Available", icon: Gem },
 ];
 
 export const fancyColor_options = [
@@ -244,4 +246,10 @@ export const fancyColorIntensity_options = [
     { value: "FV", label: "Fancy Vivid", icon: Gem },
     { value: "D", label: "Deep", icon: Gem },
     { value: "N", label: "None", icon: Gem },
+];
+
+export const noBgm_options = [
+    { value: "yes", label: "Yes", icon: Gem },
+    { value: "no", label: "No", icon: Gem },
+    { value: "bgm", label: "BGM", icon: Gem },
 ];

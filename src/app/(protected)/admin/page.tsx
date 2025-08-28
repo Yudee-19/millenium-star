@@ -23,10 +23,14 @@ import {
     SlashIcon,
     TrendingUp,
     Upload,
+    Mail,
+    Info,
+    RefreshCw,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AddDiamondModal } from "@/components/modals/add-diamond";
 import { RapnetUploadModal } from "@/components/modals/rapnet-upload-modal";
+import { EmailExportModal } from "@/components/modals/send-email-modal";
 import { AdminGuard } from "@/components/auth/routeGuard";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -40,6 +44,14 @@ import {
 } from "@/components/ui/breadcrumb";
 import { StatsCard } from "@/components/cards/stats-card";
 import { toast } from "sonner";
+// Replace the old import with the new enhanced modal
+import { EnhancedImportCSVModal } from "@/components/modals/enhanced-import-csv-modal";
+import {
+    Tooltip,
+    TooltipTrigger,
+    TooltipContent,
+} from "@/components/ui/tooltip";
+import axios from "axios";
 
 interface RapnetUploadData {
     uploadID: number;
@@ -59,6 +71,18 @@ interface RapnetUploadData {
     duration: string | null;
     progressPercent: number;
     waitingINQueue: number;
+}
+
+// Add this interface with other interfaces at the top
+interface RefreshResponse {
+    success: boolean;
+    data: {
+        totalDiamonds: number;
+        targetDiamonds: number;
+        successfulUpdates: number;
+        failedUpdates: number;
+        errors: string[];
+    };
 }
 
 export default function DiamondPage() {
@@ -117,6 +141,8 @@ export default function DiamondPage() {
     // Modal states
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isRapnetModalOpen, setIsRapnetModalOpen] = useState(false);
+    const [isImportCSVModalOpen, setIsImportCSVModalOpen] = useState(false);
+    const [isEmailExportModalOpen, setIsEmailExportModalOpen] = useState(false);
     const [activeTab, setActiveTab] = useState("all");
 
     // Rapnet upload states
@@ -124,6 +150,9 @@ export default function DiamondPage() {
     const [rapnetUploadData, setRapnetUploadData] =
         useState<RapnetUploadData | null>(null);
     const [rapnetError, setRapnetError] = useState<string | null>(null);
+
+    // Add refresh state
+    const [isRefreshing, setIsRefreshing] = useState(false);
 
     // ...existing handlers...
     const handleTableStateChange = useCallback(
@@ -176,6 +205,14 @@ export default function DiamondPage() {
 
     const handleAddDiamondSuccess = () => {
         console.log("✅ Diamond added successfully");
+        refetch();
+        fancyRefetch();
+        highEndRefetch();
+        lowEndRefetch();
+    };
+
+    const handleImportCSVSuccess = () => {
+        console.log("✅ CSV/Excel imported successfully");
         refetch();
         fancyRefetch();
         highEndRefetch();
@@ -411,6 +448,92 @@ export default function DiamondPage() {
         exportToCsv(dataToExport, fileName);
     };
 
+    const handleDownloadSampleCSV = async () => {
+        try {
+            const response = await fetch(
+                "https://diamond-inventory.onrender.com/api/diamonds/example-csv"
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to download sample CSV");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", "sample-diamond-format.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+
+            toast.success("Sample CSV downloaded successfully!");
+        } catch (error) {
+            console.error("Error downloading sample CSV:", error);
+            toast.error("Failed to download sample CSV. Please try again.");
+        }
+    };
+
+    // Add refresh handler
+    const handleRefresh = async () => {
+        setIsRefreshing(true);
+
+        try {
+            const response = await axios.get<RefreshResponse>(
+                "https://diamond-inventory.onrender.com/api/rapnet/refresh"
+            );
+
+            if (response.data.success) {
+                const { data } = response.data;
+
+                // Show success toast with details
+                toast.success(
+                    <div className="space-y-2">
+                        <p className="font-semibold">
+                            Refresh Completed Successfully!
+                        </p>
+                        <div className="text-sm space-y-1">
+                            <p>Total Diamonds: {data.totalDiamonds}</p>
+                            <p>Target Diamonds: {data.targetDiamonds}</p>
+                            <p>Successful Updates: {data.successfulUpdates}</p>
+                            {data.failedUpdates > 0 && (
+                                <p className="text-red-600">
+                                    Failed Updates: {data.failedUpdates}
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                );
+
+                // Refresh all diamond data
+                refetch();
+                fancyRefetch();
+                highEndRefetch();
+                lowEndRefetch();
+            } else {
+                toast.error("Refresh failed. Please try again.");
+            }
+        } catch (error) {
+            console.error("Refresh error:", error);
+
+            if (axios.isAxiosError(error)) {
+                const errorMessage =
+                    error.response?.data?.message || error.message;
+                toast.error(
+                    <div className="space-y-2">
+                        <p className="font-semibold">Refresh Failed</p>
+                        <p className="text-sm">{errorMessage}</p>
+                    </div>
+                );
+            } else {
+                toast.error("An unexpected error occurred during refresh.");
+            }
+        } finally {
+            setIsRefreshing(false);
+        }
+    };
+
     if (error) {
         return (
             <Container>
@@ -453,25 +576,57 @@ export default function DiamondPage() {
 
                 {/* Search and Action Buttons */}
                 <div className="flex  items-start justify-between gap-5 my-5">
-                    {/* <Input
-                        className="bg-white border-2 text-black px-3 py-5 text-base rounded-md max-w-xl"
-                        placeholder="Search by Diamond ID, Shape, Color, Clarity, etc."
-                    /> */}
                     <div className=" flex items-center justify-start gap-6">
                         <CustomButton
-                            className="bg-white hover:bg-gray-100"
+                            className="bg-purple-600 hover:bg-purple-700 text-white"
                             variant="secondary"
                             icon={<DownloadIcon size={15} />}
                             onClick={handleExport}
                         >
                             Export
                         </CustomButton>
+                        <div className="flex items-center gap-2">
+                            <CustomButton
+                                className="bg-lime-600 hover:bg-lime-700 text-white"
+                                variant="secondary"
+                                icon={<FileTextIcon size={15} />}
+                                onClick={() => setIsImportCSVModalOpen(true)}
+                            >
+                                <span>Import&nbsp;CSV/Excel</span>
+                            </CustomButton>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-8 w-8 p-0 hover:bg-gray-100"
+                                    >
+                                        <Info
+                                            size={14}
+                                            className="text-gray-500"
+                                        />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent className="max-w-xs p-4">
+                                    <div className="space-y-3">
+                                        <Button
+                                            size="sm"
+                                            onClick={handleDownloadSampleCSV}
+                                            className="w-full"
+                                        >
+                                            Download Sample CSV
+                                        </Button>
+                                    </div>
+                                </TooltipContent>
+                            </Tooltip>
+                        </div>
                         <CustomButton
-                            className="bg-white hover:bg-gray-100"
+                            className="bg-green-600 hover:bg-green-700 text-white"
                             variant="secondary"
-                            icon={<FileTextIcon size={15} />}
+                            icon={<Mail size={15} />}
+                            onClick={() => setIsEmailExportModalOpen(true)}
                         >
-                            <span>Import&nbsp;Excel</span>
+                            <span>Send&nbsp;Email</span>
                         </CustomButton>
                         <CustomButton
                             className="bg-blue-600 hover:bg-blue-700 text-white"
@@ -481,6 +636,24 @@ export default function DiamondPage() {
                             disabled={rapnetLoading}
                         >
                             <span>Upload&nbsp;to&nbsp;Rapnet</span>
+                        </CustomButton>
+                        <CustomButton
+                            className="bg-orange-600 hover:bg-orange-700 text-white"
+                            variant="secondary"
+                            icon={
+                                <RefreshCw
+                                    size={15}
+                                    className={
+                                        isRefreshing ? "animate-spin" : ""
+                                    }
+                                />
+                            }
+                            onClick={handleRefresh}
+                            disabled={isRefreshing}
+                        >
+                            <span>
+                                {isRefreshing ? "Refreshing..." : "Refresh"}
+                            </span>
                         </CustomButton>
                         <CustomButton
                             variant="dark"
@@ -986,6 +1159,17 @@ export default function DiamondPage() {
                     isOpen={isAddModalOpen}
                     onClose={() => setIsAddModalOpen(false)}
                     onSuccess={handleAddDiamondSuccess}
+                />
+
+                <EnhancedImportCSVModal
+                    isOpen={isImportCSVModalOpen}
+                    onClose={() => setIsImportCSVModalOpen(false)}
+                    onSuccess={handleImportCSVSuccess}
+                />
+
+                <EmailExportModal
+                    isOpen={isEmailExportModalOpen}
+                    onClose={() => setIsEmailExportModalOpen(false)}
                 />
 
                 <RapnetUploadModal

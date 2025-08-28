@@ -27,10 +27,15 @@ import {
     clarity_options,
     cut_options,
     lab_options,
-    flou_options,
+    fluorescenceColor_options,
     polish_options,
     symmetry_options,
     fluorescenceIntensity_options,
+    availability_options, // ADDED: Import availability options
+    noBgm_options,
+    fancyColor_options,
+    fancyColorOvertone_options,
+    fancyColorIntensity_options,
 } from "../filters/diamond-filters";
 import { Textarea } from "../ui/textarea";
 import { DiamondType } from "@/lib/validations/diamond-schema";
@@ -69,9 +74,13 @@ interface DiamondFormData {
 
     // Optional fields
     size?: number;
-    isAvailable: boolean;
+    isAvailable: string;
     noBgm?: string;
     fromTab?: string;
+    // Fancy color fields
+    fancyColor: string;
+    fancyColorOvertone: string;
+    fancyColorIntensity: string;
 }
 
 const initialFormData: DiamondFormData = {
@@ -94,9 +103,12 @@ const initialFormData: DiamondFormData = {
     discount: 0,
     price: 0,
     size: undefined,
-    isAvailable: true,
-    noBgm: "",
+    isAvailable: "G",
+    noBgm: "no",
     fromTab: "",
+    fancyColor: "X",
+    fancyColorOvertone: "Other",
+    fancyColorIntensity: "N",
 };
 
 export function EditDiamondModal({
@@ -134,9 +146,12 @@ export function EditDiamondModal({
                 discount: diamond.discount || 0,
                 price: diamond.price || 0,
                 size: diamond.size,
-                isAvailable: diamond.isAvailable ?? true,
-                noBgm: diamond.noBgm || "",
+                isAvailable: diamond.isAvailable || "G", // Map to string enum
+                noBgm: diamond.noBgm || "no",
                 fromTab: diamond.fromTab || "",
+                fancyColor: diamond.fancyColor || "X",
+                fancyColorOvertone: diamond.fancyColorOvertone || "Other",
+                fancyColorIntensity: diamond.fancyColorIntensity || "N",
             });
         }
     }, [diamond]);
@@ -265,9 +280,12 @@ export function EditDiamondModal({
                 table: formData.table,
                 certificateNumber: formData.certificateNumber.trim(),
                 price: formData.price,
+                fancyColor: formData.fancyColor,
+                fancyColorOvertone: formData.fancyColorOvertone,
+                fancyColorIntensity: formData.fancyColorIntensity,
                 ...(formData.size !== undefined && { size: formData.size }),
                 isAvailable: formData.isAvailable,
-                ...(formData.noBgm && { noBgm: formData.noBgm.trim() }),
+                ...(formData.noBgm && { noBgm: formData.noBgm }),
                 ...(formData.fromTab && { fromTab: formData.fromTab.trim() }),
             };
 
@@ -722,14 +740,16 @@ export function EditDiamondModal({
                                             <SelectValue placeholder="Select fluorescence color" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {flou_options.map((option) => (
-                                                <SelectItem
-                                                    key={option.value}
-                                                    value={option.value}
-                                                >
-                                                    {option.label}
-                                                </SelectItem>
-                                            ))}
+                                            {fluorescenceColor_options.map(
+                                                (option) => (
+                                                    <SelectItem
+                                                        key={option.value}
+                                                        value={option.value}
+                                                    >
+                                                        {option.label}
+                                                    </SelectItem>
+                                                )
+                                            )}
                                         </SelectContent>
                                     </Select>
                                     {errors.fluorescenceColor && (
@@ -780,6 +800,100 @@ export function EditDiamondModal({
                                         </p>
                                     )}
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Fancy Color Information */}
+                    <div className="space-y-2">
+                        <Label className="text-base font-semibold">
+                            Fancy Color Information
+                        </Label>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="fancyColor">Fancy Color</Label>
+                                <Select
+                                    value={formData.fancyColor}
+                                    onValueChange={(value) =>
+                                        handleInputChange("fancyColor", value)
+                                    }
+                                >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select fancy color" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {fancyColor_options.map((option) => (
+                                            <SelectItem
+                                                key={option.value}
+                                                value={option.value}
+                                            >
+                                                {option.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="fancyColorOvertone">
+                                    Fancy Color Overtone
+                                </Label>
+                                <Select
+                                    value={formData.fancyColorOvertone}
+                                    onValueChange={(value) =>
+                                        handleInputChange(
+                                            "fancyColorOvertone",
+                                            value
+                                        )
+                                    }
+                                >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select fancy color overtone" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {fancyColorOvertone_options.map(
+                                            (option) => (
+                                                <SelectItem
+                                                    key={option.value}
+                                                    value={option.value}
+                                                >
+                                                    {option.label}
+                                                </SelectItem>
+                                            )
+                                        )}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="fancyColorIntensity">
+                                    Fancy Color Intensity
+                                </Label>
+                                <Select
+                                    value={formData.fancyColorIntensity}
+                                    onValueChange={(value) =>
+                                        handleInputChange(
+                                            "fancyColorIntensity",
+                                            value
+                                        )
+                                    }
+                                >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select fancy color intensity" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {fancyColorIntensity_options.map(
+                                            (option) => (
+                                                <SelectItem
+                                                    key={option.value}
+                                                    value={option.value}
+                                                >
+                                                    {option.label}
+                                                </SelectItem>
+                                            )
+                                        )}
+                                    </SelectContent>
+                                </Select>
                             </div>
                         </div>
                     </div>
@@ -1013,15 +1127,58 @@ export function EditDiamondModal({
                         </div>
                     </div>
 
-                    <div className="flex items-center space-x-2">
-                        <Checkbox
-                            id="isAvailable"
-                            checked={formData.isAvailable}
-                            onCheckedChange={(checked) =>
-                                handleInputChange("isAvailable", !!checked)
-                            }
-                        />
-                        <Label htmlFor="isAvailable">Available for sale</Label>
+                    <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="isAvailable">
+                                    Availability Status
+                                </Label>
+                                <Select
+                                    value={formData.isAvailable}
+                                    onValueChange={(value) =>
+                                        handleInputChange("isAvailable", value)
+                                    }
+                                >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select availability" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {availability_options.map((option) => (
+                                            <SelectItem
+                                                key={option.value}
+                                                value={option.value}
+                                            >
+                                                {option.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="noBgm">BGM Status</Label>
+                                <Select
+                                    value={formData.noBgm}
+                                    onValueChange={(value) =>
+                                        handleInputChange("noBgm", value)
+                                    }
+                                >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select BGM status" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {noBgm_options.map((option) => (
+                                            <SelectItem
+                                                key={option.value}
+                                                value={option.value}
+                                            >
+                                                {option.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
                     </div>
                     {/* Additional Fields */}
                     {/* <div className="space-y-4">
