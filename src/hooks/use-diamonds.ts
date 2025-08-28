@@ -45,7 +45,7 @@ export function useDiamonds(): UseDiamondsReturn {
     // Table state with default sorting
     const [tableState, setTableState] = useState<TableState>({
         pagination: { pageIndex: 0, pageSize: 10 },
-        sorting: [{ id: "createdAt", desc: false }], // Default sort by createdAt ascending
+        sorting: [{ id: "createdAt", desc: true }], // Default sort by createdAt ascending
         columnFilters: [],
     });
 

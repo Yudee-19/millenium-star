@@ -98,7 +98,7 @@ export default function DiamondPage() {
         updateTable: fancyUpdateTable,
         paginationMeta: fancyPaginationMeta,
     } = useFilteredDiamonds(
-        "diamonds/search?notShape=Round&sortBy=price&sortOrder=desc"
+        "diamonds/search?notShape=Round&sortBy=createdAt&sortOrder=desc"
     );
 
     const {
@@ -111,7 +111,7 @@ export default function DiamondPage() {
         updateTable: highEndUpdateTable,
         paginationMeta: highEndPaginationMeta,
     } = useFilteredDiamonds(
-        "diamonds/search?shape=Round&sizeMin=1&sortBy=createdAt&sortOrder=aesc"
+        "diamonds/search?shape=Round&sizeMin=1&sortBy=createdAt&sortOrder=desc"
     );
 
     const {
@@ -124,7 +124,7 @@ export default function DiamondPage() {
         updateTable: lowEndUpdateTable,
         paginationMeta: lowEndPaginationMeta,
     } = useFilteredDiamonds(
-        "diamonds/search?shape=Round&sizeMax=0.9&sortBy=createdAt&sortOrder=aesc"
+        "diamonds/search?shape=Round&sizeMax=0.9&sortBy=createdAt&sortOrder=desc"
     );
 
     // Modal states

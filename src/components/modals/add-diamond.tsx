@@ -1275,7 +1275,7 @@ export function AddDiamondModal({
     if (createdDiamond) {
         return (
             <Dialog open={isOpen} onOpenChange={handleClose}>
-                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                <DialogContent className="max-w-4xl  max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle>
                             Upload Files for Diamond{" "}
@@ -1335,7 +1335,7 @@ export function AddDiamondModal({
     // Original diamond creation form
     return (
         <Dialog open={isOpen} onOpenChange={handleClose}>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-4xl min-w-3xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Add New Diamond</DialogTitle>
                     <DialogDescription>

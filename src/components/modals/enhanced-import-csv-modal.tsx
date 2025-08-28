@@ -545,7 +545,7 @@ export function EnhancedImportCSVModal({
 
     return (
         <Dialog open={isOpen} onOpenChange={handleClose}>
-            <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-5xl min-w-3xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Import CSV/Excel Files</DialogTitle>
                     <DialogDescription>
