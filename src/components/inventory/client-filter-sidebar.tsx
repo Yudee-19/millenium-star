@@ -194,46 +194,7 @@ export function ClientFilterSidebar({
                             ))}
                         </div>
                     </div>
-                    <div className="flex flex-col gap-4 bg-gray-200/50 p-5 mb-6">
-                        <div>
-                            <Label className="text-sm font-medium text-gray-700 mb-2  flex items-center gap-2">
-                                <RulerDimensionLine className="w-4 h-4" />
-                                Carat
-                            </Label>
-                            <div className="flex gap-2">
-                                <Input
-                                    type="number"
-                                    placeholder="From"
-                                    step="0.01"
-                                    value={filters.sizeMin || ""}
-                                    onChange={(e) =>
-                                        updateFilter(
-                                            "sizeMin",
-                                            e.target.value
-                                                ? parseFloat(e.target.value)
-                                                : undefined
-                                        )
-                                    }
-                                    className="text-xs h-8 bg-white"
-                                />
-                                <Input
-                                    type="number"
-                                    placeholder="To"
-                                    step="0.01"
-                                    value={filters.sizeMax || ""}
-                                    onChange={(e) =>
-                                        updateFilter(
-                                            "sizeMax",
-                                            e.target.value
-                                                ? parseFloat(e.target.value)
-                                                : undefined
-                                        )
-                                    }
-                                    className="text-xs h-8 bg-white"
-                                />
-                            </div>
-                        </div>
-
+                    <div className="flex max-w-md flex-col gap-4 bg-gray-200/50 p-5 mb-6">
                         {/* Price Range */}
                         <div>
                             <Label className="text-sm font-medium text-gray-700 mb-2  flex items-center gap-2">
@@ -270,6 +231,143 @@ export function ClientFilterSidebar({
                                     className="text-xs h-8 bg-white"
                                 />
                             </div>
+                        </div>
+                        {/* Carat Range */}
+                        <div>
+                            <Label className="text-sm font-medium text-gray-700 mb-2  flex items-center gap-2">
+                                <RulerDimensionLine className="w-4 h-4" />
+                                Carat
+                            </Label>
+
+                            <div className="flex gap-2">
+                                <Input
+                                    type="number"
+                                    placeholder="From"
+                                    step="0.01"
+                                    value={filters.sizeMin || ""}
+                                    onChange={(e) =>
+                                        updateFilter(
+                                            "sizeMin",
+                                            e.target.value
+                                                ? parseFloat(e.target.value)
+                                                : undefined
+                                        )
+                                    }
+                                    className="text-xs h-8 bg-white"
+                                />
+                                <Input
+                                    type="number"
+                                    placeholder="To"
+                                    step="0.01"
+                                    value={filters.sizeMax || ""}
+                                    onChange={(e) =>
+                                        updateFilter(
+                                            "sizeMax",
+                                            e.target.value
+                                                ? parseFloat(e.target.value)
+                                                : undefined
+                                        )
+                                    }
+                                    className="text-xs h-8 bg-white"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Predefined Carat Range Buttons */}
+                        <div className="flex flex-wrap gap-1 mb-3">
+                            {[
+                                {
+                                    label: "0.30 - 0.39",
+                                    min: 0.3,
+                                    max: 0.39,
+                                },
+                                {
+                                    label: "0.40 - 0.49",
+                                    min: 0.4,
+                                    max: 0.49,
+                                },
+                                {
+                                    label: "0.50 - 0.69",
+                                    min: 0.5,
+                                    max: 0.69,
+                                },
+                                {
+                                    label: "0.70 - 0.89",
+                                    min: 0.7,
+                                    max: 0.89,
+                                },
+                                {
+                                    label: "0.90 - 0.99",
+                                    min: 0.9,
+                                    max: 0.99,
+                                },
+                                {
+                                    label: "1.00 - 1.49",
+                                    min: 1.0,
+                                    max: 1.49,
+                                },
+                                {
+                                    label: "1.50 - 1.99",
+                                    min: 1.5,
+                                    max: 1.99,
+                                },
+                                {
+                                    label: "2.00 - 2.99",
+                                    min: 2.0,
+                                    max: 2.99,
+                                },
+                                {
+                                    label: "3.00 - 3.99",
+                                    min: 3.0,
+                                    max: 3.99,
+                                },
+                                {
+                                    label: "4.00 - 4.99",
+                                    min: 4.0,
+                                    max: 4.99,
+                                },
+                                {
+                                    label: "5.00 - 5.99",
+                                    min: 5.0,
+                                    max: 5.99,
+                                },
+                                {
+                                    label: "6.00 - 9.99",
+                                    min: 6.0,
+                                    max: 9.99,
+                                },
+                                {
+                                    label: "10.00 - 10.99",
+                                    min: 10.0,
+                                    max: 10.99,
+                                },
+                            ].map((range) => {
+                                const isSelected =
+                                    filters.sizeMin === range.min &&
+                                    filters.sizeMax === range.max;
+                                return (
+                                    <button
+                                        key={range.label}
+                                        type="button"
+                                        onClick={() => {
+                                            const newFilters = {
+                                                ...filters,
+                                                sizeMin: range.min,
+                                                sizeMax: range.max,
+                                            };
+                                            onFiltersChange(newFilters);
+                                            debouncedSearch(newFilters);
+                                        }}
+                                        className={`text-xs px-3 py-2 border border-gray-300 rounded cursor-pointer hover:bg-gray-100 hover:border-black transition-colors ${
+                                            isSelected
+                                                ? "bg-gray-200 border-black text-black"
+                                                : "bg-white"
+                                        }`}
+                                    >
+                                        {range.label}
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
                 </div>
