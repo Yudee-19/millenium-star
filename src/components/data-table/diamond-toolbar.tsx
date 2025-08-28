@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DataTableFacetedFilter } from "@/components/data-table/data-table-faceted-filter";
 import { DataTableViewOptions } from "@/components/data-table/data-table-view-options";
-import { X } from "lucide-react";
+import { X, Search } from "lucide-react";
 import {
     shape_options,
     color_options,
@@ -28,20 +28,26 @@ export function DiamondTableToolbar<TData>({
     return (
         <div className="flex items-center justify-between">
             <div className="flex flex-1 items-center space-x-2">
-                {/* <Input
-                    placeholder="Search diamonds..."
-                    value={
-                        (table
-                            .getColumn("diamond-Id")
-                            ?.getFilterValue() as string) ?? ""
-                    }
-                    onChange={(event) =>
-                        table
-                            .getColumn("diamond-Id")
-                            ?.setFilterValue(event.target.value)
-                    }
-                    className="h-8 w-[150px] shadowm lg:w-[250px]"
-                /> */}
+                {/* Search Input */}
+                <div className="relative">
+                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                        placeholder="Search by certificate number..."
+                        value={
+                            (table
+                                .getColumn("certificateNumber")
+                                ?.getFilterValue() as string) ?? ""
+                        }
+                        onChange={(event) =>
+                            table
+                                .getColumn("certificateNumber")
+                                ?.setFilterValue(event.target.value)
+                        }
+                        className="h-8 w-[200px] pl-8 lg:w-[300px]"
+                    />
+                </div>
+
+                {/* Existing Faceted Filters */}
                 {table.getColumn("laboratory") && (
                     <DataTableFacetedFilter
                         column={table.getColumn("laboratory")}
@@ -91,6 +97,8 @@ export function DiamondTableToolbar<TData>({
                         options={availability_options}
                     />
                 )}
+
+                {/* Reset Button */}
                 {isFiltered && (
                     <Button
                         variant="ghost"

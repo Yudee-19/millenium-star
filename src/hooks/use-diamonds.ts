@@ -108,6 +108,7 @@ export function useDiamonds(): UseDiamondsReturn {
         const mapping: Record<string, string> = {
             "CERT-NO": "searchTerm",
             certificateNumber: "searchTerm",
+            "diamond-Id": "searchTerm",
             color: "color",
             clarity: "clarity",
             cut: "cut",

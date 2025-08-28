@@ -510,32 +510,17 @@ export function EnhancedImportCSVModal({
     };
 
     const handleClose = () => {
-        if (importResults?.success) {
-            // Only close immediately if import was successful
-            setFiles([]);
-            setProcessedFiles([]);
-            setExcelSheets([]);
-            setSelectedSheets(new Set());
-            setShowSheetSelection(false);
-            setIsUploading(false);
-            setIsProcessing(false);
-            setImportResults(null);
-            setShowResults(false);
-            onClose();
-        } else if (!showResults) {
-            // Close if no results to show
-            setFiles([]);
-            setProcessedFiles([]);
-            setExcelSheets([]);
-            setSelectedSheets(new Set());
-            setShowSheetSelection(false);
-            setIsUploading(false);
-            setIsProcessing(false);
-            setImportResults(null);
-            setShowResults(false);
-            onClose();
-        }
-        // If there are error results, keep modal open to show them
+        // Always allow closing the modal, but reset all state
+        setFiles([]);
+        setProcessedFiles([]);
+        setExcelSheets([]);
+        setSelectedSheets(new Set());
+        setShowSheetSelection(false);
+        setIsUploading(false);
+        setIsProcessing(false);
+        setImportResults(null);
+        setShowResults(false);
+        onClose();
     };
 
     const getFileIcon = (fileName: string) => {

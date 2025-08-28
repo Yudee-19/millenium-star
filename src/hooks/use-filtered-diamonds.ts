@@ -81,13 +81,16 @@ export function useFilteredDiamonds(
         // Add filters
         columnFilters.forEach((filter) => {
             if (filter.value && filter.value.length > 0) {
+                // Map column IDs to API parameters
+                const apiParam = mapColumnToApiParam(filter.id);
+
                 // Handle array filters (from faceted filters)
                 if (Array.isArray(filter.value)) {
                     filter.value.forEach((val) => {
-                        params.append(filter.id, val.toString());
+                        params.append(apiParam, val.toString());
                     });
                 } else {
-                    params.set(filter.id, filter.value.toString());
+                    params.set(apiParam, filter.value.toString());
                 }
             }
         });
@@ -96,6 +99,27 @@ export function useFilteredDiamonds(
         console.log(`🔍 Built API URL: ${finalUrl}`);
         return finalUrl;
     }, [baseEndpoint, tableState]);
+
+    const mapColumnToApiParam = (columnId: string): string => {
+        const mapping: Record<string, string> = {
+            certificateNumber: "searchTerm",
+            "diamond-Id": "searchTerm",
+            "CERT-NO": "searchTerm",
+            color: "color",
+            clarity: "clarity",
+            cut: "cut",
+            shape: "shape",
+            laboratory: "laboratory",
+            fluorescenceColor: "fluorescenceColor",
+            fluorescenceIntensity: "fluorescenceIntensity",
+            polish: "polish",
+            symmetry: "symmetry",
+            isAvailable: "isAvailable",
+            price: "price",
+        };
+
+        return mapping[columnId] || columnId;
+    };
 
     const fetchDiamonds = useCallback(async () => {
         try {
