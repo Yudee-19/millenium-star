@@ -327,7 +327,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             <DataTableColumnHeader column={column} title="Price" />
         ),
         cell: ({ row }) => {
-            const price = row.original.pricePerCarat;
+            const price = row.original.price;
             return (
                 <div className="w-[100px] font-semibold">
                     ${price ? price.toLocaleString() : price}
