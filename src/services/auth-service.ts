@@ -1,5 +1,4 @@
 import axios from "axios";
-import { API_URLS } from "@/constants/url";
 
 // Interfaces based on your API structure
 
@@ -37,7 +36,7 @@ class AuthService {
     async login(credentials: LoginRequest): Promise<User> {
         try {
             const response = await axios.post<LoginSuccessResponse>(
-                API_URLS.USER.LOGIN,
+                `${process.env.NEXT_PUBLIC_BASE_URL}/auth/login`,
                 credentials,
                 {
                     withCredentials: true, // Important for cookie-based auth with Axios
