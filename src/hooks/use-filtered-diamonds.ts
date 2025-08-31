@@ -129,7 +129,9 @@ export function useFilteredDiamonds(
             const apiUrl = buildApiUrl();
             console.log(`🔍 Fetching filtered diamonds from: ${apiUrl}`);
 
-            const response = await fetch(`${API_BASE_URL}/${apiUrl}`);
+            const response = await fetch(`${API_BASE_URL}/${apiUrl}`, {
+                credentials: "include",
+            });
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);

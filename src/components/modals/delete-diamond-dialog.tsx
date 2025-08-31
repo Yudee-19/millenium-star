@@ -38,9 +38,10 @@ export function DeleteDiamondDialog({
             console.log(`🗑️ Deleting diamond with ID: ${diamond._id}`);
 
             const response = await fetch(
-                `https://diamond-inventory.onrender.com/api/diamonds/${diamond._id}`,
+                `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds/${diamond._id}`,
                 {
                     method: "DELETE",
+                    credentials: "include",
                 }
             );
 

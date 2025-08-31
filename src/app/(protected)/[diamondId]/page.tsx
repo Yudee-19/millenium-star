@@ -24,7 +24,6 @@ import {
     MapPin,
 } from "lucide-react";
 import axios from "axios";
-import { API_URLS, withQuery } from "@/constants/url";
 
 interface Diamond {
     rapList: number;
@@ -109,10 +108,11 @@ export default function DiamondDetailPage() {
     const fetchDiamond = async () => {
         try {
             setLoading(true);
-            const url = withQuery(API_URLS.DIAMONDS.SEARCH, {
-                searchTerm: diamondId,
+            const url =
+                process.env.NEXT_PUBLIC_BASE_URL + `/diamonds?id=${diamondId}`;
+            const response = await fetch(url, {
+                credentials: "include",
             });
-            const response = await fetch(url);
 
             if (!response.ok) {
                 throw new Error("Failed to fetch diamond details");
@@ -142,7 +142,8 @@ export default function DiamondDetailPage() {
                 setFileLoading((prev) => ({ ...prev, [fileType]: true }));
 
                 const response = await axios.get(
-                    API_URLS.DIAMONDS.GET_FILES(diamond._id, fileType)
+                    process.env.NEXT_PUBLIC_BASE_URL +
+                        `/diamonds/${diamond._id}/${fileType}`
                 );
 
                 if (response.data.status === 200) {
@@ -166,7 +167,8 @@ export default function DiamondDetailPage() {
 
         try {
             const response = await axios.post(
-                API_URLS.DIAMONDS.DELETE_FILE(diamond._id, fileType),
+                process.env.NEXT_PUBLIC_BASE_URL +
+                    `/diamonds/${diamond._id}/${fileType}/delete`,
                 {
                     urls: [fileUrl],
                 }

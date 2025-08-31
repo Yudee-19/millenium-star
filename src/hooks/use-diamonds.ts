@@ -148,7 +148,10 @@ export function useDiamonds(): UseDiamondsReturn {
                 const response = await fetch(
                     `${
                         process.env.NEXT_PUBLIC_BASE_URL
-                    }/${endpoint}?${queryParams.toString()}`
+                    }/${endpoint}?${queryParams.toString()}`,
+                    {
+                        credentials: "include",
+                    }
                 );
 
                 if (!response.ok) {

@@ -295,6 +295,7 @@ export function EditDiamondModal({
                 `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds/${diamond._id}`,
                 {
                     method: "PUT",
+                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json",
                     },

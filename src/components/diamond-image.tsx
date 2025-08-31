@@ -30,7 +30,10 @@ export const DiamondImage: React.FC<DiamondImageProps> = ({
         setError(null);
 
         fetch(
-            `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds/S3Bucket/images/${certificateNumber}/`
+            `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds/S3Bucket/images/${certificateNumber}/`,
+            {
+                credentials: "include",
+            }
         )
             .then((res) => res.json())
             .then((data) => {

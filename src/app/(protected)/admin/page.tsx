@@ -431,7 +431,10 @@ export default function DiamondPage() {
     const handleDownloadSampleCSV = async () => {
         try {
             const response = await fetch(
-                `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds/example-csv`
+                `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds/example-csv`,
+                {
+                    credentials: "include",
+                }
             );
 
             if (!response.ok) {

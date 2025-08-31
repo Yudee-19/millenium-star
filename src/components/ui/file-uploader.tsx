@@ -163,6 +163,7 @@ export const FileUploader = ({
                 `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds/S3Bucket/insert/${fileType}/${certificateNumber}`,
                 {
                     method: "POST",
+                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json",
                     },
