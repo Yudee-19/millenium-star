@@ -97,7 +97,7 @@ const ProfilePage = () => {
         const fetchProfile = async () => {
             try {
                 const response = await fetch(
-                    "https://diamond-inventory.onrender.com/api/users/profile",
+                    `${process.env.NEXT_PUBLIC_BASE_URL}/users/profile`,
                     {
                         method: "GET",
                         credentials: "include",
@@ -150,9 +150,9 @@ const ProfilePage = () => {
 
         try {
             const response = await fetch(
-                `https://diamond-inventory.onrender.com/api/users/otp?email=${encodeURIComponent(
-                    newEmail
-                )}`,
+                `${
+                    process.env.NEXT_PUBLIC_BASE_URL
+                }/users/otp?email=${encodeURIComponent(newEmail)}`,
                 {
                     method: "POST",
                     credentials: "include",
@@ -190,7 +190,7 @@ const ProfilePage = () => {
 
         try {
             const response = await fetch(
-                "https://diamond-inventory.onrender.com/api/users/update-email",
+                `${process.env.NEXT_PUBLIC_BASE_URL}/users/update-email`,
                 {
                     method: "PUT",
                     credentials: "include",
@@ -241,7 +241,7 @@ const ProfilePage = () => {
 
         try {
             const response = await fetch(
-                "https://diamond-inventory.onrender.com/api/users/otp",
+                `${process.env.NEXT_PUBLIC_BASE_URL}/users/otp`,
                 {
                     method: "POST",
                     credentials: "include",
@@ -295,7 +295,7 @@ const ProfilePage = () => {
 
         try {
             const response = await fetch(
-                "https://diamond-inventory.onrender.com/api/users/update-password",
+                `${process.env.NEXT_PUBLIC_BASE_URL}/users/update-password`,
                 {
                     method: "PUT",
                     credentials: "include",

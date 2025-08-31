@@ -217,7 +217,7 @@ export default function DiamondPage() {
 
         try {
             const uploadResponse = await fetch(
-                "https://diamond-inventory.onrender.com/api/rapnet/upload-rapnet-csv",
+                `${process.env.NEXT_PUBLIC_BASE_URL}/rapnet/upload-rapnet-csv`,
                 {
                     method: "POST",
                     credentials: "include",
@@ -262,7 +262,7 @@ export default function DiamondPage() {
 
             try {
                 const statusResponse = await fetch(
-                    `https://diamond-inventory.onrender.com/api/rapnet/upload-status/${uploadId}`,
+                    `${process.env.NEXT_PUBLIC_BASE_URL}/rapnet/upload-status/${uploadId}`,
                     {
                         method: "GET",
                         credentials: "include",
@@ -431,7 +431,7 @@ export default function DiamondPage() {
     const handleDownloadSampleCSV = async () => {
         try {
             const response = await fetch(
-                "https://diamond-inventory.onrender.com/api/diamonds/example-csv"
+                `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds/example-csv`
             );
 
             if (!response.ok) {
@@ -460,7 +460,7 @@ export default function DiamondPage() {
 
         try {
             const response = await axios.get<RefreshResponse>(
-                "https://diamond-inventory.onrender.com/api/rapnet/refresh"
+                `${process.env.NEXT_PUBLIC_BASE_URL}/rapnet/refresh`
             );
 
             if (response.data.success) {

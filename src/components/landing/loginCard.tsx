@@ -1,4 +1,3 @@
-// src/components/auth/login-modal.tsx
 "use client";
 
 import React, { useState } from "react";
@@ -52,9 +51,10 @@ export function LoginModal({
 
         try {
             console.log("Attempting login with:", { email: formData.email });
+            console.log("Using API URL:", process.env.NEXT_PUBLIC_BASE_URL);
 
             const response = await fetch(
-                "https://diamond-inventory.onrender.com/api/users/login",
+                `${process.env.NEXT_PUBLIC_BASE_URL}/users/login`,
                 {
                     method: "POST",
                     headers: {

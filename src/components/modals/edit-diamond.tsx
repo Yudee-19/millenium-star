@@ -292,7 +292,7 @@ export function EditDiamondModal({
             console.log("📤 Updating diamond with data:", apiData);
 
             const response = await fetch(
-                `https://diamond-inventory.onrender.com/api/diamonds/${diamond._id}`,
+                `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds/${diamond._id}`,
                 {
                     method: "PUT",
                     headers: {

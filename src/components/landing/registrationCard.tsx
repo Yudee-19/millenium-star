@@ -194,7 +194,7 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
             console.log("Registering user:", registerData);
 
             const registerResponse = await fetch(
-                "https://diamond-inventory.onrender.com/api/users/register",
+                `${process.env.NEXT_PUBLIC_BASE_URL}/users/register`,
                 {
                     method: "POST",
                     headers: {
@@ -253,7 +253,7 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
             console.log("Verifying OTP:", otpData);
 
             const otpResponse = await fetch(
-                "https://diamond-inventory.onrender.com/api/users/verify-otp",
+                `${process.env.NEXT_PUBLIC_BASE_URL}/users/verify-otp`,
                 {
                     method: "POST",
                     headers: {
@@ -302,7 +302,7 @@ export function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
             console.log("Submitting customer data:", customerData);
 
             const customerResponse = await fetch(
-                "https://diamond-inventory.onrender.com/api/users/customer-data",
+                `${process.env.NEXT_PUBLIC_BASE_URL}/users/customer-data`,
                 {
                     method: "POST",
                     headers: {

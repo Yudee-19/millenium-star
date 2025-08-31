@@ -24,6 +24,7 @@ import {
     MapPin,
 } from "lucide-react";
 import axios from "axios";
+import { API_URLS, withQuery } from "@/constants/url";
 
 interface Diamond {
     rapList: number;
@@ -108,12 +109,10 @@ export default function DiamondDetailPage() {
     const fetchDiamond = async () => {
         try {
             setLoading(true);
-            const baseURL =
-                process.env.NEXT_PUBLIC_API_BASE_URL ||
-                "https://diamond-inventory.onrender.com";
-            const response = await fetch(
-                `${baseURL}/api/diamonds/search?searchTerm=${diamondId}`
-            );
+            const url = withQuery(API_URLS.DIAMONDS.SEARCH, {
+                searchTerm: diamondId,
+            });
+            const response = await fetch(url);
 
             if (!response.ok) {
                 throw new Error("Failed to fetch diamond details");
@@ -143,7 +142,7 @@ export default function DiamondDetailPage() {
                 setFileLoading((prev) => ({ ...prev, [fileType]: true }));
 
                 const response = await axios.get(
-                    `https://diamond-inventory.onrender.com/api/diamonds/S3Bucket/${fileType}/${diamond._id}`
+                    API_URLS.DIAMONDS.GET_FILES(diamond._id, fileType)
                 );
 
                 if (response.data.status === 200) {
@@ -167,7 +166,7 @@ export default function DiamondDetailPage() {
 
         try {
             const response = await axios.post(
-                `https://diamond-inventory.onrender.com/api/diamonds/S3Bucket/delete/${fileType}/${diamond._id}`,
+                API_URLS.DIAMONDS.DELETE_FILE(diamond._id, fileType),
                 {
                     urls: [fileUrl],
                 }

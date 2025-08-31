@@ -80,7 +80,7 @@ const QuotationsPageContent = () => {
         setError(null);
         try {
             const res = await fetch(
-                "https://diamond-inventory.onrender.com/api/quotations",
+                `${process.env.NEXT_PUBLIC_BASE_URL}/quotations`,
                 {
                     credentials: "include",
                 }
@@ -115,7 +115,7 @@ const QuotationsPageContent = () => {
         try {
             if (action === "approve") {
                 const res = await fetch(
-                    `https://diamond-inventory.onrender.com/api/quotations/${quotationId}/approve`,
+                    `${process.env.NEXT_PUBLIC_BASE_URL}/quotations/${quotationId}/approve`,
                     {
                         method: "POST",
                         credentials: "include",
@@ -131,7 +131,7 @@ const QuotationsPageContent = () => {
                 // Prompt for rejection reason
 
                 const res = await fetch(
-                    `https://diamond-inventory.onrender.com/api/quotations/${quotationId}/reject`,
+                    `${process.env.NEXT_PUBLIC_BASE_URL}/quotations/${quotationId}/reject`,
                     {
                         method: "POST",
                         credentials: "include",

@@ -110,7 +110,7 @@ export function RequestQuoteModal({
             if (!response.ok) {
                 const errorData = await response.json().catch(() => null);
                 throw new Error(
-                    errorData?.message || "Failed to submit quotation"
+                    errorData?.error || "Failed to submit quotation"
                 );
             }
 

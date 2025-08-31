@@ -290,7 +290,7 @@ export function AddDiamondModal({
             console.log("📤 Sending API data:", apiData);
 
             const response = await fetch(
-                "https://diamond-inventory.onrender.com/api/diamonds/create",
+                `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds/create`,
                 {
                     method: "POST",
                     headers: {

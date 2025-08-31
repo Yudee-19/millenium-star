@@ -85,7 +85,7 @@ export const useAuth = () => {
             setAuthState((prev) => ({ ...prev, loading: true, error: null }));
 
             const response = await fetch(
-                "https://diamond-inventory.onrender.com/api/users/profile",
+                `${process.env.NEXT_PUBLIC_BASE_URL}/users/profile`,
                 {
                     method: "GET",
                     credentials: "include",
@@ -145,7 +145,7 @@ export const useAuth = () => {
             setAuthState((prev) => ({ ...prev, loading: true }));
 
             const response = await fetch(
-                "https://diamond-inventory.onrender.com/api/users/logout",
+                `${process.env.NEXT_PUBLIC_BASE_URL}/users/logout`,
                 {
                     method: "POST",
                     credentials: "include",

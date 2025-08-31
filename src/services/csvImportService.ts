@@ -78,7 +78,7 @@ export const importCSV = async (file: File): Promise<CSVImportResponse> => {
 
     try {
         const response = await axios.post<CSVImportResponse>(
-            "https://diamond-inventory.onrender.com/api/diamonds/import-csv",
+            `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds/import-csv`,
             formData,
             {
                 headers: {
@@ -117,7 +117,7 @@ export const importMultipleCSV = async (
 
     try {
         const response = await axios.post<BatchImportResponse>(
-            "https://diamond-inventory.onrender.com/api/diamonds/import-csv",
+            `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds/import-csv`,
             formData,
             {
                 headers: {

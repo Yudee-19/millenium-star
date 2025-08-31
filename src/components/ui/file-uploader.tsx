@@ -160,7 +160,7 @@ export const FileUploader = ({
 
             // Upload files to the diamond inventory API
             const response = await fetch(
-                `https://diamond-inventory.onrender.com/api/diamonds/S3Bucket/insert/${fileType}/${certificateNumber}`,
+                `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds/S3Bucket/insert/${fileType}/${certificateNumber}`,
                 {
                     method: "POST",
                     headers: {

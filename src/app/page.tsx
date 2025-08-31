@@ -38,6 +38,7 @@ const gridCardsData2 = [
 ];
 
 const HomePage = () => {
+    console.log("here is the API URL:", process.env.BASE_URL);
     return (
         <div>
             {/* <Navbar /> */}

@@ -98,7 +98,7 @@ export default function MembersEnquiry() {
     const fetchPendingUsers = async () => {
         try {
             const response = await fetch(
-                "https://diamond-inventory.onrender.com/api/users/customer-data-pending",
+                `${process.env.NEXT_PUBLIC_BASE_URL}/users/customer-data-pending`,
                 {
                     credentials: "include",
                 }
@@ -127,7 +127,7 @@ export default function MembersEnquiry() {
 
             do {
                 const response = await fetch(
-                    `https://diamond-inventory.onrender.com/api/users?page=${currentPage}&limit=50`,
+                    `${process.env.NEXT_PUBLIC_BASE_URL}/users?page=${currentPage}&limit=50`,
                     {
                         credentials: "include",
                     }
@@ -175,7 +175,7 @@ export default function MembersEnquiry() {
         setActionLoading(userId);
         try {
             const response = await fetch(
-                `https://diamond-inventory.onrender.com/api/users/${userId}/approve-customer-data`,
+                `${process.env.NEXT_PUBLIC_BASE_URL}/users/${userId}/approve-customer-data`,
                 {
                     method: "POST",
                     credentials: "include",
@@ -203,7 +203,7 @@ export default function MembersEnquiry() {
         setActionLoading(userId);
         try {
             const response = await fetch(
-                `https://diamond-inventory.onrender.com/api/users/${userId}/reject-customer-data`,
+                `${process.env.NEXT_PUBLIC_BASE_URL}/users/${userId}/reject-customer-data`,
                 {
                     method: "POST",
                     credentials: "include",

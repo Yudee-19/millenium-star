@@ -146,7 +146,9 @@ export function useDiamonds(): UseDiamondsReturn {
                 });
 
                 const response = await fetch(
-                    `https://diamond-inventory.onrender.com/api/${endpoint}?${queryParams.toString()}`
+                    `${
+                        process.env.NEXT_PUBLIC_BASE_URL
+                    }/${endpoint}?${queryParams.toString()}`
                 );
 
                 if (!response.ok) {

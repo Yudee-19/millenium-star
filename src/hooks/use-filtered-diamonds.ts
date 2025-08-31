@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { DiamondType } from "@/lib/validations/diamond-schema";
 
-const API_BASE_URL = "https://diamond-inventory.onrender.com/api";
+const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 interface FilteredDiamondsReturn {
     diamonds: DiamondType[];

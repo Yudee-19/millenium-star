@@ -30,7 +30,7 @@ export const DiamondImage: React.FC<DiamondImageProps> = ({
         setError(null);
 
         fetch(
-            `https://diamond-inventory.onrender.com/api/diamonds/S3Bucket/images/${certificateNumber}/`
+            `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds/S3Bucket/images/${certificateNumber}/`
         )
             .then((res) => res.json())
             .then((data) => {

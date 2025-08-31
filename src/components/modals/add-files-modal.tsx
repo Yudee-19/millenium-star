@@ -55,21 +55,21 @@ export function AddFilesModal({
             try {
                 // Fetch image URLs
                 const imageResponse = await fetch(
-                    `https://diamond-inventory.onrender.com/api/diamonds/S3Bucket/images/${diamond._id}/`
+                    `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds/S3Bucket/images/${diamond._id}/`
                 );
                 const imageData = await imageResponse.json();
                 const imageCount = imageData.data?.imagesUrls?.length || 0;
 
                 // Fetch video URLs
                 const videoResponse = await fetch(
-                    `https://diamond-inventory.onrender.com/api/diamonds/S3Bucket/videos/${diamond._id}/`
+                    `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds/S3Bucket/videos/${diamond._id}/`
                 );
                 const videoData = await videoResponse.json();
                 const videoCount = videoData.data?.videosUrls?.length || 0;
 
                 // Fetch certificate URLs
                 const certResponse = await fetch(
-                    `https://diamond-inventory.onrender.com/api/diamonds/S3Bucket/certificates/${diamond._id}/`
+                    `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds/S3Bucket/certificates/${diamond._id}/`
                 );
                 const certData = await certResponse.json();
                 const certCount = certData.data?.certificatesUrls?.length || 0;
@@ -100,13 +100,13 @@ export function AddFilesModal({
                 try {
                     const [imageRes, videoRes, certRes] = await Promise.all([
                         fetch(
-                            `https://diamond-inventory.onrender.com/api/diamonds/S3Bucket/images/${diamond._id}/`
+                            `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds/S3Bucket/images/${diamond._id}/`
                         ),
                         fetch(
-                            `https://diamond-inventory.onrender.com/api/diamonds/S3Bucket/videos/${diamond._id}/`
+                            `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds/S3Bucket/videos/${diamond._id}/`
                         ),
                         fetch(
-                            `https://diamond-inventory.onrender.com/api/diamonds/S3Bucket/certificates/${diamond._id}/`
+                            `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds/S3Bucket/certificates/${diamond._id}/`
                         ),
                     ]);
 
