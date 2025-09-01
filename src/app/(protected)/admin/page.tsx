@@ -43,6 +43,7 @@ import AllTabContent from "@/components/admin-tabs/allTabContent";
 import FancyTabContent from "@/components/admin-tabs/fancyTabContent";
 import HighEndTabContent from "@/components/admin-tabs/highEndTabContent";
 import LowEndTabContent from "@/components/admin-tabs/lowEndTabContent";
+import { DiamondType } from "@/lib/validations/diamond-schema";
 
 interface RapnetUploadData {
     uploadID: number;
@@ -343,41 +344,57 @@ export default function DiamondPage() {
         handleRapnetUpload();
     };
 
-    const exportToCsv = (diamondsToExport: any[], fileName: string) => {
+    const exportToCsv = (diamondsToExport: DiamondType[], fileName: string) => {
         if (!diamondsToExport || diamondsToExport.length === 0) {
-            alert("No data available to export for the selected tab.");
+            toast("No data available to export for the selected tab.");
             return;
         }
 
         const headers = [
             "Certificate Number",
+            "Lab",
             "Shape",
-            "Carat",
+            "Size",
             "Color",
             "Clarity",
+            "Discount",
             "Cut",
             "Polish",
             "Symmetry",
-            "Fluorescence",
-            "Lab",
+            "Fluo. Color",
+            "Length",
+            "Width",
+            "Depth",
+            "Total Depth",
+            "Table",
+            "Price Per Carat",
             "Price",
-            "Discount",
+            "Rap List",
+            "Available",
         ];
 
         const csvRows = diamondsToExport.map((d) => {
             const row = [
-                d.certificateNumber || d["CERT-NO"] || "",
-                d.shape || d["Shape"] || "",
-                d.size || d["Carat"] || 0,
-                d.color || d["Color"] || "",
-                d.clarity || d["Clarity"] || "",
-                d.cut || d["Cut"] || "",
-                d.polish || d["Polish"] || "",
-                d.symmetry || d["sym"] || "",
-                d.fluorescence || d["FLOU"] || "",
-                d.lab || d["LAB"] || "",
-                d.price || 0,
+                d.certificateNumber || "-",
+                d.laboratory || "-",
+                d.shape || "-",
+                d.size || "-",
+                d.color || "-",
+                d.clarity || "-",
                 d.discount ? `${d.discount}%` : "0%",
+                d.cut || "-",
+                d.polish || "-",
+                d.symmetry || "-",
+                d.fluorescenceColor || "-",
+                d.measurements.length || "-",
+                d.measurements.width || "-",
+                d.measurements.depth || "-",
+                d.totalDepth || "-",
+                d.table || "-",
+                d.pricePerCarat || "-",
+                d.price || "-",
+                d.rapList || "-",
+                d.isAvailable || "-",
             ];
             return row
                 .map((value) => {
@@ -403,7 +420,7 @@ export default function DiamondPage() {
     };
 
     const handleExport = () => {
-        let dataToExport: any[] = [];
+        let dataToExport: DiamondType[] = [];
         let fileName = "diamonds";
 
         switch (activeTab) {
