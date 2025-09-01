@@ -120,6 +120,7 @@ export const importMultipleCSV = async (
             `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds/import-csv`,
             formData,
             {
+                withCredentials: true,
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
