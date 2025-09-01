@@ -93,7 +93,7 @@ export function RequestQuoteModal({
         try {
             const baseURL =
                 process.env.NEXT_PUBLIC_API_BASE_URL ||
-                "https://diamond-inventory.onrender.com";
+                "https://millennium-star-inventory-service-dev.caratlogic.com";
 
             // API expects an array of quotations
             const quotationArray = [formData];

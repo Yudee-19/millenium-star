@@ -463,7 +463,8 @@ export default function DiamondPage() {
 
         try {
             const response = await axios.get<RefreshResponse>(
-                `${process.env.NEXT_PUBLIC_BASE_URL}/rapnet/refresh`
+                `${process.env.NEXT_PUBLIC_BASE_URL}/rapnet/refresh`,
+                { withCredentials: true }
             );
 
             if (response.data.success) {
