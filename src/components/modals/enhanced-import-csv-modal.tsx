@@ -209,7 +209,7 @@ export function EnhancedImportCSVModal({
             );
             if (match && match[1]) {
                 const certificateNumber = match[1];
-                return `Duplicate certificate number: ${certificateNumber} already exists in the database`;
+                return `You are uploading a diamond with a duplicate certificate number: ${certificateNumber} already exists in the database`;
             }
             // Fallback for E11000 errors without extractable certificate number
             return "Duplicate certificate number found. This diamond already exists in the database.";
