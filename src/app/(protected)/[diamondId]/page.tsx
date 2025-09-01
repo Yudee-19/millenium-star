@@ -116,7 +116,6 @@ export default function DiamondDetailPage() {
             }
 
             const data: ApiResponse = await response.json();
-            alert(data.data[0]._id);
 
             if (data.data && data.data.length > 0) {
                 setDiamond(data.data[0]);
