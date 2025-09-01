@@ -200,6 +200,25 @@ export function EnhancedImportCSVModal({
         }
     };
 
+    const formatErrorMessage = (error: string) => {
+        // Check for MongoDB duplicate key error
+        if (error.includes("E11000 duplicate key error")) {
+            // Extract certificate number from the error message
+            const match = error.match(
+                /dup key: { certificateNumber: "([^"]+)" }/
+            );
+            if (match && match[1]) {
+                const certificateNumber = match[1];
+                return `Duplicate certificate number: ${certificateNumber} already exists in the database`;
+            }
+            // Fallback for E11000 errors without extractable certificate number
+            return "Duplicate certificate number found. This diamond already exists in the database.";
+        }
+
+        // Return original error message for other types of errors
+        return error;
+    };
+
     const renderImportResults = () => {
         if (!importResults || !showResults) return null;
 
@@ -233,8 +252,7 @@ export function EnhancedImportCSVModal({
                             success ? "text-green-800" : "text-red-800"
                         }`}
                     >
-                        {message}
-                        {error}
+                        {error ? formatErrorMessage(error) : ""}
                     </p>
                     {totalDiamondsAdded > 0 && (
                         <p className="text-sm text-green-700 mt-1">
@@ -493,9 +511,11 @@ export function EnhancedImportCSVModal({
                 onSuccess();
             } else {
                 // Show error toast but keep modal open to show detailed results
-                toast(
-                    batchResult?.error ||
-                        "Import failed. Check the details below."
+                toast.error(
+                    formatErrorMessage(
+                        batchResult?.error ||
+                            "Import failed. Check the details below."
+                    )
                 );
             }
         } catch (error) {
