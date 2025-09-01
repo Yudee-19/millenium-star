@@ -4,6 +4,7 @@ import axios, { type AxiosInstance, type AxiosResponse } from "axios";
 const api: AxiosInstance = axios.create({
     baseURL: process.env.BASE_URL,
     timeout: 10000,
+    withCredentials: true,
     headers: {
         "Content-Type": "application/json",
     },

@@ -130,7 +130,12 @@ export const DiamondCharts = () => {
                 const baseURL =
                     process.env.NEXT_PUBLIC_API_BASE_URL ||
                     "https://millennium-star-inventory-service-dev.caratlogic.com";
-                const response = await axios.get(`${baseURL}/api/diamonds/all`);
+                const response = await axios.get(
+                    `${baseURL}/api/diamonds/all`,
+                    {
+                        withCredentials: true,
+                    }
+                );
                 if (response.data.success) {
                     setDiamonds(response.data.data);
                 } else {

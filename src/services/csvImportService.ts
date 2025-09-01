@@ -86,6 +86,7 @@ export const importCSV = async (file: File): Promise<CSVImportResponse> => {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
+                withCredentials: true,
             }
         );
 

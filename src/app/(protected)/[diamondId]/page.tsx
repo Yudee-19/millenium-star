@@ -109,7 +109,7 @@ export default function DiamondDetailPage() {
         try {
             setLoading(true);
             const url = `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds/search?searchTerm=${diamondId}`;
-            const response = await fetch(url);
+            const response = await fetch(url, { credentials: "include" });
 
             if (!response.ok) {
                 throw new Error("Failed to fetch diamond details");
@@ -139,7 +139,10 @@ export default function DiamondDetailPage() {
                 setFileLoading((prev) => ({ ...prev, [fileType]: true }));
 
                 const response = await axios.get(
-                    `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds/S3Bucket/${fileType}/${diamond._id}`
+                    `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds/S3Bucket/${fileType}/${diamond._id}`,
+                    {
+                        withCredentials: true,
+                    }
                 );
                 console.log(
                     `File URLs response: ${fileType}`,
