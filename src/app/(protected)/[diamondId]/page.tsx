@@ -108,7 +108,7 @@ export default function DiamondDetailPage() {
     const fetchDiamond = async () => {
         try {
             setLoading(true);
-            const url = `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds?id=${diamondId}`;
+            const url = `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds/search?searchTerm=${diamondId}`;
             const response = await fetch(url);
 
             if (!response.ok) {
@@ -116,6 +116,7 @@ export default function DiamondDetailPage() {
             }
 
             const data: ApiResponse = await response.json();
+            alert(data.data[0]._id);
 
             if (data.data && data.data.length > 0) {
                 setDiamond(data.data[0]);
@@ -139,7 +140,11 @@ export default function DiamondDetailPage() {
                 setFileLoading((prev) => ({ ...prev, [fileType]: true }));
 
                 const response = await axios.get(
-                    `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds/${diamond._id}/${fileType}`
+                    `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds/S3Bucket/${fileType}/${diamond._id}`
+                );
+                console.log(
+                    `File URLs response: ${fileType}`,
+                    response.data.data
                 );
 
                 if (response.data.status === 200) {
@@ -163,10 +168,9 @@ export default function DiamondDetailPage() {
 
         try {
             const response = await axios.post(
-                `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds/${diamond._id}/${fileType}/delete`,
-                {
-                    urls: [fileUrl],
-                }
+                `${process.env.NEXT_PUBLIC_BASE_URL}/diamonds/S3Bucket/delete/${fileType}/${diamond._id}`,
+                { urls: [fileUrl] },
+                { withCredentials: true }
             );
 
             if (response.data.status === 200) {
