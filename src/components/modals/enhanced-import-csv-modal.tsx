@@ -205,6 +205,7 @@ export function EnhancedImportCSVModal({
 
         const {
             success,
+            error,
             message,
             results = [],
             totalDiamondsAdded = 0,
@@ -233,6 +234,7 @@ export function EnhancedImportCSVModal({
                         }`}
                     >
                         {message}
+                        {error}
                     </p>
                     {totalDiamondsAdded > 0 && (
                         <p className="text-sm text-green-700 mt-1">
@@ -491,13 +493,12 @@ export function EnhancedImportCSVModal({
                 onSuccess();
             } else {
                 // Show error toast but keep modal open to show detailed results
-                toast.error(
-                    batchResult.message ||
+                toast(
+                    batchResult?.error ||
                         "Import failed. Check the details below."
                 );
             }
         } catch (error) {
-            console.error("Import error:", error);
             toast.error(
                 `Import failed: ${
                     error instanceof Error ? error.message : "Unknown error"

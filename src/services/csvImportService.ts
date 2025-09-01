@@ -2,6 +2,7 @@ import axios from "axios";
 
 export interface CSVImportResponse {
     success: boolean;
+    error?: string;
     message: string;
     replaced?: boolean;
     // New fields for detailed error handling
@@ -29,6 +30,7 @@ export interface CSVImportResponse {
 
 export interface BatchImportResponse {
     success: boolean;
+    error?: string;
     message: string;
     totalFiles?: number;
     totalSuccess?: number;
