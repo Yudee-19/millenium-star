@@ -61,19 +61,7 @@ interface RapaportGridProps {
 }
 
 // Color and clarity options based on your schema
-const COLOR_OPTIONS = [
-    "D",
-    "E",
-    "F",
-    "G",
-    "H",
-    "I",
-    "J",
-    "K",
-    "L",
-    "M",
-    "others",
-];
+const COLOR_OPTIONS = ["D", "E", "F", "G", "H", "I", "J", "K", "L", "M"];
 const CLARITY_OPTIONS = [
     "FL",
     "IF",
