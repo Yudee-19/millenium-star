@@ -49,6 +49,28 @@ export function useFilteredDiamonds(
         columnFilters: [] as Array<{ id: string; value: any }>,
     });
 
+    const mapColumnToApiParam = (columnId: string): string => {
+        const mapping: Record<string, string> = {
+            certificateNumber: "searchTerm",
+            "diamond-Id": "searchTerm",
+            "CERT-NO": "searchTerm",
+            color: "color",
+            clarity: "clarity",
+            cut: "cut",
+            shape: "shape",
+            laboratory: "laboratory",
+            fluorescenceColor: "fluorescenceColor",
+            fluorescenceIntensity: "fluorescenceIntensity",
+            polish: "polish",
+            symmetry: "symmetry",
+            isAvailable: "isAvailable",
+            price: "price",
+            caratRange: "caratRange", // Add this
+        };
+
+        return mapping[columnId] || columnId;
+    };
+
     const buildApiUrl = useCallback(() => {
         const { pagination, sorting, columnFilters } = tableState;
 
@@ -80,7 +102,22 @@ export function useFilteredDiamonds(
 
         // Add filters
         columnFilters.forEach((filter) => {
-            if (filter.value && filter.value.length > 0) {
+            if (
+                filter.value &&
+                (Array.isArray(filter.value) ? filter.value.length > 0 : true)
+            ) {
+                // Special handling for carat range
+                if (
+                    filter.id === "caratRange" &&
+                    typeof filter.value === "object" &&
+                    filter.value.min !== undefined &&
+                    filter.value.max !== undefined
+                ) {
+                    params.set("sizeMin", filter.value.min.toString());
+                    params.set("sizeMax", filter.value.max.toString());
+                    return;
+                }
+
                 // Map column IDs to API parameters
                 const apiParam = mapColumnToApiParam(filter.id);
 
@@ -99,27 +136,6 @@ export function useFilteredDiamonds(
         console.log(`🔍 Built API URL: ${finalUrl}`);
         return finalUrl;
     }, [baseEndpoint, tableState]);
-
-    const mapColumnToApiParam = (columnId: string): string => {
-        const mapping: Record<string, string> = {
-            certificateNumber: "searchTerm",
-            "diamond-Id": "searchTerm",
-            "CERT-NO": "searchTerm",
-            color: "color",
-            clarity: "clarity",
-            cut: "cut",
-            shape: "shape",
-            laboratory: "laboratory",
-            fluorescenceColor: "fluorescenceColor",
-            fluorescenceIntensity: "fluorescenceIntensity",
-            polish: "polish",
-            symmetry: "symmetry",
-            isAvailable: "isAvailable",
-            price: "price",
-        };
-
-        return mapping[columnId] || columnId;
-    };
 
     const fetchDiamonds = useCallback(async () => {
         try {

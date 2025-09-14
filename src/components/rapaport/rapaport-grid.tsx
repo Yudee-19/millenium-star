@@ -236,6 +236,11 @@ const RapaportGrid: React.FC<RapaportGridProps> = ({
                                 {CLARITY_OPTIONS.map((clarity) => {
                                     const count =
                                         diamondMatrix[color][clarity].length;
+                                    const averagePrice =
+                                        diamondMatrix[color][clarity].reduce(
+                                            (sum, d) => sum + d.price,
+                                            0
+                                        ) / (count || 1);
                                     return (
                                         <td
                                             key={`${color}-${clarity}`}
@@ -249,6 +254,13 @@ const RapaportGrid: React.FC<RapaportGridProps> = ({
                                             }
                                         >
                                             {count > 0 ? count : "-"}
+                                            <p className="text-[12px] text-gray-500 mt-1">
+                                                {count > 0
+                                                    ? `$${averagePrice.toFixed(
+                                                          2
+                                                      )}`
+                                                    : ""}
+                                            </p>
                                         </td>
                                     );
                                 })}

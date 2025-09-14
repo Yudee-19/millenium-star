@@ -126,6 +126,17 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
         ),
     },
     {
+        id: "caratRange",
+        // This is a virtual column that doesn't render but handles carat range filtering
+        header: () => null,
+        cell: () => null,
+        enableHiding: true,
+        enableSorting: false,
+        meta: {
+            isVirtual: true, // Mark as virtual column
+        },
+    },
+    {
         accessorKey: "color",
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Color" />

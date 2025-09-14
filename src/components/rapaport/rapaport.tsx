@@ -11,6 +11,8 @@ import RapaportGrid from "./rapaport-grid";
 
 // Predefined carat ranges commonly used in the industry
 const CARAT_RANGES = [
+    { label: "0.18 - 0.22", min: 0.18, max: 0.22 },
+    { label: "0.23 - 0.29", min: 0.23, max: 0.29 },
     { label: "0.30 - 0.39", min: 0.3, max: 0.39 },
     { label: "0.40 - 0.49", min: 0.4, max: 0.49 },
     { label: "0.50 - 0.69", min: 0.5, max: 0.69 },

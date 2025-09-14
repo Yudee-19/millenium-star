@@ -70,7 +70,7 @@ export function useClientDiamonds(): UseClientDiamondsReturn {
             };
 
             const [diamondsResponse, filterOptionsData] = await Promise.all([
-                clientDiamondAPI.searchDiamonds(defaultFilters, 1, 20), // Include default sorting
+                clientDiamondAPI.searchDiamonds(defaultFilters, 1, 50), // Include default sorting
                 clientDiamondAPI.getFilterOptions(),
             ]);
 

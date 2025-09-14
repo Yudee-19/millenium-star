@@ -62,6 +62,32 @@ export function useDiamonds(): UseDiamondsReturn {
         hasPrevPage: boolean;
     } | null>(null);
 
+    const mapColumnToQueryParam = useCallback((columnId: string): string => {
+        // Map column IDs to API query parameters
+        const mapping: Record<string, string> = {
+            "CERT-NO": "searchTerm",
+            certificateNumber: "searchTerm",
+            "diamond-Id": "searchTerm",
+            color: "color",
+            clarity: "clarity",
+            cut: "cut",
+            shape: "shape",
+            laboratory: "laboratory",
+            fluorescenceColor: "fluorescenceColor",
+            fluorescenceIntensity: "fluorescenceIntensity",
+            Polish: "polish",
+            polish: "polish",
+            sym: "symmetry",
+            symmetry: "symmetry",
+            isAvailable: "isAvailable",
+            price: "price",
+            size: "size", // Keep this for direct size searches
+            caratRange: "caratRange", // Add this for range searches
+        };
+
+        return mapping[columnId] || columnId;
+    }, []);
+
     const buildQueryParams = useCallback((state: TableState) => {
         const params = new URLSearchParams();
 
@@ -83,6 +109,18 @@ export function useDiamonds(): UseDiamondsReturn {
         // Filters
         state.columnFilters.forEach((filter) => {
             if (filter.value !== undefined && filter.value !== null) {
+                // Special handling for carat range
+                if (
+                    filter.id === "caratRange" &&
+                    typeof filter.value === "object" &&
+                    filter.value.min !== undefined &&
+                    filter.value.max !== undefined
+                ) {
+                    params.append("sizeMin", filter.value.min.toString());
+                    params.append("sizeMax", filter.value.max.toString());
+                    return;
+                }
+
                 if (Array.isArray(filter.value)) {
                     // Handle array filters (like faceted filters)
                     filter.value.forEach((val) => {
@@ -101,30 +139,6 @@ export function useDiamonds(): UseDiamondsReturn {
         });
 
         return params;
-    }, []);
-
-    const mapColumnToQueryParam = useCallback((columnId: string): string => {
-        // Map column IDs to API query parameters
-        const mapping: Record<string, string> = {
-            "CERT-NO": "searchTerm",
-            certificateNumber: "searchTerm",
-            "diamond-Id": "searchTerm",
-            color: "color",
-            clarity: "clarity",
-            cut: "cut",
-            shape: "shape",
-            laboratory: "laboratory",
-            fluorescenceColor: "fluorescenceColor",
-            fluorescenceIntensity: "fluorescenceIntensity",
-            Polish: "polish",
-            polish: "polish",
-            sym: "symmetry",
-            symmetry: "symmetry",
-            isAvailable: "isAvailable",
-            price: "price",
-        };
-
-        return mapping[columnId] || columnId;
     }, []);
 
     const fetchDiamonds = useCallback(

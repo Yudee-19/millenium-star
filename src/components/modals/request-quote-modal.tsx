@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { Textarea } from "../ui/textarea";
 
 interface QuotationData {
     carat: number;
@@ -217,7 +218,7 @@ export function RequestQuoteModal({
 
                 <form onSubmit={handleSubmit}>
                     <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-4 items-center gap-4">
+                        {/* <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="carat" className="text-right">
                                 Carat *
                             </Label>
@@ -246,7 +247,7 @@ export function RequestQuoteModal({
                                     </p>
                                 )}
                             </div>
-                        </div>
+                        </div> */}
 
                         {/* <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="noOfPieces" className="text-right">
@@ -279,15 +280,16 @@ export function RequestQuoteModal({
                             </div>
                         </div> */}
 
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="quotePrice" className="text-right">
-                                Quote Price ($) *
+                        <div className="flex flex-col items-start gap-4">
+                            <Label
+                                htmlFor="quotePrice"
+                                className="text-left w-full"
+                            >
+                                Quote Price ($) / Inquiry :
                             </Label>
-                            <div className="col-span-3">
-                                <Input
+                            <div className="w-full">
+                                <Textarea
                                     id="quotePrice"
-                                    type="number"
-                                    min="0"
                                     value={formData.quotePrice || ""}
                                     onChange={(e) =>
                                         handleInputChange(
@@ -295,7 +297,7 @@ export function RequestQuoteModal({
                                             parseFloat(e.target.value) || 0
                                         )
                                     }
-                                    placeholder="Your quote price in USD"
+                                    placeholder="Quote a price or Inquiry "
                                     className={
                                         errors.quotePrice
                                             ? "border-red-500"

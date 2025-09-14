@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DataTableFacetedFilter } from "@/components/data-table/data-table-faceted-filter";
 import { DataTableViewOptions } from "@/components/data-table/data-table-view-options";
+import { CaratRangeFilter } from "./carat-range-filter";
 import { X, Search } from "lucide-react";
 import {
     shape_options,
@@ -15,15 +16,59 @@ import {
     flou_options,
     availability_options,
 } from "../filters/diamond-filters";
+import { useState, useEffect } from "react";
 
 interface DiamondTableToolbarProps<TData> {
     table: Table<TData>;
 }
 
+interface CaratRange {
+    label: string;
+    min: number;
+    max: number;
+}
+
 export function DiamondTableToolbar<TData>({
     table,
 }: DiamondTableToolbarProps<TData>) {
+    const [selectedCaratRange, setSelectedCaratRange] =
+        useState<CaratRange | null>(null);
     const isFiltered = table.getState().columnFilters.length > 0;
+
+    // Check if there's an existing carat range filter
+    useEffect(() => {
+        const columnFilters = table.getState().columnFilters;
+        const caratFilter: any = columnFilters.find(
+            (filter) => filter.id === "caratRange"
+        );
+        console.log("Current column filters:", caratFilter);
+
+        if (caratFilter && caratFilter.value) {
+            const { min, max, label } = caratFilter.value;
+            console.log("Found existing carat range filter:", min, max, label);
+            setSelectedCaratRange({ label, min, max });
+        } else {
+            setSelectedCaratRange(null);
+        }
+    }, [table.getState().columnFilters]);
+
+    const handleCaratRangeSelect = (min: number, max: number) => {
+        const label =
+            min === 5 && max === 999
+                ? "5.00+"
+                : `${min.toFixed(2)} - ${max.toFixed(2)}`;
+        const range = { label, min, max };
+
+        setSelectedCaratRange(range);
+
+        // Set a custom filter that will be handled in the hooks
+        table.getColumn("caratRange")?.setFilterValue({ min, max, label });
+    };
+
+    const handleCaratRangeClear = () => {
+        setSelectedCaratRange(null);
+        table.getColumn("caratRange")?.setFilterValue(undefined);
+    };
 
     return (
         <div className="flex items-center justify-between">
@@ -46,6 +91,13 @@ export function DiamondTableToolbar<TData>({
                         className="h-8 w-[200px] pl-8 lg:w-[300px]"
                     />
                 </div>
+
+                {/* Carat Range Filter */}
+                <CaratRangeFilter
+                    onRangeSelect={handleCaratRangeSelect}
+                    selectedRange={selectedCaratRange}
+                    onClear={handleCaratRangeClear}
+                />
 
                 {/* Existing Faceted Filters */}
                 {table.getColumn("laboratory") && (
@@ -102,7 +154,10 @@ export function DiamondTableToolbar<TData>({
                 {isFiltered && (
                     <Button
                         variant="ghost"
-                        onClick={() => table.resetColumnFilters()}
+                        onClick={() => {
+                            table.resetColumnFilters();
+                            setSelectedCaratRange(null);
+                        }}
                         className="h-8 px-2 lg:px-3"
                     >
                         Reset
