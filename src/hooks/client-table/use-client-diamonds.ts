@@ -29,6 +29,7 @@ interface UseClientDiamondsReturn {
     handleSortChange: (
         sorting: { id: string; desc: boolean }[]
     ) => Promise<void>;
+    handlePageSizeChange: (pageSize: number) => Promise<void>;
 }
 
 export function useClientDiamonds(): UseClientDiamondsReturn {
@@ -70,7 +71,11 @@ export function useClientDiamonds(): UseClientDiamondsReturn {
             };
 
             const [diamondsResponse, filterOptionsData] = await Promise.all([
-                clientDiamondAPI.searchDiamonds(defaultFilters, 1, 50), // Include default sorting
+                clientDiamondAPI.searchDiamonds(
+                    defaultFilters,
+                    1,
+                    pagination.recordsPerPage
+                ),
                 clientDiamondAPI.getFilterOptions(),
             ]);
 
@@ -90,7 +95,8 @@ export function useClientDiamonds(): UseClientDiamondsReturn {
     const searchDiamonds = async (
         filters: ClientFilters,
         page: number = 1,
-        sortingOverride?: { id: string; desc: boolean }[] // Add this parameter
+        sortingOverride?: { id: string; desc: boolean }[],
+        pageSize?: number
     ) => {
         try {
             setLoading(true);
@@ -98,6 +104,7 @@ export function useClientDiamonds(): UseClientDiamondsReturn {
 
             // Use override sorting if provided, otherwise use current state
             const sorting = sortingOverride || currentSorting;
+            const currentPageSize = pageSize || pagination.recordsPerPage;
 
             // Convert sorting state to API format
             const sortBy = sorting.length > 0 ? sorting[0].id : "createdAt";
@@ -115,7 +122,7 @@ export function useClientDiamonds(): UseClientDiamondsReturn {
             const response = await clientDiamondAPI.searchDiamonds(
                 filtersWithDefaults,
                 page,
-                20
+                currentPageSize
             );
 
             setDiamonds(response.data);
@@ -138,6 +145,10 @@ export function useClientDiamonds(): UseClientDiamondsReturn {
         await searchDiamonds(currentFilters, 1, sorting);
     };
 
+    const handlePageSizeChange = async (newPageSize: number) => {
+        await searchDiamonds(currentFilters, 1, currentSorting, newPageSize);
+    };
+
     const resetFilters = async () => {
         await loadInitialData();
     };
@@ -157,5 +168,6 @@ export function useClientDiamonds(): UseClientDiamondsReturn {
         currentFilters,
         currentSorting,
         handleSortChange,
+        handlePageSizeChange,
     };
 }

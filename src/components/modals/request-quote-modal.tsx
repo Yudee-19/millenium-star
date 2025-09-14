@@ -19,7 +19,7 @@ import { Textarea } from "../ui/textarea";
 interface QuotationData {
     carat: number;
     noOfPieces: number;
-    quotePrice: number;
+    quotePrice: string;
 }
 
 interface RequestQuoteModalProps {
@@ -43,14 +43,14 @@ export function RequestQuoteModal({
     const [formData, setFormData] = useState<QuotationData>({
         carat: diamond?.size || 0,
         noOfPieces: 1,
-        quotePrice: 0,
+        quotePrice: "0",
     });
     const [isLoading, setIsLoading] = useState(false);
     const [errors, setErrors] = useState<
         Partial<Record<keyof QuotationData, string>>
     >({});
 
-    const handleInputChange = (field: keyof QuotationData, value: number) => {
+    const handleInputChange = (field: keyof QuotationData, value: string) => {
         setFormData((prev) => ({
             ...prev,
             [field]: value,
@@ -74,8 +74,8 @@ export function RequestQuoteModal({
         if (formData.noOfPieces <= 0) {
             newErrors.noOfPieces = "Number of pieces must be greater than 0";
         }
-        if (formData.quotePrice <= 0) {
-            newErrors.quotePrice = "Quote price must be greater than 0";
+        if (formData.quotePrice.trim() === "") {
+            newErrors.quotePrice = "Quote price/Inquiry cannot be blank";
         }
 
         setErrors(newErrors);
@@ -123,7 +123,7 @@ export function RequestQuoteModal({
             setFormData({
                 carat: diamond?.size || 0,
                 noOfPieces: 1,
-                quotePrice: 0,
+                quotePrice: "0",
             });
             setErrors({});
             onClose();
@@ -144,7 +144,7 @@ export function RequestQuoteModal({
         setFormData({
             carat: diamond?.size || 0,
             noOfPieces: 1,
-            quotePrice: 0,
+            quotePrice: "0",
         });
         setErrors({});
         onClose();
@@ -294,7 +294,7 @@ export function RequestQuoteModal({
                                     onChange={(e) =>
                                         handleInputChange(
                                             "quotePrice",
-                                            parseFloat(e.target.value) || 0
+                                            e.target.value || "0"
                                         )
                                     }
                                     placeholder="Quote a price or Inquiry "

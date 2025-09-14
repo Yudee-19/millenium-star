@@ -2,11 +2,10 @@
 
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { ClientDiamond } from "@/types/client/diamond";
 import { useRouter } from "next/navigation";
 import { DiamondImage } from "../diamond-image";
+import { ClientPagination } from "./client-pagination";
 
 interface PaginationData {
     currentPage: number;
@@ -22,6 +21,7 @@ interface ClientDiamondGridProps {
     loading: boolean;
     pagination: PaginationData;
     onPageChange: (page: number) => void;
+    onPageSizeChange?: (pageSize: number) => void;
 }
 
 export function ClientDiamondGrid({
@@ -29,8 +29,10 @@ export function ClientDiamondGrid({
     loading,
     pagination,
     onPageChange,
+    onPageSizeChange,
 }: ClientDiamondGridProps) {
     const router = useRouter();
+
     if (loading) {
         return (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
@@ -71,163 +73,8 @@ export function ClientDiamondGrid({
         }).format(price);
     };
 
-    // const getCutGrade = (cut: string) => {
-    //     const cutMap: { [key: string]: string } = {
-    //         EX: "Excellent",
-    //         VG: "Very Good",
-    //         G: "Good",
-    //         F: "Fair",
-    //         P: "Poor",
-    //     };
-    //     return cutMap[cut] || cut;
-    // };
-
-    // const getCutColor = (cut: string) => {
-    //     const colorMap: { [key: string]: string } = {
-    //         EX: "bg-green-100 text-green-800",
-    //         VG: "bg-blue-100 text-blue-800",
-    //         G: "bg-yellow-100 text-yellow-800",
-    //         F: "bg-orange-100 text-orange-800",
-    //         P: "bg-red-100 text-red-800",
-    //     };
-    //     return colorMap[cut] || "bg-gray-100 text-gray-800";
-    // };
-
-    const renderPaginationButtons = () => {
-        const buttons = [];
-        const { currentPage, totalPages } = pagination;
-
-        // Previous button
-        buttons.push(
-            <Button
-                key="prev"
-                variant="outline"
-                size="sm"
-                onClick={() => onPageChange(currentPage - 1)}
-                disabled={!pagination.hasPrevPage}
-                className="mr-2"
-            >
-                Previous
-            </Button>
-        );
-
-        // Page numbers (simplified for grid view)
-        if (totalPages <= 5) {
-            for (let i = 1; i <= totalPages; i++) {
-                buttons.push(
-                    <Button
-                        key={i}
-                        variant={currentPage === i ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => onPageChange(i)}
-                        className="mx-1"
-                    >
-                        {i}
-                    </Button>
-                );
-            }
-        } else {
-            // Show first page, current page area, and last page
-            buttons.push(
-                <Button
-                    key={1}
-                    variant={currentPage === 1 ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => onPageChange(1)}
-                    className="mx-1"
-                >
-                    1
-                </Button>
-            );
-
-            if (currentPage > 3) {
-                buttons.push(
-                    <span key="dots1" className="mx-2 text-gray-500">
-                        ...
-                    </span>
-                );
-            }
-
-            for (
-                let i = Math.max(2, currentPage - 1);
-                i <= Math.min(totalPages - 1, currentPage + 1);
-                i++
-            ) {
-                buttons.push(
-                    <Button
-                        key={i}
-                        variant={currentPage === i ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => onPageChange(i)}
-                        className="mx-1"
-                    >
-                        {i}
-                    </Button>
-                );
-            }
-
-            if (currentPage < totalPages - 2) {
-                buttons.push(
-                    <span key="dots2" className="mx-2 text-gray-500">
-                        ...
-                    </span>
-                );
-            }
-
-            if (totalPages > 1) {
-                buttons.push(
-                    <Button
-                        key={totalPages}
-                        variant={
-                            currentPage === totalPages ? "default" : "outline"
-                        }
-                        size="sm"
-                        onClick={() => onPageChange(totalPages)}
-                        className="mx-1"
-                    >
-                        {totalPages}
-                    </Button>
-                );
-            }
-        }
-
-        // Next button
-        buttons.push(
-            <Button
-                key="next"
-                variant="outline"
-                size="sm"
-                onClick={() => onPageChange(currentPage + 1)}
-                disabled={!pagination.hasNextPage}
-                className="ml-2"
-            >
-                Next
-            </Button>
-        );
-
-        return buttons;
-    };
-
     return (
         <div className="space-y-6">
-            {/* Results Summary */}
-            <div className="flex justify-between items-center">
-                <div className="text-sm text-gray-600">
-                    Showing{" "}
-                    {(pagination.currentPage - 1) * pagination.recordsPerPage +
-                        1}
-                    -
-                    {Math.min(
-                        pagination.currentPage * pagination.recordsPerPage,
-                        pagination.totalRecords
-                    )}{" "}
-                    of {pagination.totalRecords} diamonds
-                </div>
-                <div className="text-sm text-gray-600">
-                    Page {pagination.currentPage} of {pagination.totalPages}
-                </div>
-            </div>
-
             {/* Diamond Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                 {diamonds.map((diamond: any) => (
@@ -287,14 +134,13 @@ export function ClientDiamondGrid({
             </div>
 
             {/* Pagination */}
-            <div className="flex items-center justify-between pt-4 pb-15">
-                <div className="text-sm text-gray-500">
-                    Total: {pagination.totalRecords} diamonds
-                </div>
-                <div className="flex items-center">
-                    {renderPaginationButtons()}
-                </div>
-            </div>
+            <ClientPagination
+                pagination={pagination}
+                onPageChange={onPageChange}
+                onPageSizeChange={onPageSizeChange}
+                pageSizeOptions={[10, 20, 30, 50, 100]}
+                showPageSizeSelector={!!onPageSizeChange}
+            />
         </div>
     );
 }

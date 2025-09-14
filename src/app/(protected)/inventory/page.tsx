@@ -10,12 +10,13 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ClientFilters } from "@/types/client/diamond";
 import { useClientDiamonds } from "@/hooks/client-table/use-client-diamonds";
-import { Download, Grid3X3, Table as TableIcon } from "lucide-react";
+import { Download, FileText, Grid3X3, Table as TableIcon } from "lucide-react";
 import { InventoryGuard } from "@/components/auth/routeGuard"; // Updated import
 import { UserStatusHandler } from "@/components/auth/statusGuard";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/landing/header";
+import Rapaport from "@/components/rapaport/rapaport";
 
 export default function ClientPage() {
     const { user } = useAuth(); // Get user for conditional rendering
@@ -26,6 +27,7 @@ export default function ClientPage() {
         loading,
         currentSorting,
         handleSortChange,
+        handlePageSizeChange,
         filterOptions,
         error,
         searchDiamonds,
@@ -177,6 +179,13 @@ export default function ClientPage() {
                                                 <Grid3X3 className="w-4 h-4" />
                                                 <span>Grid View</span>
                                             </TabsTrigger>
+                                            <TabsTrigger
+                                                value="rapaport"
+                                                className="flex items-center space-x-2"
+                                            >
+                                                <FileText className="w-4 h-4" />
+                                                <span>Rapaport</span>
+                                            </TabsTrigger>
                                         </TabsList>
                                     </Tabs>
 
@@ -229,16 +238,20 @@ export default function ClientPage() {
                                     loading={loading}
                                     pagination={pagination}
                                     onPageChange={handlePageChange}
+                                    onPageSizeChange={handlePageSizeChange}
                                     onSortChange={handleSortChange}
                                     currentSorting={currentSorting}
                                 />
-                            ) : (
+                            ) : view === "grid" ? (
                                 <ClientDiamondGrid
                                     diamonds={diamonds}
                                     loading={loading}
                                     pagination={pagination}
                                     onPageChange={handlePageChange}
+                                    onPageSizeChange={handlePageSizeChange}
                                 />
+                            ) : (
+                                <Rapaport />
                             )}
                         </div>
                     </div>
