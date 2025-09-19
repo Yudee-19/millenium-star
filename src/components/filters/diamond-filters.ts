@@ -146,6 +146,7 @@ export const fluorescenceIntensity_options = [
     { value: "M", label: "Medium", icon: Gem },
     { value: "SL", label: "Slight", icon: Gem },
     { value: "VSL", label: "Very Slight", icon: Gem },
+    { value: "F", label: "Faint", icon: Gem },
     { value: "N", label: "None", icon: Gem },
 ];
 

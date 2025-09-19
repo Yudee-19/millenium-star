@@ -240,19 +240,19 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
         ),
     },
     {
-        accessorKey: "fluorescenceColor",
+        accessorKey: "fluorescenceIntensity",
         header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Fluo. Color" />
+            <DataTableColumnHeader column={column} title="Fluo. Intensity" />
         ),
         cell: ({ row }) => {
             const flou = flou_options.find(
-                (flou) => flou.value === row.original.fluorescenceColor
+                (flou) => flou.value === row.original.fluorescenceIntensity
             );
             return (
                 <div className="flex w-[100px] justify-center items-center">
                     <span className="whitespace-pre-wrap">
-                        {(row.original as any)["fluorescenceColor"] ||
-                            row.original.fluorescenceColor ||
+                        {(row.original as any)["fluorescenceIntensity"] ||
+                            row.original.fluorescenceIntensity ||
                             "-"}
                     </span>
                 </div>

@@ -15,6 +15,7 @@ import {
     lab_options,
     flou_options,
     availability_options,
+    fluorescenceIntensity_options,
 } from "../filters/diamond-filters";
 import { useState, useEffect } from "react";
 
@@ -135,11 +136,11 @@ export function DiamondTableToolbar<TData>({
                         options={cut_options}
                     />
                 )}
-                {table.getColumn("fluorescenceColor") && (
+                {table.getColumn("fluorescenceIntensity") && (
                     <DataTableFacetedFilter
-                        column={table.getColumn("fluorescenceColor")}
-                        title="Fluorescence"
-                        options={flou_options}
+                        column={table.getColumn("fluorescenceIntensity")}
+                        title="Fluo. Intensity"
+                        options={fluorescenceIntensity_options}
                     />
                 )}
                 {table.getColumn("isAvailable") && (
