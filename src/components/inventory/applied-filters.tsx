@@ -133,11 +133,14 @@ export function AppliedFilters({
         }
 
         // Fluorescence filters
-        if (filters.fluorescenceColor && filters.fluorescenceColor.length > 0) {
-            filters.fluorescenceColor.forEach((fluorescence) => {
+        if (
+            filters.fluorescenceIntensity &&
+            filters.fluorescenceIntensity.length > 0
+        ) {
+            filters.fluorescenceIntensity.forEach((fluorescence) => {
                 addBadge(
                     `Fluorescence: ${fluorescence}`,
-                    "fluorescenceColor",
+                    "fluorescenceIntensity",
                     fluorescence
                 );
             });

@@ -11,6 +11,10 @@ export interface ClientDiamond {
     polish: string;
     symmetry: string;
     fluorescenceColor: string;
+    fluorescenceIntensity: string;
+    fancyColor?: string;
+    fancyColorOvertone?: string;
+    fancyColorIntensity?: string;
     measurements: {
         length: number;
         width: number;
@@ -20,9 +24,10 @@ export interface ClientDiamond {
     table: number;
     certificateNumber: string;
     price: number;
+    pricePerCarat: number;
     noBgm?: string;
     fromTab?: string;
-    isAvailable: boolean;
+    isAvailable: string;
     lab?: string;
     shape?: string;
     createdAt: string;
@@ -47,6 +52,7 @@ export interface ClientFilters {
     polish?: string[];
     symmetry?: string[];
     fluorescenceColor?: string[];
+    fluorescenceIntensity?: string[];
     laboratory?: string[];
     searchTerm?: string;
     isAvailable?: boolean;

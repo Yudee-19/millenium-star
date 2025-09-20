@@ -244,20 +244,45 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             return value.includes(row.getValue(id));
         },
     },
-
-    // Virtual Column for Carat Range Filtering
+    // Table Column
     {
-        id: "caratRange",
-        // This is a virtual column that doesn't render but handles carat range filtering
-        header: () => null,
-        cell: () => null,
-        enableHiding: true,
-        enableSorting: false,
-        meta: {
-            isVirtual: true, // Mark as virtual column
+        accessorKey: "table",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Table" />
+        ),
+        cell: ({ row }) => (
+            <div className="w-[80px]">
+                {row.getValue("table") || row.original.table || "-"}%
+            </div>
+        ),
+    },
+    // Depth Column
+    {
+        accessorKey: "depth",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Depth" />
+        ),
+        cell: ({ row }) => (
+            <div className="w-[80px]">
+                {row.original.measurements?.depth || "-"} mm
+            </div>
+        ),
+    },
+    // RapList Column
+    {
+        accessorKey: "rapList",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="RapList" />
+        ),
+        cell: ({ row }) => {
+            const rapList = row.original.rapList;
+            return (
+                <div className="w-[100px] font-semibold">
+                    ${rapList ? rapList.toLocaleString() : rapList}
+                </div>
+            );
         },
     },
-
     // Discount Column
     {
         accessorKey: "discount",
@@ -277,7 +302,21 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             );
         },
     },
-
+    // Price Per Carat Column
+    {
+        accessorKey: "pricePerCarat",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Price/Carat" />
+        ),
+        cell: ({ row }) => {
+            const price = row.original.pricePerCarat;
+            return (
+                <div className="w-[100px] font-semibold">
+                    ${price?.toLocaleString()}
+                </div>
+            );
+        },
+    },
     // Measurements Columns
     {
         accessorKey: "length",
@@ -302,18 +341,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             </div>
         ),
     },
-    // Depth Column
-    {
-        accessorKey: "depth",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Depth" />
-        ),
-        cell: ({ row }) => (
-            <div className="w-[80px]">
-                {row.original.measurements?.depth || "-"} mm
-            </div>
-        ),
-    },
+
     // Total Depth Column
     {
         accessorKey: "totalDepth",
@@ -327,33 +355,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             return <div className="w-[80px]">{tDep ? `${tDep}%` : "-"}</div>;
         },
     },
-    // Table Column
-    {
-        accessorKey: "table",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Table" />
-        ),
-        cell: ({ row }) => (
-            <div className="w-[80px]">
-                {row.getValue("table") || row.original.table || "-"}%
-            </div>
-        ),
-    },
-    // Price Per Carat Column
-    {
-        accessorKey: "pricePerCarat",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Price/Carat" />
-        ),
-        cell: ({ row }) => {
-            const price = row.original.pricePerCarat;
-            return (
-                <div className="w-[100px] font-semibold">
-                    ${price?.toLocaleString()}
-                </div>
-            );
-        },
-    },
+
     // Price Column
     {
         accessorKey: "price",
@@ -369,21 +371,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             );
         },
     },
-    // RapList Column
-    {
-        accessorKey: "rapList",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="RapList" />
-        ),
-        cell: ({ row }) => {
-            const rapList = row.original.rapList;
-            return (
-                <div className="w-[100px] font-semibold">
-                    ${rapList ? rapList.toLocaleString() : rapList}
-                </div>
-            );
-        },
-    },
+
     // Availability Column
     {
         accessorKey: "isAvailable", // Change from "Availabilty" to "isAvailable"
@@ -421,9 +409,22 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
         },
         enableSorting: true, // Enable sorting for this column
     },
+    // Virtual Column for Carat Range Filtering
+    {
+        id: "caratRange",
+        // This is a virtual column that doesn't render but handles carat range filtering
+        header: () => null,
+        cell: () => null,
+        enableHiding: true,
+        enableSorting: false,
+        meta: {
+            isVirtual: true, // Mark as virtual column
+        },
+    },
 
     // Example columns for newly added fields
 
+    //FancyColor Coloumn
     // {
     //     accessorKey: "fancyColor",
     //     header: ({ column }) => (
@@ -433,6 +434,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
     //         <div className="w-[100px]">{row.original.fancyColor || "-"}</div>
     //     ),
     // },
+    //FancyColorOvertone Coloumn
     // {
     //     accessorKey: "fancyColorOvertone",
     //     header: ({ column }) => (
@@ -447,6 +449,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
     //         </div>
     //     ),
     // },
+    //FancyColorIntensity Coloumn
     // {
     //     accessorKey: "fancyColorIntensity",
     //     header: ({ column }) => (

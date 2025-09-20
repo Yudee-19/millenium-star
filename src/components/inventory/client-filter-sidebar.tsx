@@ -28,6 +28,7 @@ import {
     symmetry_options,
     lab_options,
     flou_options,
+    fluorescenceIntensity_options,
 } from "@/components/filters/diamond-filters";
 import Container from "../ui/container";
 
@@ -479,38 +480,42 @@ export function ClientFilterSidebar({
                                 </div>
                             </div>
 
-                            {/* Fluorescence */}
+                            {/* Fluorescence Intensity*/}
                             <div className="animate-fade-in-up">
                                 <Label className="text-sm font-medium text-gray-700 mb-2  flex items-center gap-2">
                                     <Filter className="w-4 h-4" />
-                                    Fluorescence Color
+                                    Fluorescence Intensity
                                 </Label>
                                 <div className="flex flex-wrap gap-4">
-                                    {flou_options.map((fluo) => (
-                                        <div key={fluo.value}>
-                                            <Checkbox
-                                                id={`fluo-${fluo.value}`}
-                                                className="sr-only peer"
-                                                checked={(
-                                                    filters.fluorescenceColor ||
-                                                    []
-                                                ).includes(fluo.value)}
-                                                onCheckedChange={(checked) =>
-                                                    updateArrayFilter(
-                                                        "fluorescenceColor",
-                                                        fluo.value,
-                                                        checked as boolean
-                                                    )
-                                                }
-                                            />
-                                            <Label
-                                                htmlFor={`fluo-${fluo.value}`}
-                                                className="text-xs bg-white px-3 py-2 border border-gray-300 rounded cursor-pointer hover:bg-gray-100 transition-colors peer-data-[state=checked]:bg-gray-200 peer-data-[state=checked]:text-black peer-data-[state=checked]:border-black"
-                                            >
-                                                {fluo.label}
-                                            </Label>
-                                        </div>
-                                    ))}
+                                    {fluorescenceIntensity_options.map(
+                                        (fluo) => (
+                                            <div key={fluo.value}>
+                                                <Checkbox
+                                                    id={`fluo-${fluo.value}`}
+                                                    className="sr-only peer"
+                                                    checked={(
+                                                        filters.fluorescenceIntensity ||
+                                                        []
+                                                    ).includes(fluo.value)}
+                                                    onCheckedChange={(
+                                                        checked
+                                                    ) =>
+                                                        updateArrayFilter(
+                                                            "fluorescenceIntensity",
+                                                            fluo.value,
+                                                            checked as boolean
+                                                        )
+                                                    }
+                                                />
+                                                <Label
+                                                    htmlFor={`fluo-${fluo.value}`}
+                                                    className="text-xs bg-white px-3 py-2 border border-gray-300 rounded cursor-pointer hover:bg-gray-100 transition-colors peer-data-[state=checked]:bg-gray-200 peer-data-[state=checked]:text-black peer-data-[state=checked]:border-black"
+                                                >
+                                                    {fluo.label}
+                                                </Label>
+                                            </div>
+                                        )
+                                    )}
                                 </div>
                             </div>
 

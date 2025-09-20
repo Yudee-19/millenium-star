@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { DiamondImage } from "../diamond-image";
 import { ClientTableColumnHeader } from "./client-table-column-header";
 import { ClientPagination } from "./client-pagination";
+import { Badge } from "../ui/badge";
 
 interface PaginationData {
     currentPage: number;
@@ -78,14 +79,7 @@ export function ClientDiamondTable({
                                     canSort={false}
                                 />
                             </TableHead>
-                            <TableHead className="text-xs font-medium text-gray-700 text-center">
-                                <ClientTableColumnHeader
-                                    title="Diamond Id."
-                                    sortKey="certificateNumber"
-                                    currentSorting={currentSorting}
-                                    onSortChange={onSortChange}
-                                />
-                            </TableHead>
+                            {/* Shape Header */}
                             <TableHead className="text-xs font-medium text-gray-700 text-center">
                                 <ClientTableColumnHeader
                                     title="Shape"
@@ -94,30 +88,16 @@ export function ClientDiamondTable({
                                     onSortChange={onSortChange}
                                 />
                             </TableHead>
-                            <TableHead className="text-xs font-medium  text-gray-700 text-center">
-                                <ClientTableColumnHeader
-                                    title="Color"
-                                    sortKey="color"
-                                    currentSorting={currentSorting}
-                                    onSortChange={onSortChange}
-                                />
-                            </TableHead>
+                            {/* CertficateNumber Header */}
                             <TableHead className="text-xs font-medium text-gray-700 text-center">
                                 <ClientTableColumnHeader
-                                    title="Clarity"
-                                    sortKey="clarity"
+                                    title="Diamond Id."
+                                    sortKey="certificateNumber"
                                     currentSorting={currentSorting}
                                     onSortChange={onSortChange}
                                 />
                             </TableHead>
-                            <TableHead className="text-xs font-medium text-gray-700 text-center">
-                                <ClientTableColumnHeader
-                                    title="Cut"
-                                    sortKey="cut"
-                                    currentSorting={currentSorting}
-                                    onSortChange={onSortChange}
-                                />
-                            </TableHead>
+                            {/* Size Header */}
                             <TableHead className="text-xs font-medium text-gray-700 text-center">
                                 <ClientTableColumnHeader
                                     title="Size (in ct.)"
@@ -126,14 +106,34 @@ export function ClientDiamondTable({
                                     onSortChange={onSortChange}
                                 />
                             </TableHead>
-                            <TableHead className="text-xs font-medium text-gray-700 text-center">
+                            {/* Color Header */}
+                            <TableHead className="text-xs font-medium  text-gray-700 text-center">
                                 <ClientTableColumnHeader
-                                    title="Polish"
-                                    sortKey="polish"
+                                    title="Color"
+                                    sortKey="color"
                                     currentSorting={currentSorting}
                                     onSortChange={onSortChange}
                                 />
                             </TableHead>
+                            {/* Clarity Header */}
+                            <TableHead className="text-xs font-medium text-gray-700 text-center">
+                                <ClientTableColumnHeader
+                                    title="Clarity"
+                                    sortKey="clarity"
+                                    currentSorting={currentSorting}
+                                    onSortChange={onSortChange}
+                                />
+                            </TableHead>
+                            {/* Cut Header */}
+                            <TableHead className="text-xs font-medium text-gray-700 text-center">
+                                <ClientTableColumnHeader
+                                    title="Cut"
+                                    sortKey="cut"
+                                    currentSorting={currentSorting}
+                                    onSortChange={onSortChange}
+                                />
+                            </TableHead>
+                            {/* Symmetry Header */}
                             <TableHead className="text-xs font-medium text-gray-700 text-center">
                                 <ClientTableColumnHeader
                                     title="Symmetry"
@@ -142,14 +142,25 @@ export function ClientDiamondTable({
                                     onSortChange={onSortChange}
                                 />
                             </TableHead>
+                            {/* Polish Header */}
                             <TableHead className="text-xs font-medium text-gray-700 text-center">
                                 <ClientTableColumnHeader
-                                    title="Fluorescence"
-                                    sortKey="fluorescenceColor"
+                                    title="Polish"
+                                    sortKey="polish"
                                     currentSorting={currentSorting}
                                     onSortChange={onSortChange}
                                 />
                             </TableHead>
+                            {/* Fluorescence Header */}
+                            <TableHead className="text-xs font-medium text-gray-700 text-center">
+                                <ClientTableColumnHeader
+                                    title="Fluo. Intensity"
+                                    sortKey="fluorescenceIntensity"
+                                    currentSorting={currentSorting}
+                                    onSortChange={onSortChange}
+                                />
+                            </TableHead>
+                            {/* Laboratory Header */}
                             <TableHead className="text-xs font-medium text-gray-700 text-center">
                                 <ClientTableColumnHeader
                                     title="Lab"
@@ -158,6 +169,79 @@ export function ClientDiamondTable({
                                     onSortChange={onSortChange}
                                 />
                             </TableHead>
+                            {/* Table Header */}
+                            <TableHead className="text-xs font-medium text-gray-700 text-center">
+                                <ClientTableColumnHeader
+                                    title="Table"
+                                    sortKey="table"
+                                    currentSorting={currentSorting}
+                                    onSortChange={onSortChange}
+                                />
+                            </TableHead>
+                            {/* Total Depth Header */}
+                            <TableHead className="text-xs font-medium text-gray-700 text-center">
+                                <ClientTableColumnHeader
+                                    title="Total Depth"
+                                    sortKey="totalDepth"
+                                    currentSorting={currentSorting}
+                                    onSortChange={onSortChange}
+                                />
+                            </TableHead>
+                            {/* RapList Header */}
+                            <TableHead className="text-xs font-medium text-gray-700 text-center">
+                                <ClientTableColumnHeader
+                                    title="Rap List"
+                                    sortKey="rapList"
+                                    currentSorting={currentSorting}
+                                    onSortChange={onSortChange}
+                                />
+                            </TableHead>
+                            {/* Discount Header */}
+                            <TableHead className="text-xs font-medium text-gray-700 text-center">
+                                <ClientTableColumnHeader
+                                    title="Discount"
+                                    sortKey="discount"
+                                    currentSorting={currentSorting}
+                                    onSortChange={onSortChange}
+                                />
+                            </TableHead>
+                            {/* Price per Carat Header */}
+                            <TableHead className="text-xs font-medium text-gray-700 text-center">
+                                <ClientTableColumnHeader
+                                    title="Price/Ct."
+                                    sortKey="pricePerCarat"
+                                    currentSorting={currentSorting}
+                                    onSortChange={onSortChange}
+                                />
+                            </TableHead>
+                            {/* Length Header */}
+                            <TableHead className="text-xs font-medium text-gray-700 text-center">
+                                <ClientTableColumnHeader
+                                    title="Length"
+                                    sortKey="length"
+                                    currentSorting={currentSorting}
+                                    onSortChange={onSortChange}
+                                />
+                            </TableHead>
+                            {/* Width Header */}
+                            <TableHead className="text-xs font-medium text-gray-700 text-center">
+                                <ClientTableColumnHeader
+                                    title="Width"
+                                    sortKey="width"
+                                    currentSorting={currentSorting}
+                                    onSortChange={onSortChange}
+                                />
+                            </TableHead>
+                            {/* Total depth Header */}
+                            <TableHead className="text-xs font-medium text-gray-700 text-center">
+                                <ClientTableColumnHeader
+                                    title="Total Depth"
+                                    sortKey="totalDepth"
+                                    currentSorting={currentSorting}
+                                    onSortChange={onSortChange}
+                                />
+                            </TableHead>
+                            {/* Price Header */}
                             <TableHead className="text-xs font-medium text-gray-700 text-center">
                                 <ClientTableColumnHeader
                                     title="Price"
@@ -166,10 +250,11 @@ export function ClientDiamondTable({
                                     onSortChange={onSortChange}
                                 />
                             </TableHead>
+                            {/* Availability Header */}
                             <TableHead className="text-xs font-medium text-gray-700 text-center">
                                 <ClientTableColumnHeader
-                                    title="Rap List"
-                                    sortKey="rapList"
+                                    title="Availability"
+                                    sortKey="isAvailable"
                                     currentSorting={currentSorting}
                                     onSortChange={onSortChange}
                                 />
@@ -186,16 +271,21 @@ export function ClientDiamondTable({
                                 }
                             >
                                 <TableCell className="text-sm font-mono">
-                                    <DiamondImage
-                                        certificateNumber={diamond._id}
-                                        size={60}
-                                    />
+                                    <div className="aspect-square w-15 mx-auto">
+                                        <DiamondImage
+                                            certificateNumber={diamond._id}
+                                            size={100}
+                                        />
+                                    </div>
+                                </TableCell>
+                                <TableCell className="text-sm">
+                                    {diamond.shape || "-"}
                                 </TableCell>
                                 <TableCell className="text-sm font-mono">
                                     {diamond.certificateNumber || "-"}
                                 </TableCell>
                                 <TableCell className="text-sm">
-                                    {diamond.shape || "-"}
+                                    {diamond.size || "-"}
                                 </TableCell>
                                 <TableCell className="text-sm ">
                                     {diamond.color || "-"}
@@ -207,25 +297,83 @@ export function ClientDiamondTable({
                                     {diamond.cut || "-"}
                                 </TableCell>
                                 <TableCell className="text-sm">
-                                    {diamond.size || "-"}
+                                    {diamond.symmetry || "-"}
                                 </TableCell>
+
                                 <TableCell className="text-sm">
                                     {diamond.polish || "-"}
                                 </TableCell>
+
                                 <TableCell className="text-sm">
-                                    {diamond.symmetry || "-"}
-                                </TableCell>
-                                <TableCell className="text-sm">
-                                    {diamond.fluorescenceColor || "-"}
+                                    {diamond.fluorescenceIntensity || "-"}
                                 </TableCell>
                                 <TableCell className="text-sm">
                                     {diamond.laboratory || "-"}
                                 </TableCell>
+                                <TableCell className="text-sm">
+                                    {diamond.table
+                                        ? diamond.table + " mm"
+                                        : "-"}
+                                </TableCell>
+                                <TableCell className="text-sm">
+                                    {diamond.measurements?.depth
+                                        ? diamond.measurements.depth + " mm"
+                                        : "-"}
+                                </TableCell>
+                                <TableCell className="text-sm font-semibold">
+                                    {"$ " + formatPrice(diamond.rapList) || "-"}
+                                </TableCell>
+                                <TableCell className="text-sm font-semibold">
+                                    {formatPrice(diamond.discount) + "%" || "-"}
+                                </TableCell>
+                                <TableCell className="text-sm font-semibold">
+                                    {"$ " +
+                                        formatPrice(diamond.pricePerCarat) ||
+                                        "-"}
+                                </TableCell>
+                                <TableCell className="text-sm font-semibold">
+                                    {diamond.measurements?.length
+                                        ? diamond.measurements.length + " mm"
+                                        : "-"}
+                                </TableCell>
+                                <TableCell className="text-sm font-semibold">
+                                    {diamond.measurements?.width
+                                        ? diamond.measurements.width + " mm"
+                                        : "-"}
+                                </TableCell>
+                                <TableCell className="text-sm font-semibold">
+                                    {diamond.totalDepth
+                                        ? diamond.totalDepth + " %"
+                                        : "-"}
+                                </TableCell>
+
                                 <TableCell className="text-sm font-semibold">
                                     {"$ " + formatPrice(diamond.price) || "-"}
                                 </TableCell>
                                 <TableCell className="text-sm font-semibold">
-                                    {"$ " + formatPrice(diamond.rapList) || "-"}
+                                    {diamond.isAvailable ? (
+                                        <Badge
+                                            className={
+                                                diamond.isAvailable == "G"
+                                                    ? "bg-green-200 text-black"
+                                                    : diamond.isAvailable == "S"
+                                                    ? "bg-red-200 text-black"
+                                                    : diamond.isAvailable == "M"
+                                                    ? "bg-yellow-200 text-black"
+                                                    : "bg-gray-200 text-black"
+                                            }
+                                        >
+                                            {diamond.isAvailable == "G"
+                                                ? "Available"
+                                                : diamond.isAvailable == "S"
+                                                ? "Sold"
+                                                : diamond.isAvailable == "M"
+                                                ? "Memo"
+                                                : "N/A"}
+                                        </Badge>
+                                    ) : (
+                                        "-"
+                                    )}
                                 </TableCell>
                             </TableRow>
                         ))}

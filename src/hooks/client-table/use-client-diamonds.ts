@@ -1,4 +1,3 @@
-// src/hooks/client/use-client-diamonds.ts
 import { useState, useEffect } from "react";
 import {
     ClientDiamond,
