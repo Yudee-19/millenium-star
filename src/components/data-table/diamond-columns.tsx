@@ -32,6 +32,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             />
         ),
     },
+    // Image Column
     {
         accessorKey: "image",
         header: ({ column }) => (
@@ -43,7 +44,32 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             </Link>
         ),
     },
+    // Shape Column
+    {
+        accessorKey: "shape",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Shape" />
+        ),
+        cell: ({ row }) => {
+            const shapeValue = row.original.shape || "-";
+            const shape = shape_options.find(
+                (shape) => shape.value === shapeValue
+            );
+            return (
+                <div className="flex w-[80px] items-center">
+                    {/* {shape?.icon && (
+                        <shape.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+                    )} */}
+                    <span className="whitespace-pre-wrap">{shapeValue}</span>
+                </div>
+            );
+        },
+        filterFn: (row, id, value) => {
+            return value.includes(row.getValue(id));
+        },
+    },
 
+    // Certificate Number Column
     {
         accessorKey: "certificateNumber",
         header: ({ column }) => (
@@ -66,6 +92,133 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             return certNo.toLowerCase().includes(value.toLowerCase());
         },
     },
+    // Size/Carat Column
+    {
+        accessorKey: "size",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Size" />
+        ),
+        cell: ({ row }) => (
+            <div className="w-[80px] whitespace-pre-wrap">
+                {(row.getValue("size") as number) || (0 as number)} ct
+            </div>
+        ),
+    },
+    // Color Column
+    {
+        accessorKey: "color",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Color" />
+        ),
+        cell: ({ row }) => {
+            const colorValue =
+                row.original.color || (row.original as any)["color"] || "-";
+
+            const color = color_options.find(
+                (color) => color.value === colorValue
+            );
+
+            return (
+                <div className="flex w-[60px] items-center">
+                    <span className="whitespace-pre-wrap">{colorValue}</span>
+                </div>
+            );
+        },
+        filterFn: (row, id, value) => {
+            return value.includes(row.getValue(id));
+        },
+    },
+    // Clarity Column
+    {
+        accessorKey: "clarity",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Clarity" />
+        ),
+        cell: ({ row }) => {
+            const clarityValue =
+                row.original.clarity || (row.original as any)["clarity"] || "-";
+            const clarity = clarity_options.find(
+                (clarity) => clarity.value === clarityValue
+            );
+            return (
+                <div className="flex w-[80px] items-center">
+                    <span className="whitespace-pre-wrap">{clarityValue}</span>
+                </div>
+            );
+        },
+        filterFn: (row, id, value) => {
+            return value.includes(row.getValue(id));
+        },
+    },
+    // Cut Column
+    {
+        accessorKey: "cut",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Cut" />
+        ),
+        cell: ({ row }) => {
+            const cutValue =
+                row.original.cut || (row.original as any)["cut"] || "-";
+            const cut = cut_options.find((cut) => cut.value === cutValue);
+            return (
+                <div className="flex w-[80px] items-center">
+                    <span className="whitespace-pre-wrap">{cutValue}</span>
+                </div>
+            );
+        },
+        filterFn: (row, id, value) => {
+            return value.includes(row.getValue(id));
+        },
+    },
+    // Symmetry Column
+    {
+        accessorKey: "symmetry",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Symmetry" />
+        ),
+        cell: ({ row }) => (
+            <div className="w-[80px] whitespace-pre-wrap">
+                {(row.original as any)["sym"] || row.original.symmetry || "-"}
+            </div>
+        ),
+    },
+    // Polish Column
+    {
+        accessorKey: "polish",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Polish" />
+        ),
+        cell: ({ row }) => (
+            <div className="w-[80px] whitespace-pre-wrap">
+                {row.original.polish || (row.original as any)["Polish"] || "-"}
+            </div>
+        ),
+    },
+    // Fluorescence Intensity Column
+    {
+        accessorKey: "fluorescenceIntensity",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Fluo. Intensity" />
+        ),
+        cell: ({ row }) => {
+            const flou = flou_options.find(
+                (flou) => flou.value === row.original.fluorescenceIntensity
+            );
+            return (
+                <div className="flex w-[100px] justify-center items-center">
+                    <span className="whitespace-pre-wrap">
+                        {(row.original as any)["fluorescenceIntensity"] ||
+                            row.original.fluorescenceIntensity ||
+                            "-"}
+                    </span>
+                </div>
+            );
+        },
+        filterFn: (row, id, value) => {
+            return value.includes(row.getValue(id));
+        },
+    },
+    // Laboratory Column
     {
         accessorKey: "laboratory",
         header: ({ column }) => (
@@ -91,40 +244,8 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             return value.includes(row.getValue(id));
         },
     },
-    {
-        accessorKey: "shape",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Shape" />
-        ),
-        cell: ({ row }) => {
-            const shapeValue = row.original.shape || "-";
-            const shape = shape_options.find(
-                (shape) => shape.value === shapeValue
-            );
-            return (
-                <div className="flex w-[80px] items-center">
-                    {/* {shape?.icon && (
-                        <shape.icon className="mr-2 h-4 w-4 text-muted-foreground" />
-                    )} */}
-                    <span className="whitespace-pre-wrap">{shapeValue}</span>
-                </div>
-            );
-        },
-        filterFn: (row, id, value) => {
-            return value.includes(row.getValue(id));
-        },
-    },
-    {
-        accessorKey: "size",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Size" />
-        ),
-        cell: ({ row }) => (
-            <div className="w-[80px] whitespace-pre-wrap">
-                {(row.getValue("size") as number) || (0 as number)} ct
-            </div>
-        ),
-    },
+
+    // Virtual Column for Carat Range Filtering
     {
         id: "caratRange",
         // This is a virtual column that doesn't render but handles carat range filtering
@@ -136,50 +257,8 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             isVirtual: true, // Mark as virtual column
         },
     },
-    {
-        accessorKey: "color",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Color" />
-        ),
-        cell: ({ row }) => {
-            const colorValue =
-                row.original.color || (row.original as any)["color"] || "-";
 
-            const color = color_options.find(
-                (color) => color.value === colorValue
-            );
-
-            return (
-                <div className="flex w-[60px] items-center">
-                    <span className="whitespace-pre-wrap">{colorValue}</span>
-                </div>
-            );
-        },
-        filterFn: (row, id, value) => {
-            return value.includes(row.getValue(id));
-        },
-    },
-    {
-        accessorKey: "clarity",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Clarity" />
-        ),
-        cell: ({ row }) => {
-            const clarityValue =
-                row.original.clarity || (row.original as any)["clarity"] || "-";
-            const clarity = clarity_options.find(
-                (clarity) => clarity.value === clarityValue
-            );
-            return (
-                <div className="flex w-[80px] items-center">
-                    <span className="whitespace-pre-wrap">{clarityValue}</span>
-                </div>
-            );
-        },
-        filterFn: (row, id, value) => {
-            return value.includes(row.getValue(id));
-        },
-    },
+    // Discount Column
     {
         accessorKey: "discount",
         header: ({ column }) => (
@@ -198,70 +277,8 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             );
         },
     },
-    {
-        accessorKey: "cut",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Cut" />
-        ),
-        cell: ({ row }) => {
-            const cutValue =
-                row.original.cut || (row.original as any)["cut"] || "-";
-            const cut = cut_options.find((cut) => cut.value === cutValue);
-            return (
-                <div className="flex w-[80px] items-center">
-                    <span className="whitespace-pre-wrap">{cutValue}</span>
-                </div>
-            );
-        },
-        filterFn: (row, id, value) => {
-            return value.includes(row.getValue(id));
-        },
-    },
-    {
-        accessorKey: "polish",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Polish" />
-        ),
-        cell: ({ row }) => (
-            <div className="w-[80px] whitespace-pre-wrap">
-                {row.original.polish || (row.original as any)["Polish"] || "-"}
-            </div>
-        ),
-    },
-    {
-        accessorKey: "symmetry",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Symmetry" />
-        ),
-        cell: ({ row }) => (
-            <div className="w-[80px] whitespace-pre-wrap">
-                {(row.original as any)["sym"] || row.original.symmetry || "-"}
-            </div>
-        ),
-    },
-    {
-        accessorKey: "fluorescenceIntensity",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Fluo. Intensity" />
-        ),
-        cell: ({ row }) => {
-            const flou = flou_options.find(
-                (flou) => flou.value === row.original.fluorescenceIntensity
-            );
-            return (
-                <div className="flex w-[100px] justify-center items-center">
-                    <span className="whitespace-pre-wrap">
-                        {(row.original as any)["fluorescenceIntensity"] ||
-                            row.original.fluorescenceIntensity ||
-                            "-"}
-                    </span>
-                </div>
-            );
-        },
-        filterFn: (row, id, value) => {
-            return value.includes(row.getValue(id));
-        },
-    },
+
+    // Measurements Columns
     {
         accessorKey: "length",
         header: ({ column }) => (
@@ -273,6 +290,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             </div>
         ),
     },
+    // Width Column
     {
         accessorKey: "width",
         header: ({ column }) => (
@@ -284,6 +302,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             </div>
         ),
     },
+    // Depth Column
     {
         accessorKey: "depth",
         header: ({ column }) => (
@@ -295,6 +314,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             </div>
         ),
     },
+    // Total Depth Column
     {
         accessorKey: "totalDepth",
         header: ({ column }) => (
@@ -307,6 +327,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             return <div className="w-[80px]">{tDep ? `${tDep}%` : "-"}</div>;
         },
     },
+    // Table Column
     {
         accessorKey: "table",
         header: ({ column }) => (
@@ -318,6 +339,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             </div>
         ),
     },
+    // Price Per Carat Column
     {
         accessorKey: "pricePerCarat",
         header: ({ column }) => (
@@ -332,6 +354,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             );
         },
     },
+    // Price Column
     {
         accessorKey: "price",
         header: ({ column }) => (
@@ -346,6 +369,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             );
         },
     },
+    // RapList Column
     {
         accessorKey: "rapList",
         header: ({ column }) => (
@@ -360,6 +384,7 @@ export const diamondColumns: ColumnDef<DiamondType>[] = [
             );
         },
     },
+    // Availability Column
     {
         accessorKey: "isAvailable", // Change from "Availabilty" to "isAvailable"
         header: ({ column }) => (

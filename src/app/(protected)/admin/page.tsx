@@ -630,8 +630,9 @@ export default function DiamondPage() {
                             className="bg-white hover:bg-gray-100 border-1 border-gray-200 text-black"
                             variant="secondary"
                             icon={<Upload size={15} />}
-                            onClick={handleRapnetUpload}
-                            disabled={rapnetLoading}
+                            // onClick={handleRapnetUpload}
+                            // disabled={rapnetLoading}
+                            disabled={true} // Temporarily disable until Rapnet resolves upload issues
                         >
                             <span>Upload&nbsp;to&nbsp;Rapnet</span>
                         </CustomButton>
